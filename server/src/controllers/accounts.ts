@@ -4,7 +4,7 @@ import {
 	editAccountSchema,
 	isActiveSchema,
 	type CreateAccountData,
-} from "../schema/accountSchema";
+} from "../schema/accountsSchema";
 import {
 	ConflictError,
 	NotFoundError,

@@ -30,6 +30,9 @@ model User {
   transactions  Transaction[]
   categories    Category[]
   refreshTokens RefreshToken[]
+  loans         Loan[]
+  creditCards   CreditCard[]
+  investments   Investment[]
 }
 
 enum LanguagePreference {
@@ -95,6 +98,10 @@ model Transaction {
   accountId       String          @db.Uuid
   categoryId      String?         @db.Uuid
   transferGroupId String?         @db.Uuid
+  loan            Loan?           @relation(fields: [loanId], references: [id], onDelete: SetNull)
+  loanId          String?         @db.Uuid
+  creditCard      CreditCard?     @relation(fields: [creditCardId], references: [id], onDelete: SetNull)
+  creditCardId    String?         @db.Uuid
 
   @@index([transferGroupId])
   @@index([accountId, transactionDate, statementRow])
@@ -116,4 +123,68 @@ model Category {
   userId       String          @db.Uuid
 
   @@unique([userId, appliesTo, name])
+}
+
+model Loan {
+  id                  String        @id @default(uuid()) @db.Uuid
+  installment         Decimal       @db.Decimal(12, 3)
+  invoiceNumber       String
+  originalAmount      Decimal       @db.Decimal(12, 3)
+  startDate           DateTime      @db.Date
+  lastInstallmentDate DateTime      @db.Date
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String        @db.Uuid
+  transactions        Transaction[]
+
+  @@unique([userId, invoiceNumber])
+}
+
+model CreditCard {
+  id                 String        @id @default(uuid()) @db.Uuid
+  limit              Decimal       @db.Decimal(12, 3)
+  type               CardType
+  cardNumber         String
+  outstandingBalance Decimal       @db.Decimal(12, 3)
+  expiryDate         DateTime      @db.Date
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  transactions       Transaction[]
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String        @db.Uuid
+
+  @@unique([userId, cardNumber])
+}
+
+enum CardType {
+  installment
+  fullDeduction
+}
+
+model Investment {
+  id             String             @id @default(uuid()) @db.Uuid
+  asset          String
+  category       InvestmentCategory
+  shares         Decimal            @db.Decimal(20, 8)
+  purchasePrice  Decimal            @db.Decimal(20, 8)
+  currentPrice   Decimal            @db.Decimal(20, 8)
+  platform       String?
+  symbol         String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  priceUpdatedAt DateTime           @default(now())
+  userId         String             @db.Uuid
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum InvestmentCategory {
+  stocks
+  ETF
+  crypto
+  funds
+  commodity
+  other
 }

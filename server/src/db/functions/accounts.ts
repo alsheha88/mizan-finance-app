@@ -3,7 +3,7 @@ import { prisma } from "../../lib/prisma";
 import type {
 	CreateAccountData,
 	EditAccountData,
-} from "../../schema/accountSchema";
+} from "../../schema/accountsSchema";
 
 export const dbGetAccount = async (id: string, userId: string) => {
 	return await prisma.account.findFirst({ where: { id, userId } });

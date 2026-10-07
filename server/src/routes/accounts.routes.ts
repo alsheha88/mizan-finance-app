@@ -6,7 +6,7 @@ import {
 	getAccount,
 	updateAccountActiveStatus
 
-} from "../controllers/account";
+} from "../controllers/accounts";
 
 const router = express.Router();
 
