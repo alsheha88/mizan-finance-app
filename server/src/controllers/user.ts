@@ -1,5 +1,9 @@
 import type { RequestHandler } from "express";
-import { createUserSchema, loginSchema } from "../schema/userSchema";
+import {
+	createUserSchema,
+	editUserSchema,
+	loginSchema,
+} from "../schema/userSchema";
 import {
 	ConflictError,
 	NotFoundError,
@@ -9,10 +13,13 @@ import {
 import {
 	createRefreshToken,
 	dbCreateUser,
+	dbDeleteUser,
+	dbEditUser,
 	dbGetRefreshToken,
 	dbGetUserByEmail,
-    invalidateAllUserRefreshTokens,
-    markRefreshToken,
+	dbGetUserById,
+	invalidateAllUserRefreshTokens,
+	markRefreshToken,
 } from "../db/functions/user";
 import {
 	checkPassword,
@@ -86,18 +93,18 @@ export const refresh: RequestHandler = async (req, res) => {
 	const cookie = req.cookies.refreshToken;
 	if (!cookie) throw new UnauthorizedError("No token provided");
 
-    const hashedCookie = hashToken(cookie);
-    const existingToken = await dbGetRefreshToken(hashedCookie);
-    if (!existingToken) throw new UnauthorizedError("Invalid token");
-    const userId = existingToken.userId;
+	const hashedCookie = hashToken(cookie);
+	const existingToken = await dbGetRefreshToken(hashedCookie);
+	if (!existingToken) throw new UnauthorizedError("Invalid token");
+	const userId = existingToken.userId;
 
-    if (existingToken.usedAt){
-        await invalidateAllUserRefreshTokens(userId);
+	if (existingToken.usedAt) {
+		await invalidateAllUserRefreshTokens(userId);
 		throw new UnauthorizedError("Token reuse detected. Please log in again.");
-    }
-    if (existingToken.expiresAt < new Date())
+	}
+	if (existingToken.expiresAt < new Date())
 		throw new UnauthorizedError("token is expired");
-    const rawToken = generateRawToken();
+	const rawToken = generateRawToken();
 	const newHash = hashToken(rawToken);
 	await prisma.$transaction(async (tx) => {
 		await markRefreshToken(existingToken.tokenHash, tx);
@@ -129,4 +136,39 @@ export const logout: RequestHandler = async (req, res) => {
 	});
 
 	res.status(200).json({ data: { message: "Logged out successfully" } });
+};
+
+export const getUser: RequestHandler = async (req, res) => {
+	const userId = req.user.id;
+
+	const user = await dbGetUserById(userId);
+	if (!user) throw new NotFoundError("User not found");
+
+	res.status(200).json({ data: { user } });
+};
+
+export const editUser: RequestHandler = async (req, res) => {
+	const userId = req.user.id;
+	const validateRequest = editUserSchema.safeParse(req.body);
+	if (!validateRequest.success)
+		throw new ValidationError(
+			"Failed to validate input data",
+			validateRequest.error.issues,
+		);
+
+	const user = await dbEditUser(validateRequest.data, userId);
+
+	res.status(200).json({ data: { user } });
+};
+
+export const deleteUser: RequestHandler = async (req, res) => {
+	const userId = req.user.id;
+
+	await dbDeleteUser(userId);
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+	});
+	res.status(200).json({ data: { message: "Account deleted successfully" } });
 };

@@ -6,8 +6,7 @@ export const createAccountSchema = z.object({
 	accountType: z.enum(AccountType),
 	accountNumber: z
 		.string()
-		.length(4)
-		.regex(/^\d{4}$/),
+		.regex(/^\d{12}$/, "Account number must be 12 digits"),
 	isPrimary: z.boolean().default(false),
 });
 

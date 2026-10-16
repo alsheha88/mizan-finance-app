@@ -1,3 +1,4 @@
+import { PaletteColor, TransactionType } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import type {
 	CreateCategory,
@@ -14,10 +15,11 @@ export const dbCreateCategory = async (
 	userId: string,
 	data: CreateCategory,
 ) => {
+	const color = await pickLeastUsedColor(userId, data.appliesTo);
 	return await prisma.category.create({
 		data: {
 			name: data.name,
-			color: data.color,
+			color,
 			appliesTo: data.appliesTo,
 			userId,
 		},
@@ -43,4 +45,34 @@ export const dbDeleteCategory = async (userId: string, id: string) => {
 	return await prisma.category.deleteMany({
 		where: { id, userId },
 	});
+};
+
+export const pickLeastUsedColor = async (
+	userId: string,
+	appliesTo: TransactionType,
+) => {
+	const rows = await prisma.category.groupBy({
+		where: { userId, appliesTo },
+		by: ["color"],
+		_count: { color: true },
+	});
+	const counts = new Map(
+		rows.map(
+			({ color, _count }: { color: PaletteColor; _count: { color: number } }) => [
+				color,
+				_count.color,
+			],
+		),
+	);
+	let bestColor: PaletteColor = "mint";
+	let bestCount = Infinity;
+	for (const color of Object.values(PaletteColor)) {
+		const colorCount = counts.get(color) ?? 0;
+		if (colorCount < bestCount) {
+			bestColor = color;
+			bestCount = colorCount;
+		}
+	}
+
+	return bestColor;
 };

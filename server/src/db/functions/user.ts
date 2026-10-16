@@ -1,18 +1,28 @@
 import type { Prisma } from "../../../generated/prisma/client";
 import { hashPassword } from "../../lib/authHelpers";
+import { defaultCategories } from "../../lib/defaultCategories";
 import { prisma } from "../../lib/prisma";
 import type { CreateUser, UpdateUser } from "../../schema/userSchema";
 
-export const dbCreateUser = async (
-	user: CreateUser,
-	client: Prisma.TransactionClient = prisma,
-) => {
+export const dbCreateUser = async (user: CreateUser) => {
 	const email = user.email.toLowerCase();
 	const passwordHash = await hashPassword(user.password);
-	return await client.user.create({
-		data: { fullName: user.fullName, email: email, passwordHash: passwordHash },
-		omit: { passwordHash: true },
+	const createdUser = await prisma.$transaction(async (tx) => {
+		const newUser = await tx.user.create({
+			data: {
+				fullName: user.fullName,
+				email,
+				passwordHash,
+			},
+			omit: { passwordHash: true },
+		});
+		await tx.category.createMany({
+			data: defaultCategories.map((c) => ({ ...c, userId: newUser.id })),
+		});
+
+		return newUser;
 	});
+	return createdUser;
 };
 
 export const dbEditUser = async (user: UpdateUser, id: string) => {
@@ -27,7 +37,7 @@ export const dbEditUser = async (user: UpdateUser, id: string) => {
 };
 
 export const dbDeleteUser = async (id: string) => {
-	return await prisma.user.deleteMany({
+	return await prisma.user.delete({
 		where: { id },
 	});
 };

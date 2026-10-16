@@ -1,49 +1,74 @@
-import type { Prisma } from "../../../generated/prisma/client";
+import { randomUUID } from "crypto";
+import type { Prisma, RowType } from "../../../generated/prisma/client";
 import { type TransactionType } from "../../../generated/prisma/enums";
-import { formatDate, getMonthBounds, stripCommas } from "../../lib/helpers";
+import {
+	extractMCC,
+	formatDate,
+	getMerchant,
+	getMonthBounds,
+	getRowType,
+	stripCommas,
+} from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
-import { type StatementRow } from "../../parser/statement-parser";
+import { type AccountStatementRow } from "../../parser/accountStatementParser";
 import type { TransactionsOptions } from "../../schema/querySchema";
 import type { UpdateTransaction } from "../../schema/transactionsSchema";
+import { MCC_CATEGORIES, NON_MCC_CATEGORIES_MAP } from "../../lib/pdfConfig";
 
-export type Transaction = {
-	transactionDate: Date;
-	amount: string;
-	balanceAfter: string;
-	merchant: string;
-	transferGroupId?: string | null;
-	categoryId?: string | null;
-	description: string;
-	userId: string;
-	accountId: string;
-	type: TransactionType;
-	statementRow: number;
-};
+const TRANSFER_ROW_TYPES: RowType[] = ["own_transfer", "credit_card_payment"];
 
 export const dbCreateTransaction = async (
-	data: StatementRow[],
+	data: AccountStatementRow[],
 	userId: string,
 	accountId: string,
 ) => {
-	const transactions: Transaction[] = data.map((i, index) => {
-		return {
-			transactionDate: formatDate(i.date),
-			amount: Number(stripCommas(i.credit))
-				? stripCommas(i.credit)
-				: stripCommas(i.debit),
-			balanceAfter: stripCommas(i.balance),
-			merchant: i.description,
-			description: i.description,
-			userId,
-			accountId,
-			type: Number(stripCommas(i.credit))
-				? "income"
-				: ("expense" as TransactionType),
-			statementRow: index,
-		};
+	const categories = await prisma.category.findMany({
+		where: { userId },
+	});
+	const transactions: Prisma.TransactionCreateManyInput[] = data.map(
+		(i, index) => {
+			const isCredit = Boolean(Number(stripCommas(i.credit)));
+			const rowType = getRowType(i.description);
+			const mcc = extractMCC(i.description, rowType);
+			const categoryName =
+				MCC_CATEGORIES[mcc ?? ""] ?? NON_MCC_CATEGORIES_MAP[rowType];
+			const category = categoryName
+				? categories.find((c) => c.name === categoryName)
+				: undefined;
+			const type: TransactionType = TRANSFER_ROW_TYPES.includes(rowType)
+				? "transfer"
+				: isCredit
+					? "income"
+					: "expense";
+
+			return {
+				transactionDate: formatDate(i.date),
+				amount: isCredit ? stripCommas(i.credit) : stripCommas(i.debit),
+				balanceAfter: stripCommas(i.balance),
+				merchant: getMerchant(i.description, rowType),
+				description: i.description,
+				userId,
+				accountId,
+				type,
+				statementRow: index,
+				rowType,
+				categoryId: category?.id ?? null,
+			};
+		},
+	);
+
+	const created = await prisma.transaction.createManyAndReturn({
+		data: transactions,
+		skipDuplicates: true,
 	});
 
-	return await prisma.transaction.createManyAndReturn({ data: transactions });
+	if (created.length !== transactions.length) {
+		console.warn(
+			`[upload] skipped ${transactions.length - created.length} of ${transactions.length} rows as duplicates — accountId ${accountId}`,
+		);
+	}
+
+	return created;
 };
 
 export const dbGetTransactions = async (
@@ -118,4 +143,162 @@ export const dbUpdateTransaction = async (
 			...(transaction.merchant !== undefined && { isEdited: true }),
 		},
 	});
+};
+
+export const dbMatchTransactionToLoan = async (userId: string) => {
+	const transactions = await prisma.transaction.findMany({
+		where: {
+			userId,
+			description: {
+				contains: "Invoice No.",
+				mode: "insensitive",
+			},
+			type: "expense",
+			loanId: null,
+		},
+	});
+
+	const invoices = transactions.map((i) => {
+		const invoiceNumber = i.description.match(/Invoice No\.\s*(\d+)/);
+		if (!invoiceNumber) return null;
+		return {
+			transactionId: i.id,
+			invoiceNumber: invoiceNumber[1],
+		};
+	});
+
+	const filteredInvoices = invoices.filter((i) => i !== null);
+	const numbers = filteredInvoices.map((i) => i.invoiceNumber ?? "");
+
+	const loans = await prisma.loan.findMany({
+		where: { userId, invoiceNumber: { in: numbers } },
+	});
+	for (const invoice of filteredInvoices) {
+		const loan = loans.find((i) => i.invoiceNumber === invoice.invoiceNumber);
+		if (!loan) continue;
+
+		await prisma.transaction.update({
+			where: { id: invoice.transactionId },
+			data: {
+				loanId: loan.id,
+			},
+		});
+	}
+};
+
+export const dbAccountToAccountTransfers = async (userId: string) => {
+	// 1. The user's own accounts — needed to tell "my account" from someone else's
+	const accounts = await prisma.account.findMany({ where: { userId } });
+
+	// 2. Every row the parser classified as a transfer between accounts
+	const transactions = await prisma.transaction.findMany({
+		where: { userId, rowType: "own_transfer" },
+	});
+
+	// 3. Keep only what pairing needs, and drop rows we can't pair
+	const transfers = transactions
+		.map((t) => {
+			const match = t.description.match(/(To|From) Account\s*(\d+)/);
+			if (!match) return null;
+
+			const number = match[2];
+			if (!number) return null;
+
+			const other = accounts.find((a) => a.accountNumber === number);
+
+			return {
+				id: t.id,
+				ownAccountId: t.accountId,
+				otherAccountId: other?.id ?? null,
+				direction: match[1] === "From" ? "from" : "to",
+				date: t.transactionDate,
+				amount: t.amount,
+			};
+		})
+		.filter((t) => t !== null);
+
+	// 4. Two piles
+	const outgoing = transfers.filter((t) => t.direction === "to");
+	const incoming = transfers.filter((t) => t.direction === "from");
+
+	// 5. For each outgoing row, find its incoming twin
+	const updates: ReturnType<typeof prisma.transaction.update>[] = [];
+	const used = new Set<string>();
+
+	for (const t of transfers) {
+		if (t.otherAccountId) continue;
+		updates.push(
+			prisma.transaction.update({
+				where: { id: t.id },
+				data: {
+					type: t.direction === "to" ? "expense" : "income",
+				},
+			}),
+		);
+	}
+
+	for (const out of outgoing) {
+		const partner = incoming.find(
+			(inc) =>
+				!used.has(inc.id) &&
+				inc.ownAccountId === out.otherAccountId &&
+				inc.otherAccountId === out.ownAccountId &&
+				inc.date.getTime() === out.date.getTime() &&
+				inc.amount.equals(out.amount),
+		);
+
+		if (!partner) continue;
+
+		used.add(partner.id);
+
+		const groupId = randomUUID();
+
+		updates.push(
+			prisma.transaction.update({
+				where: { id: out.id },
+				data: { transferGroupId: groupId, type: "transfer" },
+			}),
+			prisma.transaction.update({
+				where: { id: partner.id },
+				data: { transferGroupId: groupId, type: "transfer" },
+			}),
+		);
+	}
+
+	// 6. One round trip
+	if (updates.length === 0) return 0;
+
+	await prisma.$transaction(updates);
+
+	return updates.length;
+};
+export const dbMatchCardPayments = async (userId: string) => {
+	const transactions = await prisma.transaction.findMany({
+		where: { userId, rowType: "credit_card_payment", creditCardId: null },
+	});
+
+	const filteredList = transactions.map((i) => {
+		const cardNumber = i.description.match(/x+(\d{4})/);
+		if (!cardNumber) return null;
+		return {
+			id: i.id,
+			cardNumber: cardNumber[1],
+		};
+	});
+	const cleanList = filteredList.filter((i) => i !== null);
+	const cards = await prisma.creditCard.findMany({ where: { userId } });
+	const updates: ReturnType<typeof prisma.transaction.updateMany>[] = [];
+	for (const item of cleanList) {
+		const card = cards.find((i) => i.cardNumber === item.cardNumber);
+		if (!card) continue;
+		updates.push(
+			prisma.transaction.updateMany({
+				where: { userId, id: item.id },
+				data: { creditCardId: card.id },
+			}),
+		);
+	}
+	await prisma.$transaction(updates);
+
+	return updates.length
 };

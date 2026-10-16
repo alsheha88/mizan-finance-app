@@ -1,0 +1,401 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+@import "tailwindcss";
+
+@theme {
+	/* ---------------------------------------------------------------
+	   Font family
+	--------------------------------------------------------------- */
+	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+	/* ---------------------------------------------------------------
+	   Palette — raw scale
+	--------------------------------------------------------------- */
+	--color-neutral-50: #faf8fd;
+	--color-neutral-100: #f1eef8;
+	--color-neutral-200: #e4dff1;
+	--color-neutral-250: #d5cee6;
+	--color-neutral-300: #c5bddc;
+	--color-neutral-400: #9c92bc;
+	--color-neutral-500: #6f6494;
+	--color-neutral-600: #4d4270;
+	--color-neutral-700: #352b4d;
+	--color-neutral-800: #251e36;
+	--color-neutral-900: #1a1526;
+	--color-neutral-950: #120e1c;
+	--color-white: #ffffff;
+
+	--color-primary-50: #fff1ea;
+	--color-primary-100: #ffdfce;
+	--color-primary-200: #ffc3a3;
+	--color-primary-300: #ffa073;
+	--color-primary-400: #ff8659;
+	--color-primary-500: #ff6b3d;
+	--color-primary-600: #e85426;
+	--color-primary-700: #c2411a;
+	--color-primary-800: #9c3316;
+	--color-primary-900: #7a2812;
+
+	/* Feedback */
+	--color-success-light: #a8f0d1;
+	--color-success: #3ddc97;
+	--color-success-dark: #1fae72;
+	--color-warning-light: #ffe7a8;
+	--color-warning: #ffc94d;
+	--color-warning-dark: #e0a72e;
+	--color-error-light: #ffb8c4;
+	--color-error: #ff4d6d;
+	--color-error-dark: #d62f4f;
+	--color-info-light: #b8e4ff;
+	--color-info: #5cc8ff;
+	--color-info-dark: #2e9fdb;
+
+	/* Chart */
+	--color-chart-emerald: #3ddc97;
+	--color-chart-blue: #5cc8ff;
+	--color-chart-purple: #b983ff;
+	--color-chart-amber: #ffc94d;
+	--color-chart-rose: #ff6b9d;
+	--color-chart-cyan: #4de8e8;
+	--color-chart-indigo: #8c7aff;
+	--color-chart-orange: #ff6b3d;
+
+	/* ---------------------------------------------------------------
+	   Semantic — backgrounds and surfaces
+	--------------------------------------------------------------- */
+	--color-bg-primary: #120e1c;
+	--color-bg-secondary: #170f22;
+	--color-bg-tertiary: #1a1526;
+	--color-bg-elevated: #251e36;
+	--color-bg-dark: #15101f;
+	--color-bg-deep: #1a1526;
+
+	--color-surface-default: #1a1526;
+	--color-surface-hover: #251e36;
+	--color-surface-active: #352b4d;
+	--color-surface-overlay: #120e1ccc;
+	--color-surface-dark: #17121f;
+
+	/* Borders */
+	--color-border-default: #352b4d;
+	--color-border-subtle: #251e36;
+	--color-border-strong: #4d4270;
+	--color-border-focus: #ff6b3d;
+
+	/* Text */
+	--color-text-primary: #f1eef8;
+	--color-text-secondary: #9c92bc;
+	--color-text-tertiary: #6f6494;
+	--color-text-disabled: #4d4270;
+	--color-text-inverse: #120e1c;
+	--color-text-link: #c4a8ff;
+
+	/* ---------------------------------------------------------------
+	   Interactive
+	--------------------------------------------------------------- */
+	--color-interactive-primary: #ff6b3d;
+	--color-interactive-primary-hover: #e85426;
+	--color-interactive-primary-active: #c2411a;
+	--color-interactive-primary-foreground: #120e1c;
+
+	--color-interactive-secondary: transparent;
+	--color-interactive-secondary-hover: #251e36;
+	--color-interactive-secondary-active: #352b4d;
+	--color-interactive-secondary-foreground: #f1eef8;
+	--color-interactive-secondary-border: #4d4270;
+
+	--color-interactive-destructive: #ff4d6d;
+	--color-interactive-destructive-hover: #d62f4f;
+	--color-interactive-destructive-active: #b02240;
+	--color-interactive-destructive-foreground: #f1eef8;
+
+	--color-interactive-ghost-hover: #352b4d80;
+	--color-interactive-ghost-active: #352b4db2;
+	--color-interactive-ghost-foreground: #f1eef8;
+
+	--color-accent-default: #ff6b3d26;
+	--color-accent-foreground: #ff8659;
+
+	/* ---------------------------------------------------------------
+	   Components
+	--------------------------------------------------------------- */
+	--color-card-default: #1a1526;
+	--color-card-foreground: #f1eef8;
+	--color-card-hover: #251e36;
+	--color-card-dark: #221b33;
+
+	--color-popover-default: #1a1526;
+	--color-popover-foreground: #f1eef8;
+
+	--color-input-default: #352b4d;
+	--color-input-focus: #ff6b3d;
+	--color-input-invalid: #ff4d6d;
+	--color-input-placeholder: #6f6494;
+	--color-input-background: #170f22;
+
+	--color-ring-default: #ff6b3d;
+	--color-ring-destructive: #ff4d6d;
+	--color-ring-offset: #120e1c;
+
+	--color-sidebar-background: #1a1526;
+	--color-sidebar-foreground: #9c92bc;
+	--color-sidebar-active: #ff6b3d;
+	--color-sidebar-active-foreground: #f1eef8;
+	--color-sidebar-hover: #1a1526;
+	--color-sidebar-border: #251e36;
+
+	--color-badge-default: #352b4d;
+	--color-badge-foreground: #f1eef8;
+	--color-badge-success: #3ddc9726;
+	--color-badge-success-foreground: #3ddc97;
+	--color-badge-warning: #ffc94d26;
+	--color-badge-warning-foreground: #ffc94d;
+	--color-badge-error: #ff4d6d26;
+	--color-badge-error-foreground: #ff4d6d;
+	--color-badge-info: #5cc8ff26;
+	--color-badge-info-foreground: #5cc8ff;
+
+	--color-table-header: #170f22;
+	--color-table-row-hover: #1a1526;
+	--color-table-border: #251e36;
+
+	--color-toggle-off: #4d4270;
+	--color-toggle-on: #ff6b3d;
+	--color-toggle-thumb: #f1eef8;
+
+	/* ---------------------------------------------------------------
+	   Categories — expense
+	--------------------------------------------------------------- */
+	--color-palette-mint: #3ddc9726;
+	--color-palette-mint-fg: #3ddc97;
+	--color-palette-cyan: #4de8e826;
+	--color-palette-cyan-fg: #4de8e8;
+	--color-palette-sky: #5cc8ff26;
+	--color-palette-sky-fg: #5cc8ff;
+	--color-palette-indigo: #8c7aff26;
+	--color-palette-indigo-fg: #8c7aff;
+	--color-palette-violet: #b983ff26;
+	--color-palette-violet-fg: #b983ff;
+	--color-palette-pink: #ff6b9d26;
+	--color-palette-pink-fg: #ff6b9d;
+	--color-palette-rose: #ff4d6d26;
+	--color-palette-rose-fg: #ff4d6d;
+	--color-palette-orange: #ff6b3d26;
+	--color-palette-orange-fg: #ff6b3d;
+	--color-palette-coral: #ffa07326;
+	--color-palette-coral-fg: #ffa073;
+	--color-palette-amber: #ffc94d26;
+	--color-palette-amber-fg: #ffc94d;
+	--color-palette-yellow: #ffd16626;
+	--color-palette-yellow-fg: #ffd166;
+	--color-palette-mauve: #9c92bc26;
+	--color-palette-mauve-fg: #9c92bc;
+
+	/* Categories — income */
+	--color-category-salary: #3ddc9726;
+	--color-category-salary-fg: #3ddc97;
+	--color-category-transfer: #4de8e826;
+	--color-category-transfer-fg: #4de8e8;
+	--color-category-gift: #b983ff26;
+	--color-category-gift-fg: #b983ff;
+	--color-category-refund: #5cc8ff26;
+	--color-category-refund-fg: #5cc8ff;
+	--color-category-interest: #3ddc9726;
+	--color-category-interest-fg: #3ddc97;
+
+	/* Categories — internal */
+	--color-category-internal: #9c92bc26;
+	--color-category-internal-fg: #9c92bc;
+
+	/* ---------------------------------------------------------------
+	   Status, priority, financial, tier
+	--------------------------------------------------------------- */
+	--color-status-success: #3ddc9726;
+	--color-status-success-fg: #3ddc97;
+	--color-status-warning: #ffc94d26;
+	--color-status-warning-fg: #ffc94d;
+	--color-status-danger: #ff4d6d26;
+	--color-status-danger-fg: #ff4d6d;
+	--color-status-neutral: #352b4d;
+	--color-status-neutral-fg: #9c92bc;
+	--color-status-info: #5cc8ff26;
+	--color-status-info-fg: #5cc8ff;
+
+	--color-priority-critical: #ff4d6d26;
+	--color-priority-critical-fg: #ff4d6d;
+	--color-priority-high: #ff6b9d26;
+	--color-priority-high-fg: #ff6b9d;
+	--color-priority-medium: #ffc94d26;
+	--color-priority-medium-fg: #ffc94d;
+	--color-priority-low: #3ddc9726;
+	--color-priority-low-fg: #3ddc97;
+
+	--color-financial-gain: #3ddc9726;
+	--color-financial-gain-fg: #3ddc97;
+	--color-financial-loss: #ff4d6d26;
+	--color-financial-loss-fg: #ff4d6d;
+
+	--color-tier-gold: #ffc94d26;
+	--color-tier-gold-fg: #ffc94d;
+	--color-tier-premium: #b983ff26;
+	--color-tier-premium-fg: #b983ff;
+
+	/* ---------------------------------------------------------------
+	   Radius
+	--------------------------------------------------------------- */
+	--radius-none: 0rem;
+	--radius-xs: 0.25rem;
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.25rem;
+	--radius-2xl: 1.5rem;
+	--radius-3xl: 2rem;
+	--radius-full: 624.9375rem;
+
+	/* ---------------------------------------------------------------
+	   Border width
+	--------------------------------------------------------------- */
+	--border-width-thin: 1px;
+	--border-width-default: 1.5px;
+	--border-width-medium: 2px;
+	--border-width-thick: 3px;
+
+	/* ---------------------------------------------------------------
+	   Icon sizes
+	--------------------------------------------------------------- */
+	--icon-xs: 0.75rem;
+	--icon-sm: 1rem;
+	--icon-md: 1.25rem;
+	--icon-lg: 1.5rem;
+	--icon-xl: 2rem;
+	--icon-2xl: 2.5rem;
+
+	/* ---------------------------------------------------------------
+	   Font weight
+	--------------------------------------------------------------- */
+	--font-weight-regular: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	/* ---------------------------------------------------------------
+	   Type scale — size / line-height / tracking
+	--------------------------------------------------------------- */
+	--text-display-lg: 3.5rem;
+	--text-display-lg--line-height: 4rem;
+	--text-display-lg--letter-spacing: -1.5px;
+	--text-display-lg--font-weight: 700;
+
+	--text-display-md: 3rem;
+	--text-display-md--line-height: 3.5rem;
+	--text-display-md--letter-spacing: -1.2px;
+	--text-display-md--font-weight: 700;
+
+	--text-display-sm: 2.25rem;
+	--text-display-sm--line-height: 2.75rem;
+	--text-display-sm--letter-spacing: -0.8px;
+	--text-display-sm--font-weight: 700;
+
+	--text-h1: 2rem;
+	--text-h1--line-height: 2.5rem;
+	--text-h1--letter-spacing: -0.5px;
+	--text-h1--font-weight: 600;
+
+	--text-h2: 1.5rem;
+	--text-h2--line-height: 2rem;
+	--text-h2--letter-spacing: -0.3px;
+	--text-h2--font-weight: 600;
+
+	--text-h3: 1.25rem;
+	--text-h3--line-height: 1.75rem;
+	--text-h3--letter-spacing: -0.2px;
+	--text-h3--font-weight: 600;
+
+	--text-h4: 1.125rem;
+	--text-h4--line-height: 1.625rem;
+	--text-h4--letter-spacing: -0.1px;
+	--text-h4--font-weight: 500;
+
+	--text-body-lg: 1.125rem;
+	--text-body-lg--line-height: 1.75rem;
+	--text-body-lg--letter-spacing: 0px;
+	--text-body-lg--font-weight: 400;
+
+	--text-body-md: 1rem;
+	--text-body-md--line-height: 1.5rem;
+	--text-body-md--letter-spacing: 0px;
+	--text-body-md--font-weight: 400;
+
+	--text-body-sm: 0.875rem;
+	--text-body-sm--line-height: 1.25rem;
+	--text-body-sm--letter-spacing: 0px;
+	--text-body-sm--font-weight: 400;
+
+	--text-caption-lg: 0.8125rem;
+	--text-caption-lg--line-height: 1.125rem;
+	--text-caption-lg--letter-spacing: 0.1px;
+	--text-caption-lg--font-weight: 500;
+
+	--text-caption-md: 0.75rem;
+	--text-caption-md--line-height: 1rem;
+	--text-caption-md--letter-spacing: 0.2px;
+	--text-caption-md--font-weight: 400;
+
+	--text-caption-sm: 0.6875rem;
+	--text-caption-sm--line-height: 0.875rem;
+	--text-caption-sm--letter-spacing: 0.3px;
+	--text-caption-sm--font-weight: 400;
+
+	--text-label-lg: 0.875rem;
+	--text-label-lg--line-height: 1.25rem;
+	--text-label-lg--letter-spacing: 0.1px;
+	--text-label-lg--font-weight: 500;
+
+	--text-label-md: 0.75rem;
+	--text-label-md--line-height: 1rem;
+	--text-label-md--letter-spacing: 0.2px;
+	--text-label-md--font-weight: 500;
+
+	--text-label-sm: 0.6875rem;
+	--text-label-sm--line-height: 0.875rem;
+	--text-label-sm--letter-spacing: 0.3px;
+	--text-label-sm--font-weight: 500;
+
+	--text-button-lg: 1rem;
+	--text-button-lg--line-height: 1.5rem;
+	--text-button-lg--letter-spacing: 0px;
+	--text-button-lg--font-weight: 600;
+
+	--text-button-md: 0.875rem;
+	--text-button-md--line-height: 1.25rem;
+	--text-button-md--letter-spacing: 0.1px;
+	--text-button-md--font-weight: 600;
+
+	--text-button-sm: 0.75rem;
+	--text-button-sm--line-height: 1rem;
+	--text-button-sm--letter-spacing: 0.2px;
+	--text-button-sm--font-weight: 600;
+}
+
+/* ===================================================================
+   Custom utilities
+
+   Only for token namespaces Tailwind does not recognise. Anything
+   expressible through --color-*, --spacing-*, --radius-*, --text-*
+   or --font-weight-* belongs in @theme above, not here.
+   =================================================================== */
+
+/* icon-xs … icon-2xl — square sizing from the --icon-* scale */
+@utility icon-* {
+	width: --value(--icon-*);
+	height: --value(--icon-*);
+}
+
+/* border-w-thin … border-w-thick — from the --border-width-* scale.
+   Named border-w-* rather than border-* to stay clear of Tailwind's
+   own border-* family (colours and numeric widths). */
+@utility border-w-* {
+	border-style: var(--tw-border-style, solid);
+	border-width: --value(--border-width-*);
+}

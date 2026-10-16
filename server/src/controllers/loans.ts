@@ -14,6 +14,7 @@ import {
 	ValidationError,
 } from "../../errors/errors";
 import { createLoanSchema, editLoanSchema } from "../schema/loansSchema";
+import { dbMatchTransactionToLoan } from "../db/functions/transactions";
 
 export const getLoans: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -55,6 +56,7 @@ export const createLoan: RequestHandler = async (req, res) => {
 		);
 
 	const loan = await dbCreateLoan(userId, validateRequest.data);
+	await dbMatchTransactionToLoan(userId);
 
 	res.status(201).json({ data: { loan } });
 };

@@ -4,7 +4,6 @@ import {
 } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { PDFPageProxy } from "pdfjs-dist";
 
-
 const assets = new URL("../../node_modules/pdfjs-dist/", import.meta.url);
 
 GlobalWorkerOptions.workerSrc = new URL("build/pdf.worker.mjs", assets).href;
@@ -12,6 +11,7 @@ GlobalWorkerOptions.workerSrc = new URL("build/pdf.worker.mjs", assets).href;
 interface TextItem {
 	str: string;
 	transform: number[];
+	dir: string;
 }
 
 interface PhysicalRow {
@@ -19,13 +19,13 @@ interface PhysicalRow {
 	cells: string[];
 }
 
-export type StatementRow = {
+export type AccountStatementRow = {
 	date: string;
 	description: string;
 	debit: string;
 	credit: string;
 	balance: string;
-}
+};
 
 function getColumn(x: number) {
 	if (x < 120) return 0; // Date
@@ -41,7 +41,7 @@ function isDate(value: string) {
 
 export async function extractTableFromPage(
 	page: PDFPageProxy,
-): Promise<StatementRow[]> {
+): Promise<AccountStatementRow[]> {
 	const textContent = await page.getTextContent();
 	const items = (textContent.items as TextItem[]) ?? [];
 
@@ -80,7 +80,6 @@ export async function extractTableFromPage(
 
 		// Sort left → right
 		rowItems.sort((a, b) => (a.transform[4] ?? 0) - (b.transform[4] ?? 0));
-
 		// Date | Description | Debit | Credit | Balance
 		const cells = ["", "", "", "", ""];
 
@@ -91,7 +90,14 @@ export async function extractTableFromPage(
 
 			if (!text) continue;
 
-			cells[column] = cells[column] ? `${cells[column]} ${text}` : text;
+			cells[column] =
+				item.dir === "rtl"
+					? cells[column]
+						? `${text} ${cells[column]}`
+						: text
+					: cells[column]
+						? `${cells[column]} ${text}`
+						: text;
 		}
 
 		/*
@@ -105,11 +111,14 @@ export async function extractTableFromPage(
 		*/
 		const firstColumn = cells[0] ?? "";
 
-		const dateMatch = firstColumn.match(/^(\d{4}\/\d{2}\/\d{2})(.*)$/);
+		const dateMatch = firstColumn.match(/\d{4}\/\d{2}\/\d{2}/);
 
 		if (dateMatch) {
-			const date = dateMatch[1] ?? "";
-			const extraText = dateMatch[2]?.trim() ?? "";
+			const date = dateMatch[0];
+			const extraText = firstColumn
+				.replace(date, "")
+				.replace(/\s+/g, " ")
+				.trim();
 
 			cells[0] = date;
 
@@ -185,7 +194,7 @@ export async function extractTableFromPage(
 	}
 
 	// 9. Build final transactions
-	const structuredTable: StatementRow[] = [];
+	const structuredTable: AccountStatementRow[] = [];
 
 	for (const group of transactionGroups) {
 		const transaction = [
@@ -231,10 +240,16 @@ export async function extractTableFromPage(
 			}
 		}
 
+		const description =
+			transaction[1]
+				?.replace(/\s*-\s*-\s*/g, " - ") // collapse doubled dashes
+				.replace(/\s*-\s*$/, "") // drop a trailing dash
+				.trim() ?? "";
+
 		// Convert array into object with named keys
 		structuredTable.push({
 			date: transaction[0] ?? "",
-			description: transaction[1] ?? "",
+			description: description ?? "",
 			debit: transaction[2] ?? "",
 			credit: transaction[3] ?? "",
 			balance: transaction[4] ?? "",
@@ -248,7 +263,9 @@ export async function extractTableFromPage(
 // PDF setup
 // ---------------------------------
 
-export async function parseStatement(data: Uint8Array): Promise<StatementRow[]> {
+export async function parseAccountStatement(
+	data: Uint8Array,
+): Promise<AccountStatementRow[]> {
 	const pdf = await getDocument({
 		data: data,
 
@@ -258,7 +275,7 @@ export async function parseStatement(data: Uint8Array): Promise<StatementRow[]> 
 
 		wasmUrl: new URL("wasm/", assets).href,
 	}).promise;
-	const allTransactions: StatementRow[] = [];
+	const allTransactions: AccountStatementRow[] = [];
 
 	for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
 		const page = await pdf.getPage(pageNumber);
@@ -271,8 +288,7 @@ export async function parseStatement(data: Uint8Array): Promise<StatementRow[]> 
 	return allTransactions;
 }
 
-
-export function verifyBalances(transactions: StatementRow[]): number[] {
+export function verifyBalances(transactions: AccountStatementRow[]): number[] {
 	const failedIndex: number[] = [];
 
 	for (let i = 0; i < transactions.length - 1; i++) {

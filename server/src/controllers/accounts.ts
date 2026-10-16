@@ -19,6 +19,7 @@ import {
 } from "../db/functions/accounts";
 import { Prisma } from "../../generated/prisma/client";
 import { idParamsSchema } from "../schema/userSchema";
+import { dbAccountToAccountTransfers } from "../db/functions/transactions";
 
 export const createAccount: RequestHandler = async (req, res) => {
 	const validateRequest = createAccountSchema.safeParse(req.body);
@@ -30,13 +31,13 @@ export const createAccount: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
 	try {
 		const account = await dbCreateAccount(validateRequest.data, userId);
+		await dbAccountToAccountTransfers(userId);
 		res.status(201).json({ data: { account } });
 	} catch (err) {
 		if (
 			err instanceof Prisma.PrismaClientKnownRequestError &&
 			err.code === "P2002"
 		) {
-			console.log((err.meta as any)?.driverAdapterError?.cause?.constraint);
 			throw new ConflictError("You already have an account with this name");
 		}
 		throw err;

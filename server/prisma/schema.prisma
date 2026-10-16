@@ -13,36 +13,43 @@ datasource db {
 }
 
 model User {
-  id            String              @id @default(uuid()) @db.Uuid
-  fullName      String
-  email         String              @unique
-  passwordHash  String
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  isVerified    Boolean             @default(false)
-  avatar        String?
-  dateFormat    String?
-  currency      String?
-  phoneNumber   String?
-  weekStart     WeekStart?
-  language      LanguagePreference?
-  accounts      Account[]
-  transactions  Transaction[]
-  categories    Category[]
-  refreshTokens RefreshToken[]
-  loans         Loan[]
-  creditCards   CreditCard[]
-  investments   Investment[]
+  id               String             @id @default(uuid()) @db.Uuid
+  fullName         String
+  email            String             @unique
+  passwordHash     String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  isVerified       Boolean            @default(false)
+  avatar           String?
+  dateFormat       DateFormat         @default(dd_MM_yyyy)
+  currency         String             @default("KWD")
+  phoneNumber      String?
+  weekStart        WeekStart          @default(sun)
+  language         LanguagePreference @default(en)
+  accounts         Account[]
+  transactions     Transaction[]
+  categories       Category[]
+  refreshTokens    RefreshToken[]
+  loans            Loan[]
+  creditCards      CreditCard[]
+  investments      Investment[]
+  cardTransactions CardTransaction[]
 }
 
 enum LanguagePreference {
-  english
-  arabic
+  en
+  ar
 }
 
 enum WeekStart {
   sun
   mon
+}
+
+enum DateFormat {
+  dd_MM_yyyy
+  MM_dd_yyyy
+  yyyy_MM_dd
 }
 
 model RefreshToken {
@@ -88,6 +95,7 @@ model Transaction {
   type            TransactionType
   amount          Decimal         @db.Decimal(12, 3)
   statementRow    Int
+  rowType         RowType         @default(unknown)
   transactionDate DateTime        @db.Date
   updatedAt       DateTime        @updatedAt
   notes           String?
@@ -103,7 +111,8 @@ model Transaction {
   creditCard      CreditCard?     @relation(fields: [creditCardId], references: [id], onDelete: SetNull)
   creditCardId    String?         @db.Uuid
 
-  @@index([transferGroupId])
+  @@unique([accountId, transactionDate, amount, balanceAfter])
+  @@index([userId, transferGroupId])
   @@index([accountId, transactionDate, statementRow])
 }
 
@@ -113,16 +122,49 @@ enum TransactionType {
   transfer
 }
 
+enum RowType {
+  debit_card_purchase
+  pos_purchase
+  credit_card_payment
+  own_transfer
+  person_transfer
+  salary
+  loan_installment
+  standing_order
+  bill_payment
+  bank_fee
+  incoming_wire
+  card_refund
+  financing
+  unknown
+}
+
 model Category {
-  id           String          @id @default(uuid()) @db.Uuid
-  name         String
-  color        String
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  appliesTo    TransactionType
-  transactions Transaction[]
-  userId       String          @db.Uuid
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  color            PaletteColor
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appliesTo        TransactionType
+  transactions     Transaction[]
+  userId           String            @db.Uuid
+  cardTransactions CardTransaction[]
 
   @@unique([userId, appliesTo, name])
+}
+
+enum PaletteColor {
+  mint
+  cyan
+  sky
+  indigo
+  violet
+  pink
+  rose
+  orange
+  coral
+  amber
+  yellow
+  mauve
 }
 
 model Loan {
@@ -142,17 +184,18 @@ model Loan {
 }
 
 model CreditCard {
-  id                 String        @id @default(uuid()) @db.Uuid
-  limit              Decimal       @db.Decimal(12, 3)
+  id                 String            @id @default(uuid()) @db.Uuid
+  limit              Decimal           @db.Decimal(12, 3)
   type               CardType
   cardNumber         String
-  outstandingBalance Decimal       @db.Decimal(12, 3)
-  expiryDate         DateTime      @db.Date
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
+  outstandingBalance Decimal           @db.Decimal(12, 3)
+  expiryDate         DateTime          @db.Date
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   transactions       Transaction[]
-  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             String        @db.Uuid
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String            @db.Uuid
+  cardTransactions   CardTransaction[]
 
   @@unique([userId, cardNumber])
 }
@@ -160,6 +203,29 @@ model CreditCard {
 enum CardType {
   installment
   fullDeduction
+}
+
+model CardTransaction {
+  id                  String              @id @default(uuid()) @db.Uuid
+  merchant            String
+  description         String
+  amount              Decimal             @db.Decimal(12, 3)
+  transactionDate     DateTime            @db.Date
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  isEdited            Boolean             @default(false)
+  cardTransactionType CardTransactionType
+  card                CreditCard          @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
+  creditCardId        String              @db.Uuid
+  category            Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId          String?             @db.Uuid
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId              String              @db.Uuid
+}
+
+enum CardTransactionType {
+  payment
+  purchase
 }
 
 model Investment {

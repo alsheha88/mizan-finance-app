@@ -1,16 +1,16 @@
 import z from "zod";
-import { TransactionType } from "../../generated/prisma/enums";
+import { PaletteColor, TransactionType } from "../../generated/prisma/enums";
 
 export const createCategorySchema = z.object({
 	name: z.string().min(1, "This field is required"),
-	color: z
-		.string()
-		.regex(/^#?([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, {
-			message: "Invalid CSS Hex Color code",
-		}),
 	appliesTo: z.enum(TransactionType),
 });
-export const updateCategorySchema = createCategorySchema.partial();
+export const updateCategorySchema = z
+	.object({
+		name: z.string().trim().min(1, "This field is required").max(50),
+		color: z.enum(PaletteColor),
+	})
+	.partial();
 
 export type CreateCategory = z.infer<typeof createCategorySchema>;
 export type UpdateCategory = z.infer<typeof updateCategorySchema>;
