@@ -35,6 +35,9 @@ function getColumn(x: number) {
 	return 4; // Balance
 }
 
+// Digits and commas, a dot, exactly three decimals — every KFH amount.
+const AMOUNT = /^[\d,]+\.\d{3}$/;
+
 function isDate(value: string) {
 	return /^\d{4}\/\d{2}\/\d{2}$/.test(value.trim());
 }
@@ -233,6 +236,18 @@ export async function extractTableFromPage(
 				const value = cells[column]?.trim() ?? "";
 
 				if (!value) continue;
+
+				/*
+					An amount column can only hold an amount. Description text
+					sometimes drifts a point or two past the column boundary —
+					send anything that isn't a number back to the description,
+					or Number() turns the cell into NaN and the row fails
+					verification.
+				*/
+				if (!AMOUNT.test(value)) {
+					transaction[1] = `${transaction[1] ?? ""} ${value}`.trim();
+					continue;
+				}
 
 				transaction[column] = transaction[column]
 					? `${transaction[column]} ${value}`

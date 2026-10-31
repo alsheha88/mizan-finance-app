@@ -51,9 +51,23 @@ export const uploadAccountStatement: RequestHandler = async (req, res) => {
 
 	if (accountNumber !== account.accountNumber)
 		throw new ConflictError("This statement belongs to a different account");
-	const failuers = verifyBalances(rows);
-	if (failuers.length > 0 || rows.length === 0)
-		throw new ValidationError("The uploaded file contains broken data");
+	if (rows.length === 0)
+		throw new ValidationError(
+			"We couldn't read any transactions from this statement",
+		);
+
+	const failures = verifyBalances(rows);
+	if (failures.length > 0) {
+		const first = failures[0] ?? 0;
+		console.error(
+			`[upload] balance mismatch on ${failures.length} of ${rows.length} rows — first at index ${first}`,
+			rows[first],
+			rows[first + 1],
+		);
+		throw new ValidationError(
+			"Some rows in this statement didn't add up, so it wasn't imported",
+		);
+	}
 
 	const { created, skipped } = await dbCreateTransaction(
 		rows,
@@ -95,8 +109,16 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 		);
 	if (cardNumber !== card.cardNumber)
 		throw new ConflictError("This statement belongs to a different card");
-	if (transactionsCount === 0 || allTransactions.length !== transactionsCount)
-		throw new ValidationError("The uploaded file contains broken data");
+	if (transactionsCount === 0 || allTransactions.length !== transactionsCount) {
+		console.error(
+			`[upload] card statement count mismatch — statement says ${transactionsCount}, parsed ${allTransactions.length}`,
+		);
+		throw new ValidationError(
+			transactionsCount === 0
+				? "We couldn't read any transactions from this statement"
+				: "Some transactions in this statement couldn't be read",
+		);
+	}
 
 	const storedTransactions = await dbCreateCardTransaction(
 		userId,
