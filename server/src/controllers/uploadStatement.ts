@@ -5,8 +5,15 @@ import {
 } from "../parser/accountStatementParser";
 import { parseCardStatement } from "../parser/creditCardStatementParser";
 import { accountIdSchema, creditCardIdSchema } from "../schema/uploadSchema";
-import { ValidationError } from "../../errors/errors";
-import { dbGetAccount } from "../db/functions/accounts";
+import {
+	ConflictError,
+	NotFoundError,
+	ValidationError,
+} from "../../errors/errors";
+import {
+	dbGetAccount,
+	dbUpdateAccountStatementImportDate,
+} from "../db/functions/accounts";
 import {
 	dbAccountToAccountTransfers,
 	dbMatchCardPayments,
@@ -21,7 +28,6 @@ import {
 export const uploadAccountStatement: RequestHandler = async (req, res) => {
 	const file = req.file;
 	const userId = req.user.id;
-	console.log("UPLOAD HANDLER v2");
 	const validateRequest = accountIdSchema.safeParse(req.body);
 	if (!validateRequest.success)
 		throw new ValidationError(
@@ -29,39 +35,40 @@ export const uploadAccountStatement: RequestHandler = async (req, res) => {
 			validateRequest.error.issues,
 		);
 	const account = await dbGetAccount(validateRequest.data.accountId, userId);
-	if (!account)
-		return res.status(404).json({ data: { message: "Account not found" } });
+	if (!account) throw new NotFoundError("Account not found");
+
 	if (!file)
-		return res.status(400).json({
-			data: {
-				message:
-					"Failed to upload file, please try again by uploading a PDF file",
-			},
-		});
+		throw new ValidationError(
+			"Failed to upload file, please try again by uploading a PDF file",
+		);
 	const buffer = new Uint8Array(file.buffer);
 
-	const transactions = await parseAccountStatement(buffer);
-	const failuers = verifyBalances(transactions);
-	if (failuers.length > 0 || transactions.length === 0) {
-		return res
-			.status(400)
-			.json({ data: { message: "The uploaded file contain broken data" } });
-	}
+	const { rows, accountNumber } = await parseAccountStatement(buffer);
+	if (!accountNumber)
+		throw new ValidationError(
+			"Couldn't read the account number from this statement",
+		);
 
-	const storedTransactions = await dbCreateTransaction(
-		transactions,
+	if (accountNumber !== account.accountNumber)
+		throw new ConflictError("This statement belongs to a different account");
+	const failuers = verifyBalances(rows);
+	if (failuers.length > 0 || rows.length === 0)
+		throw new ValidationError("The uploaded file contains broken data");
+
+	const { created, skipped } = await dbCreateTransaction(
+		rows,
 		userId,
 		validateRequest.data.accountId,
 	);
 
-	console.log("transfers:", await dbAccountToAccountTransfers(userId));
-	console.log("cards:", await dbMatchCardPayments(userId));
+	if (created.length > 0) {
+		await dbMatchTransactionToLoan(userId);
+		await dbAccountToAccountTransfers(userId);
+		await dbMatchCardPayments(userId);
+		await dbUpdateAccountStatementImportDate(account.id, userId);
+	}
 
-	await dbMatchTransactionToLoan(userId);
-	await dbAccountToAccountTransfers(userId);
-	await dbMatchCardPayments(userId);
-
-	res.status(201).json({ data: storedTransactions });
+	res.status(201).json({ data: { transactions: created, skipped } });
 };
 export const uploadCardStatement: RequestHandler = async (req, res) => {
 	const file = req.file;
@@ -73,32 +80,29 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 			validateRequest.error.issues,
 		);
 	const card = await dbGetCreditCard(userId, validateRequest.data.creditCardId);
-	if (!card)
-		return res.status(404).json({ data: { message: "Card not found" } });
+	if (!card) throw new NotFoundError("Card not found");
 	if (!file)
-		return res.status(400).json({
-			data: {
-				message:
-					"Failed to upload file, please try again by uploading a PDF file",
-			},
-		});
+		throw new ValidationError(
+			"Failed to upload file, please try again by uploading a PDF file",
+		);
 	const buffer = new Uint8Array(file.buffer);
 
-	const transactions = await parseCardStatement(buffer);
-	if (
-		transactions.transactionsCount === 0 ||
-		transactions.allTransactions.length !== transactions.transactionsCount
-	) {
-		return res
-			.status(400)
-			.json({ data: { message: "The uploaded file contain broken data" } });
-	}
+	const { transactionsCount, allTransactions, cardNumber } =
+		await parseCardStatement(buffer);
+	if (!cardNumber)
+		throw new ValidationError(
+			"Couldn't read the card number from this statement",
+		);
+	if (cardNumber !== card.cardNumber)
+		throw new ConflictError("This statement belongs to a different card");
+	if (transactionsCount === 0 || allTransactions.length !== transactionsCount)
+		throw new ValidationError("The uploaded file contains broken data");
 
 	const storedTransactions = await dbCreateCardTransaction(
 		userId,
-		transactions.allTransactions,
+		allTransactions,
 		validateRequest.data.creditCardId,
 	);
 
-	res.status(201).json({ data: storedTransactions });
+	res.status(201).json({ data: { transactions: storedTransactions } });
 };

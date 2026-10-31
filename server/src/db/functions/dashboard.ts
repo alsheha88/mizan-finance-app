@@ -1,4 +1,5 @@
 import { Prisma } from "../../../generated/prisma/client";
+import type { PaletteColor } from "../../../generated/prisma/enums";
 import { getMonthBounds } from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
 
@@ -24,17 +25,20 @@ export const dbGetIncomeOrExpenseStats = async (
 	return data;
 };
 
-export const dbGetCashflow = async (userId: string) => {
-	const now = new Date();
-	const start = new Date(
-		Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5, 1),
-	);
+export const dbGetCashflow = async (userId: string, month: string) => {
+	const [yearPart, monthPart] = month.split("-");
+	const anchorYear = Number(yearPart);
+	const anchorMonth = Number(monthPart) - 1;
+
+	const { endDate } = getMonthBounds(month);
+	const start = new Date(Date.UTC(anchorYear, anchorMonth - 5, 1));
+
 	const transactions = await prisma.transaction.findMany({
 		where: {
 			userId,
 			type: { in: ["income", "expense"] },
 			transactionDate: {
-				lte: now,
+				lte: endDate,
 				gte: start,
 			},
 		},
@@ -42,9 +46,7 @@ export const dbGetCashflow = async (userId: string) => {
 	});
 
 	const skeleton = Array.from({ length: 6 }, (_, i) => {
-		const d = new Date(
-			Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 5 + i, 1),
-		);
+		const d = new Date(Date.UTC(anchorYear, anchorMonth - 5 + i, 1));
 		return {
 			year: d.getUTCFullYear(),
 			monthIndex: d.getUTCMonth(),
@@ -99,7 +101,7 @@ export const dbSpendingByCategory = async (userId: string, month: string) => {
 	const spending: {
 		categoryId: string | null;
 		name: string;
-		color: string;
+		color: PaletteColor | null;
 		total: number;
 	}[] = [];
 	const categories = await prisma.category.findMany({
@@ -114,7 +116,7 @@ export const dbSpendingByCategory = async (userId: string, month: string) => {
 			spending.push({
 				categoryId: key,
 				name: category?.name ?? "Uncategorised",
-				color: category?.color ?? "#9C92BC",
+				color: category?.color ?? null,
 				total: Number(item._sum.amount),
 			});
 		} else {
@@ -130,7 +132,7 @@ export const dbSpendingByCategory = async (userId: string, month: string) => {
 			spending.push({
 				categoryId: key,
 				name: category?.name ?? "Uncategorised",
-				color: category?.color ?? "#9C92BC",
+				color: category?.color ?? null,
 				total: Number(item._sum.amount),
 			});
 		} else {
@@ -172,9 +174,9 @@ export const dbGetRecentTransactions = async (userId: string) => {
 	const recentTransactions = await prisma.transaction.findMany({
 		where: { userId },
 		orderBy: [{ transactionDate: "desc" }, { statementRow: "desc" }],
-		include: { category: { select: { name: true, color: true } } },
+		include: { category: { select: { name: true, color: true } }, account: {select: {name: true}} },
 		take: 5,
 	});
 
-	return recentTransactions ;
+	return recentTransactions;
 };

@@ -1,23 +1,31 @@
 import { DayPicker } from "@daypicker/react";
-import { useState, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { toCalendarDate } from "@/lib/helpers";
 
 type DatePickerProps = {
-	month: Date;
-	setMonth: React.Dispatch<SetStateAction<Date>>;
+	selected: Date;
+	setSelected: (date: Date) => void;
+	setIsPopoverOpen: Dispatch<SetStateAction<boolean>>;
+
 };
 
-export function DatePicker() {
-	const [selected, setSelected] = useState<Date>();
-	const [month, setMonth] = useState<Date>(new Date());
+export function DatePicker({
+	selected,
+	setSelected,
+	setIsPopoverOpen,
+}: DatePickerProps) {
+	const [month, setMonth] = useState<Date>(selected ?? new Date());
 
 	return (
 		<DayPicker
 			navLayout="around"
 			mode="single"
 			selected={selected}
-			onSelect={setSelected}
+			onSelect={(date: Date) => setSelected(toCalendarDate(date))}
 			month={month}
 			onMonthChange={setMonth}
+			onDayClick={() => setIsPopoverOpen(false)}
+			required
 			className="max-w-sm p-4 bg-popover-default border border-border-default rounded-md "
 			classNames={{
 				chevron: "stroke-text-secondary fill-text-secondary h-4 w-4",

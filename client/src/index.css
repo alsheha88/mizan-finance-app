@@ -399,3 +399,17 @@
 	border-style: var(--tw-border-style, solid);
 	border-width: --value(--border-width-*);
 }
+
+/* ===================================================================
+   Base
+
+   Chrome on macOS defaults to subpixel antialiasing, which renders
+   text heavier than Figma does. Grayscale smoothing matches the
+   design's apparent weight.
+   =================================================================== */
+@layer base {
+	body {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}

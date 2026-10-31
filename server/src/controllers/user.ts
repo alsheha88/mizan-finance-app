@@ -25,9 +25,7 @@ import {
 	checkPassword,
 	generateRawToken,
 	generateToken,
-	hashPassword,
 	hashToken,
-	verifyToken,
 } from "../lib/authHelpers";
 import { prisma } from "../lib/prisma";
 
@@ -44,15 +42,15 @@ export const signup: RequestHandler = async (req, res) => {
 	const existingUser = await dbGetUserByEmail(email);
 	if (existingUser)
 		throw new ConflictError("User already exists, please try to login");
-	const user = {
+	const userObj = {
 		fullName,
 		password,
 		email,
 	};
 
-	const newUser = await dbCreateUser(user);
+	const user = await dbCreateUser(userObj);
 
-	res.status(201).json({ data: { newUser } });
+	res.status(201).json({ data: { user } });
 };
 export const login: RequestHandler = async (req, res) => {
 	const validateRequest = loginSchema.safeParse(req.body);

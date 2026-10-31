@@ -1,7 +1,6 @@
 import type { RequestHandler } from "express";
 import {
 	dbCreateCreditCard,
-	dbDeleteCardTransaction,
 	dbDeleteCreditCard,
 	dbGetCardTransaction,
 	dbGetCardTransactions,
@@ -88,7 +87,7 @@ export const editCreditCard: RequestHandler = async (req, res) => {
 	const card = await dbUpdateCreditCard(userId, id, validateRequest.data);
 	if (card.length === 0) throw new NotFoundError("Card not found");
 
-	res.status(200).json({ data: { card } });
+	res.status(200).json({ data: { card: card[0] } });
 };
 export const deleteCreditCard: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -161,21 +160,5 @@ export const editCardTransaction: RequestHandler = async (req, res) => {
 	if (updatedTransaction.length === 0)
 		throw new NotFoundError("Transaction not found");
 
-	res.status(200).json({ data: { updatedTransaction } });
-};
-export const deleteCardTransaction: RequestHandler = async (req, res) => {
-	const userId = req.user.id;
-	const parsedId = idParamsSchema.safeParse(req.params);
-	if (!parsedId.success)
-		throw new ValidationError(
-			"Failed to validate transaction id",
-			parsedId.error.issues,
-		);
-	const id = parsedId.data.id;
-	const transaction = await dbDeleteCardTransaction(id, userId);
-	if (transaction.count === 0) throw new NotFoundError("Transaction not found");
-
-	res
-		.status(200)
-		.json({ data: { message: "Transaction deleted successfully" } });
+	res.status(200).json({ data: { transaction: updatedTransaction[0] } });
 };

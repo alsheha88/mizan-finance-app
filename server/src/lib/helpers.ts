@@ -1,5 +1,6 @@
 import type { RowType } from "../../generated/prisma/enums";
 import { ROW_TYPE_LABELS, rowTypeRules } from "./pdfConfig";
+import { prisma } from "./prisma";
 
 export function stripCommas(amount: string) {
 	return amount.replace(/,/g, "");
@@ -42,37 +43,40 @@ export function getRowType(input: string) {
 
 	return matched.rowType;
 }
-export function parseDescription(input: string) {}
 
 export function getMerchant(description: string, rowType: RowType) {
 	if (rowType === "debit_card_purchase" || rowType === "pos_purchase") {
-		return extractMerchant(description, rowType) || ROW_TYPE_LABELS[rowType];
+		return extractMerchant(description) || ROW_TYPE_LABELS[rowType];
 	}
 
 	return ROW_TYPE_LABELS[rowType];
 }
 
-export function extractMerchant(description: string, rowType: RowType) {
-	const parts = description.split("-");
+// Phrases the bank prefixes a row with. In Arabic rows these are stripped by the
+// character filter below; in English rows they survive it, so they're named here.
+const ROW_TYPE_PHRASES = ["pos payment", "electron settlement"];
 
-	if (rowType === "debit_card_purchase") return parts.slice(3).join("-").trim();
-	if (rowType === "pos_purchase") {
-		const mccIndex = parts.findIndex((i) => /^\d{4}$/.test(i.trim()));
-		if (mccIndex === -1) return parts.slice(3).join("-").trim();
+export function extractMerchant(description: string) {
+	// Arabic and punctuation become spaces; dashes survive as the separator.
+	const parts = description.replaceAll(/[^A-Za-z0-9-]/g, " ").split("-");
 
-		const merchantArray = parts.slice(3, mccIndex).filter((i) => {
-			const part = i.trim();
-			return !/^\d+$/.test(part) && part.length <= 24;
-		});
+	// The MCC is a reliable fence: the merchant is always to its left.
+	const mccIndex = parts.findIndex((i) => /^\d{4}$/.test(i.trim()));
+	const beforeMcc = mccIndex === -1 ? parts : parts.slice(0, mccIndex);
 
-		const mcc = parts[mccIndex];
+	const kept = beforeMcc.filter((i) => {
+		const part = i.trim();
+		if (!part) return false;
+		// References, terminal ids, store numbers, dates, amounts.
+		if (/\d/.test(part)) return false;
+		if (ROW_TYPE_PHRASES.some((phrase) => part.toLowerCase().includes(phrase)))
+			return false;
+		return true;
+	});
 
-		const merchant = merchantArray.join("-").trim();
+	const merchant = kept.join(" ").replace(/\s+/g, " ").trim();
 
-		return merchant;
-	}
-
-	return undefined;
+	return merchant || undefined;
 }
 export function extractMCC(description: string, rowType: RowType) {
 	const parts = description.split("-");
@@ -83,13 +87,26 @@ export function extractMCC(description: string, rowType: RowType) {
 
 		const mcc = parts[mccIndex]?.trim();
 
-
 		return mcc;
 	}
 
 	return undefined;
 }
 
-export function getCategory(){
-	
-} 
+export function normaliseMerchant(merchant: string) {
+	const caps = merchant.toUpperCase();
+	const replacedText = caps.replace(/[^A-Za-z0-9]/g, " ");
+	const trimResult = replacedText.trim();
+	const splitResult = trimResult.split(" ");
+	const result = splitResult
+		.filter((i) => i !== "TAP" && i !== "INT" && i !== "" && !i.match(/\d+/g))
+		.join(" ");
+
+	// Nothing usable survived — the caller must not store a key for this row.
+	if (!result) {
+		return undefined;
+	}
+
+	return result;
+}
+

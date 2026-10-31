@@ -46,7 +46,7 @@ export function Pagination({
 				</Button>
 				{pages.map((p, i) =>
 					p === "..." ? (
-						<span className="text-input-placeholder" key={i}>
+						<span className="text-input-placeholder" key={`gap-${i}`}>
 							{p}
 						</span>
 					) : (

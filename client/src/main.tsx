@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import { AppRoutes } from "./routes/AppRoutes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
@@ -12,7 +12,7 @@ import { Toaster } from "react-hot-toast";
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			staleTime: 5 * 50 * 1000,
+			staleTime: 5 * 60 * 1000,
 			retry: 1,
 		},
 	},
@@ -21,7 +21,7 @@ createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
 			<BrowserRouter>
-				<App />
+				<AppRoutes />
 				<Toaster
 					position="top-center"
 					toastOptions={{

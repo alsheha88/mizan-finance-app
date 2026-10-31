@@ -12,6 +12,7 @@ type ModalProps = {
 	onConfirm: () => void;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	isPending?: boolean;
 };
 
 function Modal({
@@ -24,13 +25,18 @@ function Modal({
 	onConfirm,
 	open,
 	onOpenChange,
+	isPending = false,
 }: ModalProps) {
 	return (
-		<Dialog.Root onOpenChange={onOpenChange} open={open}>
+		<Dialog.Root
+			onOpenChange={(next) => {
+				if (!isPending) onOpenChange(next);
+			}}
+			open={open}>
 			{trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
 			<Dialog.Portal>
 				<Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-				<Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 grid gap-3 p-6 rounded-lg bg-popover-default border border-border-default">
+				<Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md z-50 grid gap-3 p-6 rounded-lg bg-popover-default border border-border-default">
 					<Dialog.Title className="text-h3 text-text-primary">
 						{title} {item}
 					</Dialog.Title>
@@ -39,9 +45,11 @@ function Modal({
 					</Dialog.Description>
 					<div className="place-self-end flex items-center gap-3">
 						<Dialog.Close asChild>
-							<Button variant="ghost">Cancel</Button>
+							<Button variant="ghost" disabled={isPending}>
+								Cancel
+							</Button>
 						</Dialog.Close>
-						<Button variant={variant} onClick={onConfirm}>
+						<Button variant={variant} onClick={onConfirm} disabled={isPending}>
 							{btnContent}
 						</Button>
 					</div>

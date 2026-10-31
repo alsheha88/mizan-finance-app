@@ -79,7 +79,7 @@ export const editLoan: RequestHandler = async (req, res) => {
 	const loan = await dbUpdateLoan(id, userId, validateRequest.data);
 	if (loan.length === 0) throw new NotFoundError("Loan not found");
 
-	res.status(200).json({ data: { loan } });
+	res.status(200).json({ data: { loan: loan[0] } });
 };
 export const deleteLoan: RequestHandler = async (req, res) => {
 	const userId = req.user.id;

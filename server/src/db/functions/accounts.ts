@@ -8,9 +8,6 @@ import type {
 export const dbGetAccount = async (id: string, userId: string) => {
 	return await prisma.account.findFirst({ where: { id, userId } });
 };
-// export const dbGetAccountByName = async (name: string, userId: string) => {
-// 	return await prisma.account.findUnique({ where: { name, userId } });
-// };
 
 export const dbGetAccounts = async (userId: string) => {
 	const accounts = await prisma.account.findMany({
@@ -85,5 +82,15 @@ export const dbUpdateActiveStatus = async (
 		data: {
 			isActive,
 		},
+	});
+};
+
+export const dbUpdateAccountStatementImportDate = async (
+	id: string,
+	userId: string,
+) => {
+	return await prisma.account.updateMany({
+		where: { id, userId },
+		data: { lastImportedAt: new Date() },
 	});
 };

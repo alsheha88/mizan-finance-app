@@ -3,7 +3,6 @@ import {
 	createAccountSchema,
 	editAccountSchema,
 	isActiveSchema,
-	type CreateAccountData,
 } from "../schema/accountsSchema";
 import {
 	ConflictError,
@@ -61,13 +60,12 @@ export const editAccount: RequestHandler = async (req, res) => {
 	try {
 		const account = await dbUpdateAccount(validateRequest.data, userId, id);
 		if (account.length === 0) throw new NotFoundError("Account not found");
-		res.status(200).json({ data: { account } });
+		res.status(200).json({ data: { account: account[0] } });
 	} catch (err) {
 		if (
 			err instanceof Prisma.PrismaClientKnownRequestError &&
 			err.code === "P2002"
 		) {
-			console.log((err.meta as any)?.driverAdapterError?.cause?.constraint);
 			throw new ConflictError("You already have an account with this name");
 		}
 		throw err;
@@ -86,7 +84,7 @@ export const getAccountsList: RequestHandler = async (req, res) => {
 		};
 	});
 
-	res.status(200).json({ data: accounts });
+	res.status(200).json({ data: { accounts } });
 };
 export const updateAccountActiveStatus: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -113,7 +111,7 @@ export const updateAccountActiveStatus: RequestHandler = async (req, res) => {
 	if (updatedAccountActiveStatus.length === 0)
 		throw new NotFoundError("Account not found");
 
-	res.status(200).json({ data: updatedAccountActiveStatus });
+	res.status(200).json({ data: { account: updatedAccountActiveStatus[0] } });
 };
 export const getAccount: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -127,5 +125,5 @@ export const getAccount: RequestHandler = async (req, res) => {
 	const account = await dbGetAccount(id, userId);
 	if (!account) throw new NotFoundError("Account not found");
 
-	res.status(200).json({ data: account });
+	res.status(200).json({ data: { account } });
 };

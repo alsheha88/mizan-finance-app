@@ -2,6 +2,7 @@ import z from "zod";
 import { CardType } from "../../generated/prisma/enums";
 
 export const createCardSchema = z.object({
+	name: z.string().min(1, "This field is required"),
 	cardNumber: z
 		.string()
 		.length(4)

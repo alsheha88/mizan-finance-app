@@ -265,7 +265,7 @@ export async function extractTableFromPage(
 
 export async function parseAccountStatement(
 	data: Uint8Array,
-): Promise<AccountStatementRow[]> {
+) {
 	const pdf = await getDocument({
 		data: data,
 
@@ -276,16 +276,20 @@ export async function parseAccountStatement(
 		wasmUrl: new URL("wasm/", assets).href,
 	}).promise;
 	const allTransactions: AccountStatementRow[] = [];
+	let accountNumber: string | null = null;
 
 	for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
 		const page = await pdf.getPage(pageNumber);
 
 		const transactions = await extractTableFromPage(page);
 
+		if (pageNumber === 1) {
+			accountNumber = await extractAccountNumber(page);
+		}
 		allTransactions.push(...transactions);
 	}
 
-	return allTransactions;
+	return { accountNumber, rows: allTransactions };;
 }
 
 export function verifyBalances(transactions: AccountStatementRow[]): number[] {
@@ -307,4 +311,29 @@ export function verifyBalances(transactions: AccountStatementRow[]): number[] {
 	}
 
 	return failedIndex;
+}
+
+export async function extractAccountNumber(
+	page: PDFPageProxy,
+): Promise<string | null> {
+	const textContent = await page.getTextContent();
+	const items = textContent.items as TextItem[];
+
+	for (const item of items) {
+		const text = item.str.trim();
+
+		if (/^KW\d{2}[A-Z]{4}[0-9A-Z]{22}$/.test(text)) {
+			return text.slice(-12);
+		}
+	}
+
+	for (const item of items) {
+		const text = item.str.trim();
+
+		if (/^\d{12}$/.test(text)) {
+			return text;
+		}
+	}
+
+	return null;
 }

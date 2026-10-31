@@ -2,6 +2,7 @@ import type { RequestHandler } from "express";
 import { queryParamsSchema } from "../schema/querySchema";
 import { NotFoundError, ValidationError } from "../../errors/errors";
 import {
+	dbDeleteTransactions,
 	dbGetTransaction,
 	dbGetTransactions,
 	dbUpdateTransaction,
@@ -48,7 +49,7 @@ export const editTransaction: RequestHandler = async (req, res) => {
 	if (updatedTransaction.length === 0)
 		throw new NotFoundError("Transaction not found");
 
-	res.status(200).json({ data: { updatedTransaction } });
+	res.status(200).json({ data: { transaction: updatedTransaction[0] } });
 };
 export const getTransaction: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -64,4 +65,22 @@ export const getTransaction: RequestHandler = async (req, res) => {
 	if (!transaction) throw new NotFoundError("Transaction not found");
 
 	res.status(200).json({ data: { transaction } });
+};
+export const deleteTransactions: RequestHandler = async (req, res) => {
+	const userId = req.user.id;
+	const parsedId = idParamsSchema.safeParse(req.params);
+	if (!parsedId.success)
+		throw new ValidationError(
+			"Failed to validate transaction id",
+			parsedId.error.issues,
+		);
+	const accountId = parsedId.data.id;
+
+	const transaction = await dbDeleteTransactions(accountId, userId);
+	if (transaction.count === 0)
+		throw new NotFoundError("No transactions found linked to this account");
+
+	res
+		.status(200)
+		.json({ data: { message: "Transactions deleted successfully" } });
 };

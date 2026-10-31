@@ -17,7 +17,7 @@ export function Popover({
 }: PopoverProps) {
 	return (
 		<RadixPopover.Root open={open} onOpenChange={onOpenChange}>
-			<RadixPopover.Trigger className="flex items-center gap-1.5 bg-input-background p-3 border border-border-default rounded-sm text-text-primary text-body-sm cursor-pointer focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-border-focus data-[state=open]:border-border-focus">
+			<RadixPopover.Trigger className="flex items-center gap-1.5 bg-input-background p-3 border border-border-default rounded-sm text-text-secondary text-body-sm cursor-pointer focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-border-focus data-[state=open]:border-border-focus">
 				{triggerContent}
 			</RadixPopover.Trigger>
 

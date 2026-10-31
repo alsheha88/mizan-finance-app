@@ -43,9 +43,11 @@ function getColumn(x: number) {
 // PDF setup
 // ---------------------------------
 
-export async function parseCardStatement(
-	data: Uint8Array,
-): Promise<{ allTransactions: CardStatementRow[]; transactionsCount: number }> {
+export async function parseCardStatement(data: Uint8Array): Promise<{
+	allTransactions: CardStatementRow[];
+	transactionsCount: number;
+	cardNumber: string | null;
+}> {
 	const pdf = await getDocument({
 		data: data,
 
@@ -58,24 +60,26 @@ export async function parseCardStatement(
 
 	const allTransactions: CardStatementRow[] = [];
 	let transactionsCount: number = 0;
+	let cardNumber: string | null = null;
 
 	for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
 		const page = await pdf.getPage(pageNumber);
 
 		const transactions = await extractTableFromPage(page);
 		transactionsCount = transactions.transactionsCount;
+		if (pageNumber === 1) {
+			cardNumber = await extractCardNumber(page);
+		}
 
 		allTransactions.push(...transactions.cardTransactions);
 	}
 
-	console.log(transactionsCount);
-
-	return { allTransactions, transactionsCount };
+	return { cardNumber, allTransactions, transactionsCount };
 }
 
-function readFile(path: string) {
-	return new Uint8Array(fs.readFileSync(path));
-}
+// function readFile(path: string) {
+// 	return new Uint8Array(fs.readFileSync(path));
+// }
 
 export async function extractTableFromPage(page: PDFPageProxy): Promise<{
 	cardTransactions: CardStatementRow[];
@@ -181,7 +185,6 @@ export async function extractTableFromPage(page: PDFPageProxy): Promise<{
 	if (dateRows.length === 0) {
 		return { cardTransactions: [], transactionsCount };
 	}
-	
 
 	const cardTransactions = dateRows.map((row) => {
 		return {
@@ -193,5 +196,18 @@ export async function extractTableFromPage(page: PDFPageProxy): Promise<{
 
 	return { cardTransactions, transactionsCount };
 }
-const data = readFile("src/sample/CardStatement.pdf");
-const result = await parseCardStatement(data);
+export async function extractCardNumber(
+	page: PDFPageProxy,
+): Promise<string | null> {
+	const textContent = await page.getTextContent();
+	const items = textContent.items as TextItem[];
+
+	for (const item of items) {
+		const text = item.str.trim();
+
+		const match = text.match(/\d{6}X{6}(\d{4})/);
+		if (match) return match[1] ?? null;
+	}
+
+	return null;
+}

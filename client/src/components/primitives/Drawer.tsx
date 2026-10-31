@@ -90,7 +90,7 @@ export function Drawer({
 				aria-modal="true"
 				aria-labelledby={id}
 				onClick={(e) => e.stopPropagation()}
-				className="fixed right-0 top-0 h-dvh w-sm flex flex-col bg-popover-default"
+				className="fixed right-0 top-0 h-dvh w-full sm:w-sm flex flex-col bg-popover-default"
 			>
 				<div className="p-6 flex items-center justify-between border-b border-b-border-default">
 					<div className="flex flex-col gap-1">

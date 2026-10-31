@@ -4,7 +4,6 @@ import {
 	DollarSign,
 	TrendingDown,
 	CircleDollarSign,
-	PiggyBank,
 	UserSquare2Icon,
 	CreditCard,
 } from "lucide-react";
@@ -53,3 +52,15 @@ export const navItems = [
 		icon: <UserSquare2Icon className="text-current " />,
 	},
 ];
+
+// The mobile tab bar has five slots: four destinations plus "More".
+// Order follows the design: Dashboard, Accounts, Expenses, Income.
+const PRIMARY_PATHS = ["/dashboard", "/accounts", "/expenses", "/income"];
+
+export const primaryNavItems = PRIMARY_PATHS.map(
+	(path) => navItems.find((i) => i.to === path)!,
+);
+
+export const secondaryNavItems = navItems.filter(
+	(i) => !PRIMARY_PATHS.includes(i.to),
+);

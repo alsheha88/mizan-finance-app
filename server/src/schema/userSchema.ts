@@ -1,5 +1,9 @@
 import z from "zod";
-import { LanguagePreference, WeekStart } from "../../generated/prisma/enums";
+import {
+	DateFormat,
+	LanguagePreference,
+	WeekStart,
+} from "../../generated/prisma/enums";
 
 const passwordField = z
 	.string()
@@ -23,10 +27,10 @@ export const editUserSchema = z
 		fullName: z.string(),
 		avatar: z.url(),
 		phoneNumber: z.string(),
-        weekStart: z.enum(WeekStart),
-        language: z.enum(LanguagePreference),
-        dateFormat: z.string(),
-        currency: z.string()
+		weekStart: z.enum(WeekStart),
+		language: z.enum(LanguagePreference),
+		dateFormat: z.enum(DateFormat),
+		currency: z.string(),
 	})
 	.partial();
 

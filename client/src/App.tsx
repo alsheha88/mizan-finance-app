@@ -1,19 +1,19 @@
-import { useState, type SetStateAction } from "react";
-
+import { Outlet } from "react-router-dom";
+import { PrivateRoute } from "./routes/PrivateRoute";
 import { Sidebar } from "./components/primitives/Sidebar";
+import { MobileTabBar } from "./components/primitives/MobileTabBar";
 
 function App() {
-	const [isOpen, setIsOpen] = useState(false);
-	function handleClick() {
-		setIsOpen(true);
-	}
 	return (
-		<div className="bg-bg-primary flex min-h-dvh gap-4">
+		<PrivateRoute>
+			<div className="bg-bg-primary flex min-h-dvh">
 				<Sidebar />
-				<main className="flex-1 px-6 pt-6 pb-20 ">
-					
+				<main className="flex-1 px-6 pt-6 pb-20 w-full">
+					<Outlet />
 				</main>
-		</div>
+				<MobileTabBar />
+			</div>
+		</PrivateRoute>
 	);
 }
 

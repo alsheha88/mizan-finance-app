@@ -1,4 +1,5 @@
 import { RowType } from "../../generated/prisma/enums";
+import type { CategoryName } from "./defaultCategories";
 
 // ORDER IS SIGNIFICANT — first match wins.
 // Match against a lowercased description.
@@ -6,8 +7,8 @@ export const rowTypeRules: { rowType: RowType; patterns: string[] }[] = [
 	// Prefix-based types go first: the rest of these strings is merchant text,
 	// which can contain anything (a shop called "SALARY SOLUTIONS" would
 	// otherwise be classified as salary).
-	{ rowType: "debit_card_purchase", patterns: ["electron settlement"] },
-	{ rowType: "pos_purchase", patterns: ["pos payment"] },
+	{ rowType: "debit_card_purchase", patterns: ["electron settlement", "تسويات فيزا االلكترون"] },
+	{ rowType: "pos_purchase", patterns: ["pos payment", "نقاط بيع"] },
 
 	{
 		rowType: "card_refund",
@@ -23,6 +24,7 @@ export const rowTypeRules: { rowType: RowType; patterns: string[] }[] = [
 			"تحويل مالى",
 			"fund transfer-internet",
 			"transfer between own account",
+			"تحويل بين الحسابات"
 		],
 	},
 	{ rowType: "person_transfer", patterns: ["ومض", "001o"] },
@@ -44,8 +46,8 @@ export const rowTypeRules: { rowType: RowType; patterns: string[] }[] = [
 ];
 
 export const ROW_TYPE_LABELS: Record<RowType, string> = {
-	debit_card_purchase: "KNET",
-	pos_purchase: "POS Purchase",
+	debit_card_purchase: "Card Purchase",
+	pos_purchase: "KNET",
 	card_refund: "Card Refund",
 	credit_card_payment: "Card Payment",
 	own_transfer: "Account Transfer",
@@ -60,7 +62,7 @@ export const ROW_TYPE_LABELS: Record<RowType, string> = {
 	unknown: "Other",
 };
 
-export const MCC_CATEGORIES: Record<string, string> = {
+export const MCC_CATEGORIES: Record<string, CategoryName> = {
 	// Food & drink
 	"5411": "groceries", // Grocery stores / supermarkets
 	"5811": "restaurants", // Caterers
@@ -73,7 +75,7 @@ export const MCC_CATEGORIES: Record<string, string> = {
 	"5655": "shopping", // Sports apparel
 	"5941": "shopping", // Sporting goods
 	"5973": "shopping", // Religious goods stores
-	"5999": "shopping", // Miscellaneous specialty retail
+	// "5999": "shopping", // Miscellaneous specialty retail
 
 	// Utilities & services
 	"4812": "bills", // Telecom equipment
@@ -89,11 +91,11 @@ export const MCC_CATEGORIES: Record<string, string> = {
 	// "5511": "",  // Car dealers
 	// "6051": "",  // Quasi-cash / financial institutions
 	// "7230": "",  // Beauty & barber shops
-	// "7523": "",  // Parking lots & garages
+	"7523": "parking", // Parking lots & garages
 	// "9399": "",  // Government services
 };
 
-export const NON_MCC_CATEGORIES_MAP: Partial<Record<RowType, string>> = {
+export const NON_MCC_CATEGORIES_MAP: Partial<Record<RowType, CategoryName>> = {
 	bank_fee: "fees",
 	bill_payment: "bills",
 	card_refund: "refunds",

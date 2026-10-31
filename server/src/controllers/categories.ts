@@ -57,7 +57,6 @@ export const createCategory: RequestHandler = async (req, res) => {
 			err instanceof Prisma.PrismaClientKnownRequestError &&
 			err.code === "P2002"
 		) {
-			console.log((err.meta as any)?.driverAdapterError?.cause?.constraint);
 			throw new ConflictError("You already have a category with this name");
 		}
 		throw err;
@@ -82,7 +81,7 @@ export const editCategory: RequestHandler = async (req, res) => {
 	const category = await dbUpdateCategory(userId, id, validateRequest.data);
 	if (category.length === 0) throw new NotFoundError("No categroies found");
 
-	res.status(200).json({ data: { category } });
+	res.status(200).json({ data: { category: category[0] } });
 };
 
 export const deleteCategory: RequestHandler = async (req, res) => {

@@ -29,7 +29,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 	] = await Promise.all([
 		dbGetIncomeOrExpenseStats(userId, month, "income"),
 		dbGetIncomeOrExpenseStats(userId, month, "expense"),
-		dbGetCashflow(userId),
+		dbGetCashflow(userId, month),
 		dbSpendingByCategory(userId, month),
 		dbGetDebtStats(userId),
 		dbGetRecentTransactions(userId),
