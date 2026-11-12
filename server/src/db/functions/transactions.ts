@@ -108,6 +108,15 @@ export const dbGetTransactions = async (
 	if (options.type !== undefined) where.type = options.type;
 	if (options.categoryId !== undefined) where.categoryId = options.categoryId;
 	if (options.accountId !== undefined) where.accountId = options.accountId;
+	if (options.minAmount !== undefined || options.maxAmount !== undefined) {
+		where.amount = {};
+		if (options.maxAmount !== undefined) {
+			where.amount.lte = options.maxAmount;
+		}
+		if (options.minAmount !== undefined) {
+			where.amount.gte = options.minAmount;
+		}
+	}
 	if (options.month) {
 		where.transactionDate = {};
 		const { startDate, endDate } = getMonthBounds(options.month);
