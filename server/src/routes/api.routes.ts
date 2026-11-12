@@ -8,6 +8,7 @@ import loansRouter from "./loans.routes";
 import cardsRouter from "./cards.routes";
 import cardTransactionsRouter from "./cardTransactions.routes";
 import dashboardRouter from "./dashboard.routes";
+import assistantRouter from "./conversations.routes";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
 const router = Router();
@@ -20,5 +21,6 @@ router.use("/loans", authMiddleware, loansRouter);
 router.use("/cards", authMiddleware, cardsRouter);
 router.use("/card-transactions", authMiddleware, cardTransactionsRouter);
 router.use("/dashboard", authMiddleware, dashboardRouter);
+router.use("/assistant", authMiddleware, assistantRouter);
 
 export default router;

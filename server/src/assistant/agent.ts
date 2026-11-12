@@ -6,11 +6,12 @@ const client = new Anthropic();
 export async function runAgent(
 	messages: Anthropic.MessageParam[],
 	userId: string,
-): Promise<string> {
+): Promise<{ text: string; inputTokens: number; outputTokens: number }> {
 	let counter = 0;
 	const MAX_STEPS = 8;
 	let text = "";
-
+	let totalInputTokens = 0;
+	let totalOutputTokens = 0;
 	while (counter < MAX_STEPS) {
 		console.log(`Step ${counter + 1}`);
 		const toolResults: Anthropic.ToolResultBlockParam[] = [];
@@ -23,6 +24,8 @@ export async function runAgent(
 			tools: toolDefinitions,
 		});
 		messages.push({ role: "assistant", content: response.content });
+		totalOutputTokens += response.usage.output_tokens;
+		totalInputTokens += response.usage.input_tokens;
 		console.log(response.stop_reason);
 		console.log(`response_useage: {
                     input_Tokens: ${response.usage.input_tokens},
@@ -34,7 +37,11 @@ export async function runAgent(
 					text += block.text;
 				}
 			}
-			return text;
+			return {
+				text,
+				inputTokens: totalInputTokens,
+				outputTokens: totalOutputTokens,
+			};
 		}
 		for (const block of response.content) {
 			if (block.type === "tool_use") {
@@ -62,5 +69,9 @@ export async function runAgent(
 		content: "I couldn’t finish that. Please try a simpler question.",
 	});
 
-	return "I couldn’t finish that. Please try a simpler question.";
+	return {
+		text: "I couldn’t finish that. Please try a simpler question.",
+		inputTokens: totalInputTokens,
+		outputTokens: totalOutputTokens,
+	};
 }
