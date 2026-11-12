@@ -1,6 +1,5 @@
 import type { RowType } from "../../generated/prisma/enums";
 import { ROW_TYPE_LABELS, rowTypeRules } from "./pdfConfig";
-import { prisma } from "./prisma";
 
 export function stripCommas(amount: string) {
 	return amount.replace(/,/g, "");

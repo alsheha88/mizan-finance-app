@@ -36,7 +36,6 @@ function PieChart({data}:PieChartProps) {
 			/>
 		);
 	}
-
 	const chartData = {
 		labels,
 		datasets: [
