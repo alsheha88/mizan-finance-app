@@ -24,4 +24,5 @@ export type DashboardResponse = {
 		limit: string;
 	};
 	recentTransactions: TransactionListItem[];
+	month: string;
 };

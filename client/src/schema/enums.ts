@@ -101,3 +101,10 @@ export const InvestmentCategory = {
 
 export type InvestmentCategory =
 	(typeof InvestmentCategory)[keyof typeof InvestmentCategory];
+
+export const MessageRole = {
+	user: "user",
+	assistant: "assistant",
+} as const;
+export type MessageRole = (typeof MessageRole)[keyof typeof MessageRole]
+

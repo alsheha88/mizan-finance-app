@@ -46,7 +46,7 @@ function AccountCard({ account, onUpload }: AccountCardProps) {
 			</div>
 			<div className="flex flex-col gap-2">
 				<p className="text-label-md text-text-secondary">Current balance</p>
-				<h4 className="text-h4 text-text-primary">
+				<h4 className="text-h4 text-text-primary tabular-nums">
 					{accountBalance === undefined ? "--" : formatKWD(accountBalance)}
 				</h4>
 			</div>

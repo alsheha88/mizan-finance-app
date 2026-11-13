@@ -25,7 +25,7 @@ export function Card({
 		<div
 			ref={ref}
 			className={cn(
-				"relative border border-border-subtle bg-card-default text-card-foreground rounded-lg",
+				"relative shadow-card border border-border-subtle bg-card-default text-card-foreground rounded-lg",
 				interactive &&
 					"transition-colors cursor-pointer hover:bg-card-hover focus-within:ring-2 focus-within:ring-ring-default",
 				sizeClasses[size],

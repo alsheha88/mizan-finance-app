@@ -9,7 +9,7 @@ export function PrivateRoute({ children }: { children: ReactNode }) {
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex items-center justify-center min-h-screen bg-bg-primary">
 				<ThreeCircles color="#10b77f" />
 			</div>
 		);

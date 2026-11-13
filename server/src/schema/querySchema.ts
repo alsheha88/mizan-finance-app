@@ -11,7 +11,7 @@ export const queryParamsSchema = z.object({
 	accountId: z.uuid().optional(),
 	month: z
 		.string()
-		.regex(/^\d{4}-\d{2}$/)
+		.regex(/^\d{4}-(0[1-9]|1[0-2])$/)
 		.optional(),
 	page: z.coerce.number().int().min(1).default(1),
 	limit: z.coerce.number().int().min(1).max(100).default(10),
@@ -25,20 +25,17 @@ export const cardQueryParamsSchema = z.object({
 	creditCardId: z.uuid().optional(),
 	month: z
 		.string()
-		.regex(/^\d{4}-\d{2}$/)
+		.regex(/^\d{4}-(0[1-9]|1[0-2])$/)
 		.optional(),
 	page: z.coerce.number().int().min(1).default(1),
-	limit: z.coerce.number().int().min(1).max(100),
+	limit: z.coerce.number().int().min(1).max(100).default(10),
 });
 
 export const dashboardQueryParamsSchema = z.object({
 	month: z
 		.string()
-		.regex(/^\d{4}-\d{2}$/)
-		.default(() => {
-			const now = new Date();
-			return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
-		}),
+		.regex(/^\d{4}-(0[1-9]|1[0-2])$/)
+		.optional(),
 });
 
 export type TransactionsOptions = z.infer<typeof queryParamsSchema>;

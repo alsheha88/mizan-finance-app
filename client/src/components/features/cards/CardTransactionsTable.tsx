@@ -136,7 +136,7 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 								</TCell>
 
 								<TCell className="text-text-secondary">{t.card?.name}</TCell>
-								<TCell className="text-end">
+								<TCell className="text-end tabular-nums">
 									{formatKWD(Number(t.amount))}
 								</TCell>
 							</TRow>

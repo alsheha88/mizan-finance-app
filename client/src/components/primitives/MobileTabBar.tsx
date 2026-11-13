@@ -28,7 +28,7 @@ export function MobileTabBar() {
 									: "text-sidebar-foreground",
 							)
 						}>
-						{i.icon}
+						{<i.icon size={22} aria-hidden />}
 						{i.item}
 					</NavLink>
 				))}
@@ -41,9 +41,7 @@ export function MobileTabBar() {
 					className={cn(
 						slot,
 						"cursor-pointer",
-						isMoreOpen
-							? "text-interactive-primary"
-							: "text-sidebar-foreground",
+						isMoreOpen ? "text-interactive-primary" : "text-sidebar-foreground",
 					)}>
 					<Ellipsis className="text-current" />
 					More
@@ -63,13 +61,13 @@ export function MobileTabBar() {
 							onClick={() => setIsMoreOpen(false)}
 							className={({ isActive }) =>
 								cn(
-									"p-3 flex items-center gap-3 rounded-md text-label-lg transition-colors",
+									"px-3 py-2 flex items-center gap-3 rounded-sm text-label-lg transition-colors relative",
 									isActive
-										? "bg-accent-default text-sidebar-active-foreground [&>svg]:stroke-interactive-primary"
-										: "text-sidebar-foreground hover:bg-sidebar-hover",
+										? "bg-sidebar-hover text-sidebar-active-foreground [&>svg]:stroke-interactive-primary before:absolute before:inset-s-0 before:h-full before:w-0.75 before:rounded-full before:bg-interactive-primary"
+										: "text-sidebar-foreground hover:bg-sidebar-hover hover:text-text-primary",
 								)
 							}>
-							{i.icon}
+							{<i.icon size={18} aria-hidden />}
 							{i.item}
 						</NavLink>
 					))}

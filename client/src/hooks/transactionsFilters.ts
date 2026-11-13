@@ -1,4 +1,3 @@
-import { getCurrentMonth } from "@/lib/helpers";
 import { useEffect, useState, type ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -7,7 +6,7 @@ export const useTransactionsFilters = () => {
 	const [value, setValue] = useState("");
 	const page = Number(searchParams.get("page") ?? 1);
 	const search = searchParams.get("search") ?? "";
-	const month = searchParams.get("month") ?? getCurrentMonth();
+	const month = searchParams.get("month") ?? undefined;
 	const categoryId = searchParams.get("categoryId") ?? undefined;
 	const accountId = searchParams.get("accountId") ?? undefined;
 	const limit = 10;
@@ -39,7 +38,7 @@ export const useTransactionsFilters = () => {
 		setSearchParams(
 			(prev) => {
 				prev.set("month", value);
-
+				prev.set("page", "1");
 				return prev;
 			},
 			{ replace: true },

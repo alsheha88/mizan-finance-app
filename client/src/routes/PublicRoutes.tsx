@@ -8,8 +8,8 @@ export function PublicRoute({ children }: { children: ReactNode }) {
 
 	if (isLoading) {
 		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<ThreeCircles color="#10b77f" />
+			<div className="flex items-center justify-center min-h-screen ">
+				<ThreeCircles color="#ff6b3d" />
 			</div>
 		);
 	}

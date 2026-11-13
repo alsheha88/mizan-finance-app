@@ -84,7 +84,6 @@ function TextArea({
 						overLimit ? "text-ring-destructive" : "text-text-secondary",
 					)}
 				>
-					{count}/{limit} chars
 				</div>
 			</div>
 

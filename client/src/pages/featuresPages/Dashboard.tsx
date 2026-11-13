@@ -18,10 +18,14 @@ import { Link } from "react-router-dom";
 function Dashboard() {
 	const { month, onMonthChange } = useTransactionsFilters();
 	const { data, isError, isPending, refetch } = useGetDashboard(month);
-	const { data: accounts } = useGetAccounts();
+	const {
+		data: accounts,
+		isPending: isAccountsPending,
+		isError: isAccountsError,
+	} = useGetAccounts();
 
-	if (isPending) return <LoadingState />;
-	if (isError)
+	if (isPending || isAccountsPending) return <LoadingState />;
+	if (isError || isAccountsError)
 		return (
 			<ErrorState
 				title={"Something Went Wrong!"}
@@ -45,7 +49,7 @@ function Dashboard() {
 				<Select
 					options={monthOptions}
 					placeholder={"Select a period"}
-					value={month}
+					value={month ?? data.month}
 					onValueChange={onMonthChange}
 					startIcon={<Calendar className="stroke-text-tertiary" size={16} />}
 					showChevron={false}
@@ -67,7 +71,7 @@ function Dashboard() {
 					title={"Total outstanding debt"}
 					subTitle={Number(data.debtStats.outstandingLoan)}></StatCard>
 			</div>
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<div className="grid grid-cols-1 gap-4">
 				<Card>
 					<BarChart data={data.cashflow} />
 				</Card>

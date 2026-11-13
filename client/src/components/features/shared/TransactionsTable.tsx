@@ -127,11 +127,11 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex flex-col gap-1 min-w-0">
 								{merchantCell(t)}
-								<p className="text-body-sm text-text-tertiary break-words">
+								<p className="text-body-sm text-text-tertiary wrap-break-word">
 									{t.description}
 								</p>
 							</div>
-							<p className="text-body-sm text-text-primary whitespace-nowrap">
+							<p className="text-body-sm text-text-primary whitespace-nowrap tabular-nums">
 								{formatKWD(Number(t.amount))}
 							</p>
 						</div>

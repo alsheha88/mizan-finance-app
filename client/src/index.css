@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @theme {
 	/* ---------------------------------------------------------------
@@ -62,30 +63,32 @@
 
 	/* ---------------------------------------------------------------
 	   Semantic — backgrounds and surfaces
+	   4 levels: page → card → raised → overlay (lighter = closer)
+	   + 1 inset level (inputs, table header), darker than card
 	--------------------------------------------------------------- */
-	--color-bg-primary: #120e1c;
-	--color-bg-secondary: #170f22;
-	--color-bg-tertiary: #1a1526;
-	--color-bg-elevated: #251e36;
-	--color-bg-dark: #15101f;
-	--color-bg-deep: #1a1526;
+	--color-bg-primary: #0e0a16; /* page */
+	--color-bg-secondary: #170f22; /* inset */
+	--color-bg-tertiary: #1c1629; /* card */
+	--color-bg-elevated: #272038; /* raised */
+	--color-bg-dark: #1c1629; /* card */
+	--color-bg-deep: #1c1629; /* card */
 
-	--color-surface-default: #1a1526;
-	--color-surface-hover: #251e36;
-	--color-surface-active: #352b4d;
-	--color-surface-overlay: #120e1ccc;
+	--color-surface-default: #1c1629; /* card */
+	--color-surface-hover: #272038; /* raised */
+	--color-surface-active: #322a47; /* overlay */
+	--color-surface-overlay: #0e0a16cc; /* modal backdrop */
 	--color-surface-dark: #17121f;
 
-	/* Borders */
-	--color-border-default: #352b4d;
-	--color-border-subtle: #251e36;
+	/* Borders — white at low opacity: visible on every surface */
+	--color-border-default: #ffffff1a; /* 10% */
+	--color-border-subtle: #ffffff0f; /* 6% */
 	--color-border-strong: #4d4270;
 	--color-border-focus: #ff6b3d;
 
 	/* Text */
 	--color-text-primary: #f1eef8;
 	--color-text-secondary: #9c92bc;
-	--color-text-tertiary: #6f6494;
+	--color-text-tertiary: #877cab;
 	--color-text-disabled: #4d4270;
 	--color-text-inverse: #120e1c;
 	--color-text-link: #c4a8ff;
@@ -99,8 +102,8 @@
 	--color-interactive-primary-foreground: #120e1c;
 
 	--color-interactive-secondary: transparent;
-	--color-interactive-secondary-hover: #251e36;
-	--color-interactive-secondary-active: #352b4d;
+	--color-interactive-secondary-hover: #272038;
+	--color-interactive-secondary-active: #322a47;
 	--color-interactive-secondary-foreground: #f1eef8;
 	--color-interactive-secondary-border: #4d4270;
 
@@ -109,8 +112,8 @@
 	--color-interactive-destructive-active: #b02240;
 	--color-interactive-destructive-foreground: #f1eef8;
 
-	--color-interactive-ghost-hover: #352b4d80;
-	--color-interactive-ghost-active: #352b4db2;
+	--color-interactive-ghost-hover: #ffffff0f;
+	--color-interactive-ghost-active: #ffffff1a;
 	--color-interactive-ghost-foreground: #f1eef8;
 
 	--color-accent-default: #ff6b3d26;
@@ -119,32 +122,32 @@
 	/* ---------------------------------------------------------------
 	   Components
 	--------------------------------------------------------------- */
-	--color-card-default: #1a1526;
+	--color-card-default: #1a1426;
 	--color-card-foreground: #f1eef8;
-	--color-card-hover: #251e36;
-	--color-card-dark: #221b33;
+	--color-card-hover: #272038;
+	--color-card-dark: #272038;
 
-	--color-popover-default: #1a1526;
+	--color-popover-default: #322a47;
 	--color-popover-foreground: #f1eef8;
 
-	--color-input-default: #352b4d;
+	--color-input-default: #4d4270;
 	--color-input-focus: #ff6b3d;
 	--color-input-invalid: #ff4d6d;
-	--color-input-placeholder: #6f6494;
+	--color-input-placeholder: #877cab;
 	--color-input-background: #170f22;
 
 	--color-ring-default: #ff6b3d;
 	--color-ring-destructive: #ff4d6d;
-	--color-ring-offset: #120e1c;
+	--color-ring-offset: #0e0a16;
 
-	--color-sidebar-background: #1a1526;
+	--color-sidebar-background: #1c1629;
 	--color-sidebar-foreground: #9c92bc;
 	--color-sidebar-active: #ff6b3d;
 	--color-sidebar-active-foreground: #f1eef8;
-	--color-sidebar-hover: #1a1526;
-	--color-sidebar-border: #251e36;
+	--color-sidebar-hover: #272038;
+	--color-sidebar-border: #ffffff0f;
 
-	--color-badge-default: #352b4d;
+	--color-badge-default: #322a47;
 	--color-badge-foreground: #f1eef8;
 	--color-badge-success: #3ddc9726;
 	--color-badge-success-foreground: #3ddc97;
@@ -156,8 +159,8 @@
 	--color-badge-info-foreground: #5cc8ff;
 
 	--color-table-header: #170f22;
-	--color-table-row-hover: #1a1526;
-	--color-table-border: #251e36;
+	--color-table-row-hover: #272038;
+	--color-table-border: #ffffff0f;
 
 	--color-toggle-off: #4d4270;
 	--color-toggle-on: #ff6b3d;
@@ -216,7 +219,7 @@
 	--color-status-warning-fg: #ffc94d;
 	--color-status-danger: #ff4d6d26;
 	--color-status-danger-fg: #ff4d6d;
-	--color-status-neutral: #352b4d;
+	--color-status-neutral: #322a47;
 	--color-status-neutral-fg: #9c92bc;
 	--color-status-info: #5cc8ff26;
 	--color-status-info-fg: #5cc8ff;
@@ -260,6 +263,22 @@
 	--border-width-default: 1.5px;
 	--border-width-medium: 2px;
 	--border-width-thick: 3px;
+
+	/* ---------------------------------------------------------------
+	   Shadows — dark UI: thin top highlight + soft drop shadow
+	   card    → cards and panels resting on the page
+	   raised  → hovered / selected items, sticky headers
+	   overlay → dropdowns, popovers, modals
+	--------------------------------------------------------------- */
+	--shadow-card:
+		inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+		0 1px 2px 0 rgb(0 0 0 / 0.4);
+	--shadow-raised:
+		inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+		0 4px 12px -2px rgb(0 0 0 / 0.5);
+	--shadow-overlay:
+		inset 0 1px 0 0 rgb(255 255 255 / 0.07),
+		0 16px 40px -8px rgb(0 0 0 / 0.6);
 
 	/* ---------------------------------------------------------------
 	   Icon sizes
@@ -382,8 +401,8 @@
    Custom utilities
 
    Only for token namespaces Tailwind does not recognise. Anything
-   expressible through --color-*, --spacing-*, --radius-*, --text-*
-   or --font-weight-* belongs in @theme above, not here.
+   expressible through --color-*, --spacing-*, --radius-*, --text-*,
+   --shadow-* or --font-weight-* belongs in @theme above, not here.
    =================================================================== */
 
 /* icon-xs … icon-2xl — square sizing from the --icon-* scale */

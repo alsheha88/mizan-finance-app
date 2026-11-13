@@ -11,6 +11,7 @@ import Cards from "@/pages/featuresPages/CreditCards";
 import Loans from "@/pages/featuresPages/Loans";
 import Profile from "@/pages/featuresPages/Profile";
 import NotFound from "@/pages/NotFound";
+import Assistant from "@/pages/featuresPages/Assistant";
 
 export function AppRoutes() {
 	return (
@@ -41,6 +42,8 @@ export function AppRoutes() {
 				<Route path="/cards" element={<Cards />} />
 				<Route path="/loans" element={<Loans />} />
 				<Route path="/profile" element={<Profile />} />
+				<Route path="/assistant" element={<Assistant />} />
+				<Route path="/assistant/:conversationId?" element={<Assistant />} />
 			</Route>
 
 			<Route path="*" element={<NotFound />} />

@@ -78,7 +78,7 @@ export function Select({
 					<RadixSelect.Content
 						position="popper"
 						sideOffset={4}
-						className="w-(--radix-select-trigger-width) min-w-max z-50 p-1 bg-popover-default rounded-sm border border-border-default">
+						className="w-(--radix-select-trigger-width) min-w-max z-50 p-1 bg-card-default rounded-sm border border-border-default">
 						<RadixSelect.ScrollUpButton className="flex justify-center py-1 text-text-secondary">
 							<ChevronUp className="size-4" />
 						</RadixSelect.ScrollUpButton>

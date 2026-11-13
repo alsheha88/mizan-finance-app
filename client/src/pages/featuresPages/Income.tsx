@@ -82,7 +82,7 @@ function Income() {
 					<Select
 						options={monthOptions}
 						placeholder={"Select a period"}
-						value={month}
+						value={month ?? dashbaord?.month}
 						onValueChange={onMonthChange}
 						startIcon={<Calendar className="stroke-text-tertiary" size={16} />}
 						showChevron={false}
@@ -116,7 +116,10 @@ function Income() {
 			) : (
 				<EmptyState
 					icon={
-						<CircleDollarSign className="stroke-interactive-primary stroke-1" size={56} />
+						<CircleDollarSign
+							className="stroke-interactive-primary stroke-1"
+							size={56}
+						/>
 					}
 					title={"No income transactions found"}
 					message={

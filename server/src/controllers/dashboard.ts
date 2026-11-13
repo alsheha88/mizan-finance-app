@@ -9,6 +9,7 @@ import {
 } from "../db/functions/dashboard";
 import { ValidationError } from "../../errors/errors";
 import { Prisma } from "../../generated/prisma/client";
+import { resolveMonth } from "../lib/helpers";
 
 export const getDashboardStats: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -18,7 +19,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 			"Failed to validate query params",
 			queryParams.error.issues,
 		);
-	const month = queryParams.data.month;
+	const month = await resolveMonth(userId, queryParams.data.month);
 	const [
 		incomeStat,
 		expensesStats,
@@ -38,17 +39,16 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 	const expenses = expensesStats._sum.amount ?? new Prisma.Decimal(0);
 	const netCash = income.minus(expenses);
 
-	res
-		.status(200)
-		.json({
-			data: {
-				income,
-				expenses,
-				netCash,
-				cashflow,
-				spendingByCategory,
-				debtStats,
-				recentTransactions,
-			},
-		});
+	res.status(200).json({
+		data: {
+			month,
+			income,
+			expenses,
+			netCash,
+			cashflow,
+			spendingByCategory,
+			debtStats,
+			recentTransactions,
+		},
+	});
 };

@@ -40,7 +40,7 @@ function Expenses() {
 	});
 	const { data: dashbaord } = useGetDashboard(month);
 	const { data: categoriesArr } = useGetCategories();
-	const {data:transactions} = useGetTransactions({page, month, limit})
+	const { data: transactions } = useGetTransactions({ page, month, limit });
 
 	if (isPending) return <LoadingState />;
 	if (isError)
@@ -84,7 +84,7 @@ function Expenses() {
 					<Select
 						options={monthOptions}
 						placeholder={"Select a period"}
-						value={month}
+						value={month ?? dashbaord?.month}
 						onValueChange={onMonthChange}
 						startIcon={<Calendar className="stroke-text-tertiary" size={16} />}
 						showChevron={false}
@@ -102,12 +102,9 @@ function Expenses() {
 						/>
 						<StatCard
 							title={"Largest category"}
-							subTitle={
-								capitalizeFirstLetter(dashbaord?.spendingByCategory[0]?.name ?? "")
-							}
-						> 
-						
-						</StatCard>
+							subTitle={capitalizeFirstLetter(
+								dashbaord?.spendingByCategory[0]?.name ?? "",
+							)}></StatCard>
 						<StatCard
 							title={"Transactions recorded"}
 							subTitle={transactions?.count.toString() ?? ""}

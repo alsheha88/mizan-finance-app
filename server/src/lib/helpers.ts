@@ -1,5 +1,7 @@
+import { NotFoundError } from "../../errors/errors";
 import type { RowType } from "../../generated/prisma/enums";
 import { ROW_TYPE_LABELS, rowTypeRules } from "./pdfConfig";
+import { prisma } from "./prisma";
 
 export function stripCommas(amount: string) {
 	return amount.replace(/,/g, "");
@@ -109,3 +111,27 @@ export function normaliseMerchant(merchant: string) {
 	return result;
 }
 
+export function getCurrentKuwaitMonth(): string {
+	return new Intl.DateTimeFormat("en-CA", {
+		timeZone: "Asia/Kuwait",
+		year: "numeric",
+		month: "2-digit",
+	}).format(new Date());
+}
+
+export async function resolveMonth(
+	userId: string,
+	month?: string,
+): Promise<string> {
+	if (month) return month;
+
+	const latestTransaction = await prisma.transaction.findFirst({
+		where: { userId },
+		orderBy: { transactionDate: "desc" },
+		select: { transactionDate: true },
+	});
+
+	if (!latestTransaction) return getCurrentKuwaitMonth();
+
+	return latestTransaction.transactionDate.toISOString().slice(0, 7);
+}

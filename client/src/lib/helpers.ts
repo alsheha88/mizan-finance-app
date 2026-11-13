@@ -113,3 +113,23 @@ export const getInitials = (name: string) => {
 		);
 	}
 };
+
+export const getDateGroup = (updatedAt: Date | string) => {
+	const todayStart = new Date().setHours(0, 0, 0, 0);
+	const startOfDay = new Date(updatedAt).setHours(0, 0, 0, 0);
+
+	const days = Math.round((todayStart - startOfDay) / (1000 * 60 * 60 * 24));
+	if (days <= 0) {
+		return "Today";
+	} else if (days === 1) {
+		return "Yesterday";
+	} else if (days < 7) {
+		return `${days} days ago`;
+	} else if (days === 7) {
+		return "A week ago";
+	} else {
+		return "Older";
+	}
+};
+
+console.log(new Date().toLocaleString());
