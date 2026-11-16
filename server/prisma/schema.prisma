@@ -224,6 +224,7 @@ model CardTransaction {
   updatedAt           DateTime            @updatedAt
   isEdited            Boolean             @default(false)
   merchantKey         String?
+  statementRow        Int
   cardTransactionType CardTransactionType
   card                CreditCard          @relation(fields: [creditCardId], references: [id], onDelete: Cascade)
   creditCardId        String              @db.Uuid
@@ -232,6 +233,7 @@ model CardTransaction {
   user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String              @db.Uuid
 
+  @@unique([creditCardId, transactionDate, amount, description, statementRow])
   @@index([userId, merchantKey])
 }
 

@@ -120,11 +120,16 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 		);
 	}
 
-	const storedTransactions = await dbCreateCardTransaction(
+	const { created, skipped } = await dbCreateCardTransaction(
 		userId,
 		allTransactions,
 		validateRequest.data.creditCardId,
 	);
 
-	res.status(201).json({ data: { transactions: storedTransactions } });
+	res.status(201).json({
+		data: {
+			transactions: created,
+			skipped,
+		},
+	});
 };

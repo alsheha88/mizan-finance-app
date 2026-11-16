@@ -1,3 +1,4 @@
+import { NotFoundError } from "../../../errors/errors";
 import type { Prisma } from "../../../generated/prisma/client";
 import type { CardTransactionType } from "../../../generated/prisma/enums";
 import {
@@ -14,6 +15,7 @@ import type {
 	UpdateCardTransaction,
 } from "../../schema/creditCardsSchema";
 import type { CardTransactionsOptions } from "../../schema/querySchema";
+import { dbGetCategory } from "./categories";
 
 export type CardTransaction = {
 	transactionDate: Date;
@@ -25,6 +27,7 @@ export type CardTransaction = {
 	userId: string;
 	cardTransactionType: CardTransactionType;
 	merchantKey: string | null;
+	statementRow: number;
 };
 
 export const dbGetCreditCards = async (userId: string) => {
@@ -85,7 +88,7 @@ export const dbCreateCardTransaction = async (
 		]),
 	);
 
-	const cardTransactions: CardTransaction[] = data.map((i) => {
+	const cardTransactions: CardTransaction[] = data.map((i, index) => {
 		const cardTransactionType = i.description.includes(
 			"PAYMENT RECEIVED - THANK YOU",
 		)
@@ -108,11 +111,15 @@ export const dbCreateCardTransaction = async (
 			creditCardId,
 			merchantKey: merchantKey,
 			categoryId: rememberedCategoryId ?? null,
+			statementRow: index,
 		};
 	});
-	return await prisma.cardTransaction.createManyAndReturn({
+	const created = await prisma.cardTransaction.createManyAndReturn({
 		data: cardTransactions,
+		skipDuplicates: true,
 	});
+	const skipped = cardTransactions.length - created.length;
+	return { created, skipped };
 };
 
 export const dbUpdateCardTransaction = async (
@@ -123,6 +130,11 @@ export const dbUpdateCardTransaction = async (
 	const data = Object.fromEntries(
 		Object.entries(transaction).filter(([, v]) => v !== undefined),
 	);
+
+	if (transaction.categoryId !== undefined) {
+		const category = await dbGetCategory(transaction.categoryId, userId);
+		if (!category) throw new NotFoundError("Category not found");
+	}
 	const updatedTransaction = await prisma.cardTransaction.updateManyAndReturn({
 		where: { id, userId },
 		data: {

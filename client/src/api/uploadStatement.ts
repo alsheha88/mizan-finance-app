@@ -37,8 +37,8 @@ export const uploadCardStatement = async ({
 	formData.append("creditCardId", creditCardId);
 
 	const res = await api.post<{
-		data: { transactions: CardTransactionResponse[] };
+		data: { transactions: CardTransactionResponse[]; skipped: number };
 	}>("/api/statement/upload-card", formData);
 
-	return res.data.data.transactions;
+	return res.data.data;
 };

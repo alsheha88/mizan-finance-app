@@ -3,7 +3,6 @@ import {
 	GlobalWorkerOptions,
 } from "pdfjs-dist/legacy/build/pdf.mjs";
 import type { PDFPageProxy } from "pdfjs-dist";
-import fs from "node:fs";
 
 const assets = new URL("../../node_modules/pdfjs-dist/", import.meta.url);
 
