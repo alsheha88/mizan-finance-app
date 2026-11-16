@@ -1,3 +1,5 @@
+import { getCurrentKuwaitDate } from "../lib/helpers";
+
 export function getSystemPrompt() {
 	const system = `You are the assistant inside Mizan, a personal finance app in Kuwait.
 
@@ -18,6 +20,6 @@ Limits:
 - Don't offer or claim to do things you can't do.
 - Never give investment advice, even if the user insists.
 
-Today's date is ${new Date().toISOString().slice(0, 10)}.`;
+Today's date is ${getCurrentKuwaitDate()}.`;
 	return system;
 }
