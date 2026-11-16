@@ -80,9 +80,8 @@ export function Drawer({
 
 	return (
 		<div
-			className="fixed inset-0 bg-black/30"
-			onClick={() => onOpenChange(false)}
-		>
+			className="fixed inset-0 bg-surface-overlay z-50"
+			onClick={() => onOpenChange(false)}>
 			<div
 				ref={panelRef}
 				tabIndex={-1}
@@ -90,8 +89,7 @@ export function Drawer({
 				aria-modal="true"
 				aria-labelledby={id}
 				onClick={(e) => e.stopPropagation()}
-				className="fixed right-0 top-0 h-dvh w-full sm:w-sm flex flex-col bg-card-default shadow-overlay"
-			>
+				className="fixed inset-e-0 top-0 h-dvh w-full sm:w-sm flex flex-col bg-card-default shadow-overlay">
 				<div className="p-6 flex items-center justify-between border-b border-b-border-default">
 					<div className="flex flex-col gap-1">
 						<h3 id={id} className="text-h3 text-text-primary">
@@ -105,13 +103,12 @@ export function Drawer({
 						className="hover:bg-transparent active:bg-transparent"
 						variant="ghost"
 						aria-label="Close"
-						onClick={() => onOpenChange(false)}
-					>
+						onClick={() => onOpenChange(false)}>
 						<X className="text-text-secondary" />
 					</Button>
 				</div>
 
-				<div className="p-6 grid gap-4 flex-1 overflow-y-auto">{children}</div>
+				<div className="p-6 flex flex-col gap-4 flex-1 overflow-y-auto">{children}</div>
 
 				<div className="p-6 border-t border-t-border-default">
 					{footer ?? (

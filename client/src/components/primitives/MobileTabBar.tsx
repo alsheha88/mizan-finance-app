@@ -15,7 +15,7 @@ export function MobileTabBar() {
 		<>
 			<nav
 				aria-label="Main"
-				className="md:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch bg-sidebar-background border-t border-t-sidebar-border">
+				className="md:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch bg-sidebar-background border-t border-t-sidebar-border pb-[env(safe-area-inset-bottom)]">
 				{primaryNavItems.map((i) => (
 					<NavLink
 						key={i.id}

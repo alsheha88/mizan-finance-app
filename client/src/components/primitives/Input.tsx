@@ -54,7 +54,7 @@ function Input({
 						"px-3 py-2.5 bg-input-background border rounded-sm text-body-sm text-text-primary placeholder:text-input-placeholder focus:outline-none focus:ring-2",
 						error
 							? "border-ring-destructive focus:ring-ring-destructive"
-							: "border-interactive-secondary-active focus:ring-ring-default",
+							: "border-input-default focus:ring-ring-default",
 						startIcon && "ps-10", className
 					)}
 					{...props}

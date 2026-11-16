@@ -59,7 +59,7 @@ function PieChart({data}:PieChartProps) {
 					data={chartData}></Doughnut>
 			</div>
 
-			<div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+			<div className="w-full grid grid-cols-1 sm:grid-cols-3 gap-4">
 				{data.spendingByCategory.map((i) => (
 					<div
 						key={i.categoryId ?? "uncategorised"}

@@ -35,8 +35,8 @@ function Modal({
 			open={open}>
 			{trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
 			<Dialog.Portal>
-				<Dialog.Overlay className="fixed inset-0 bg-black/50 z-50" />
-				<Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md z-50 grid gap-3 p-6 rounded-lg bg-popover-default border border-border-default">
+				<Dialog.Overlay className="fixed inset-0 bg-surface-overlay z-50" />
+				<Dialog.Content className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md z-50 grid gap-3 p-6 rounded-lg bg-card-default shadow-overlay border border-border-subtle">
 					<Dialog.Title className="text-h3 text-text-primary">
 						{title} {item}
 					</Dialog.Title>
