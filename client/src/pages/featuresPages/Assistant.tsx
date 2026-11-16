@@ -1,7 +1,7 @@
 import { Button } from "@/components/primitives/Button";
 import { Card } from "@/components/primitives/Card";
 import PageHeader from "@/components/primitives/PageHeader";
-import Markdown from "react-markdown";
+import Markdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
 	useGetConversation,
@@ -15,6 +15,7 @@ import { ThreeDots } from "react-loader-spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import ConversationsList from "@/components/features/assistant/ConversationsList";
 import { Drawer } from "@/components/primitives/Drawer";
+import MarkdownTable from "@/components/features/assistant/MarkdownTable";
 
 const questions = [
 	"How much did I spend this month?",
@@ -22,6 +23,8 @@ const questions = [
 	"What are my biggest spending categories?",
 	"How much is left on my loans?",
 ];
+
+const markdownComponents: Components = { table: MarkdownTable };
 
 function Assistant() {
 	const formRef = useRef<HTMLFormElement>(null);
@@ -126,7 +129,7 @@ function Assistant() {
 				{/* ---- Chat column ---- */}
 				<section
 					aria-label="Chat"
-					className="flex flex-col gap-4 p-6 border border-border-default shadow-card rounded-md h-full min-h-0">
+					className="flex flex-col gap-4 p-6 border border-border-default shadow-card rounded-md h-full min-h-0 min-w-0">
 					{/* Messages: the only part that scrolls */}
 					<div
 						role="log"
@@ -169,8 +172,12 @@ function Assistant() {
 								<Card
 									key={i}
 									dir="auto"
-									className="place-self-start p-3 text-label-lg prose prose-invert prose-sm prose-strong:text-text-primary prose-headings:text-text-primary prose-a:text-text-link prose-th:text-text-secondary prose-td:border-border-subtle max-w-none">
-									<Markdown remarkPlugins={[remarkGfm]}>{msg.text}</Markdown>
+									className="max-w-full min-w-0 place-self-start p-3 text-label-lg prose prose-invert prose-sm prose-td:whitespace-nowrap prose-th:whitespace-nowrap prose-td:tabular-nums prose-strong:text-text-primary prose-headings:text-text-primary prose-a:text-text-link prose-th:text-text-secondary prose-td:border-border-subtle">
+									<Markdown
+										remarkPlugins={[remarkGfm]}
+										components={markdownComponents}>
+										{msg.text}
+									</Markdown>
 								</Card>
 							),
 						)}
