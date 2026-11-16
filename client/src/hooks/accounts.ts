@@ -29,6 +29,8 @@ export const useCreateAccount = () => {
 		mutationFn: createAccount,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["transactions"] });
 			toast.success("Account created");
 		},
 		onError: (error) => {

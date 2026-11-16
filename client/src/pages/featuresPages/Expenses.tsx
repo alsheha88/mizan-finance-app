@@ -13,7 +13,7 @@ import { useGetDashboard } from "@/hooks/dashboard";
 import { useGetTransactions } from "@/hooks/transactions";
 import { useTransactionsFilters } from "@/hooks/transactionsFilters";
 import { capitalizeFirstLetter, getDateRange } from "@/lib/helpers";
-import { Calendar, DollarSign, Search } from "lucide-react";
+import { ArrowUpRight, Calendar, Search } from "lucide-react";
 
 function Expenses() {
 	const {
@@ -29,28 +29,44 @@ function Expenses() {
 		onSearch,
 		handleChange,
 	} = useTransactionsFilters();
-	const { data, isError, isPending, refetch } = useGetTransactions({
-		page,
-		limit,
-		type: "expense",
-		categoryId,
-		search,
-		accountId,
-		month,
-	});
-	const { data: dashbaord } = useGetDashboard(month);
-	const { data: categoriesArr } = useGetCategories();
-	const { data: transactions } = useGetTransactions({ page, month, limit });
+	const {
+		data: dashbaord,
+		isError: isDashboardError,
+		refetch: refetchDashboard,
+	} = useGetDashboard(month);
+	const selectedMonth = month ?? dashbaord?.month;
 
-	if (isPending) return <LoadingState />;
-	if (isError)
+	const { data, isError, isPending, refetch } = useGetTransactions(
+		{
+			page,
+			limit,
+			type: "expense",
+			categoryId,
+			search,
+			accountId,
+			month: selectedMonth,
+		},
+		!!selectedMonth,
+	);
+
+	const { data: categoriesArr } = useGetCategories();
+
+	if (isError || isDashboardError)
 		return (
 			<ErrorState
 				title={"Something Went Wrong!"}
-				message={"We couldn't load your expnses, please try again"}
-				onAction={refetch}
+				message={"We couldn't load your expenses, please try again"}
+				onAction={() => {
+					if (isDashboardError) {
+						refetchDashboard();
+					}
+					if (isError) {
+						refetch();
+					}
+				}}
 			/>
 		);
+	if (isPending) return <LoadingState />;
 
 	const categories = categoriesArr?.filter((i) => i.appliesTo === "expense");
 	const options = [
@@ -67,11 +83,12 @@ function Expenses() {
 			value: i,
 		};
 	});
+	const isFiltered = !!categoryId || !!search;
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">
 			<PageHeader
 				title={"Expenses"}
-				subTitle="Every deposit, grouped by source.">
+				subTitle="Every expense, grouped by category.">
 				<div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
 					<Input
 						type={"text"}
@@ -84,7 +101,7 @@ function Expenses() {
 					<Select
 						options={monthOptions}
 						placeholder={"Select a period"}
-						value={month ?? dashbaord?.month}
+						value={selectedMonth}
 						onValueChange={onMonthChange}
 						startIcon={<Calendar className="stroke-text-tertiary" size={16} />}
 						showChevron={false}
@@ -93,6 +110,11 @@ function Expenses() {
 					/>
 				</div>
 			</PageHeader>
+			<FilterChips
+				options={options}
+				value={categoryId ?? "all"}
+				onChange={handleChange}
+			/>
 			{data.count > 0 ? (
 				<>
 					<div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
@@ -107,14 +129,9 @@ function Expenses() {
 							)}></StatCard>
 						<StatCard
 							title={"Transactions recorded"}
-							subTitle={transactions?.count.toString() ?? ""}
+							subTitle={data.count.toString()}
 						/>
 					</div>
-					<FilterChips
-						options={options}
-						value={categoryId ?? "all"}
-						onChange={handleChange}
-					/>
 					<TransactionsTable transactions={data?.transactions} />
 
 					<Pagination
@@ -124,10 +141,21 @@ function Expenses() {
 						onPageChange={onPageChange}
 					/>
 				</>
+			) : isFiltered ? (
+				<EmptyState
+					icon={
+						<ArrowUpRight
+							className="text-interactive-primary stroke-1"
+							size={56}
+						/>
+					}
+					title={"No matching transactions"}
+					message={"Try another category or search term”"}
+				/>
 			) : (
 				<EmptyState
 					icon={
-						<DollarSign
+						<ArrowUpRight
 							className="text-interactive-primary stroke-1"
 							size={56}
 						/>

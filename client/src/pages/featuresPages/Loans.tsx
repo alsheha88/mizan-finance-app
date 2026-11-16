@@ -8,7 +8,7 @@ import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
 import { useGetLoans } from "@/hooks/loans";
 import type { Loan } from "@/schema/loansSchema";
-import { TrendingDown } from "lucide-react";
+import { Landmark } from "lucide-react";
 import { useState } from "react";
 
 function Loans() {
@@ -64,7 +64,7 @@ function Loans() {
 				</>
 			) : (
 				<EmptyState
-					icon={<TrendingDown className="stroke-interactive-primary stroke-1" size={56} />}
+					icon={<Landmark className="stroke-interactive-primary stroke-1" size={56} />}
 					title={"No loans found"}
 					message={
 						"There are no loans found, please add a loan using the add loan button"

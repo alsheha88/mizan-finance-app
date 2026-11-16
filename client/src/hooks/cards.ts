@@ -28,6 +28,8 @@ export const useCreateCard = () => {
 		mutationFn: createCard,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["cards"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["transactions"] });
 			toast.success("Card created successfully");
 		},
 		onError: (error) => {
@@ -42,11 +44,14 @@ export const useEditCard = () => {
 		mutationFn: editCard,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["cards"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["transactions"] });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
 			toast.error(getApiErrorMessage(error));
 		},
+	
 	});
 };
 export const useDeleteCard = () => {
@@ -55,6 +60,10 @@ export const useDeleteCard = () => {
 		mutationFn: deleteCard,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["cards"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
+
 			toast.success("Card deleted");
 		},
 		onError: (error) => {

@@ -34,6 +34,8 @@ export const useEditCategory = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["categories"] });
 			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -48,6 +50,8 @@ export const useDeleteCategory = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["categories"] });
 			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
 			toast.success("Category deleted");
 		},
 		onError: (error) => {

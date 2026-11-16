@@ -57,12 +57,12 @@ function Dashboard() {
 					className="w-full sm:w-auto sm:min-w-3xs"
 				/>
 			</PageHeader>
-			<div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-3">
+			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
 				<StatCard
-					title={"Income this month"}
+					title={"Income"}
 					subTitle={Number(data.income)}></StatCard>
 				<StatCard
-					title={"Expenses this month"}
+					title={"Expenses"}
 					subTitle={Number(data.expenses)}></StatCard>
 				<StatCard
 					title={"Net cash flow"}

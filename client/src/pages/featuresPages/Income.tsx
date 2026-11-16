@@ -13,7 +13,7 @@ import { useGetDashboard } from "@/hooks/dashboard";
 import { useGetTransactions } from "@/hooks/transactions";
 import { useTransactionsFilters } from "@/hooks/transactionsFilters";
 import { capitalizeFirstLetter, getDateRange } from "@/lib/helpers";
-import { Calendar, CircleDollarSign, Search } from "lucide-react";
+import { ArrowDownLeft, Calendar, Search } from "lucide-react";
 
 function Income() {
 	const {
@@ -30,27 +30,42 @@ function Income() {
 		handleChange,
 	} = useTransactionsFilters();
 
-	const { data, isError, isPending, refetch } = useGetTransactions({
-		page,
-		limit,
-		type: "income",
-		categoryId,
-		search,
-		accountId,
-		month,
-	});
-	const { data: dashbaord } = useGetDashboard(month);
+	const {
+		data: dashbaord,
+		isError: isDashboardError,
+		refetch: refetchDashboard,
+	} = useGetDashboard(month);
+	const selectedMonth = month ?? dashbaord?.month;
+	const { data, isError, isPending, refetch } = useGetTransactions(
+		{
+			page,
+			limit,
+			type: "income",
+			categoryId,
+			search,
+			accountId,
+			month: selectedMonth,
+		},
+		!!selectedMonth,
+	);
 	const { data: categoriesArr } = useGetCategories();
 
-	if (isPending) return <LoadingState />;
-	if (isError)
+	if (isError || isDashboardError)
 		return (
 			<ErrorState
 				title={"Something Went Wrong!"}
 				message={"We couldn't load your income transactions, please try again"}
-				onAction={refetch}
+				onAction={() => {
+					if (isDashboardError) {
+						refetchDashboard();
+					}
+					if (isError) {
+						refetch();
+					}
+				}}
 			/>
 		);
+	if (isPending) return <LoadingState />;
 
 	const categories = categoriesArr?.filter((i) => i.appliesTo === "income");
 	const options = [
@@ -67,6 +82,7 @@ function Income() {
 		};
 	});
 
+	const isFiltered = !!categoryId || !!search;
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">
 			<PageHeader title={"Income"} subTitle="Every deposit, grouped by source.">
@@ -82,7 +98,7 @@ function Income() {
 					<Select
 						options={monthOptions}
 						placeholder={"Select a period"}
-						value={month ?? dashbaord?.month}
+						value={selectedMonth}
 						onValueChange={onMonthChange}
 						startIcon={<Calendar className="stroke-text-tertiary" size={16} />}
 						showChevron={false}
@@ -91,16 +107,16 @@ function Income() {
 					/>
 				</div>
 			</PageHeader>
+			<FilterChips
+				options={options}
+				value={categoryId ?? "all"}
+				onChange={handleChange}
+			/>
 			{data.count > 0 ? (
 				<>
 					<StatCard
 						title={"Total income"}
 						subTitle={Number(dashbaord?.income ?? 0)}
-					/>
-					<FilterChips
-						options={options}
-						value={categoryId ?? "all"}
-						onChange={handleChange}
 					/>
 
 					{data && <TransactionsTable transactions={data?.transactions} />}
@@ -113,10 +129,21 @@ function Income() {
 						/>
 					)}
 				</>
+			) : isFiltered ? (
+				<EmptyState
+					icon={
+						<ArrowDownLeft
+							className="text-interactive-primary stroke-1"
+							size={56}
+						/>
+					}
+					title={"No matching transactions"}
+					message={"Try another category or search term”"}
+				/>
 			) : (
 				<EmptyState
 					icon={
-						<CircleDollarSign
+						<ArrowDownLeft
 							className="stroke-interactive-primary stroke-1"
 							size={56}
 						/>

@@ -12,6 +12,8 @@ export const useUploadAccountStatement = () => {
 			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
 			queryClient.invalidateQueries({ queryKey: ["transactions"] });
 			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			queryClient.invalidateQueries({ queryKey: ["cards"] });
+			queryClient.invalidateQueries({ queryKey: ["loans"] });
 		},
 	});
 };

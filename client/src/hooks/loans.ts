@@ -1,4 +1,10 @@
-import { createLoan, deleteLoan, editLoan, getLoan, getLoans } from "@/api/loans";
+import {
+	createLoan,
+	deleteLoan,
+	editLoan,
+	getLoan,
+	getLoans,
+} from "@/api/loans";
 import { getApiErrorMessage } from "@/lib/api";
 import type { IdParams } from "@/schema/userSchema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +29,7 @@ export const useCreateLoan = () => {
 		mutationFn: createLoan,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["loans"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
 			toast.success("Loan created successfully");
 		},
 		onError: (error) => {
@@ -36,6 +43,7 @@ export const useEditLoan = () => {
 		mutationFn: editLoan,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["loans"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -49,6 +57,7 @@ export const useDeleteLoan = () => {
 		mutationFn: deleteLoan,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["loans"] });
+			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
 			toast.success("Loan deleted");
 		},
 		onError: (error) => {
