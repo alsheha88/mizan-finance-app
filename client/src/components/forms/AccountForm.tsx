@@ -12,6 +12,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateAccount, useEditAccount } from "@/hooks/accounts";
 import { ACCOUNT_TYPE_LABELS, toOptions } from "@/lib/labels";
+
 const toFormValues = (account: Account | null): CreateAccountData => ({
 	name: account?.name ?? "",
 	accountNumber: account?.accountNumber ?? "",
@@ -43,70 +44,64 @@ function AccountForm({ mode, onClose, account }: AccountFormProps) {
 	useEffect(() => {
 		reset(toFormValues(account));
 	}, [account, reset]);
+
 	const onSubmit: SubmitHandler<CreateAccountData> = (data) => {
 		if (mode === "add") {
-			createAccount(data, {
-				onSuccess: () => {
-					onClose();
-				},
-			});
+			createAccount(data, { onSuccess: onClose });
 		} else {
-			if (!account) return null;
-			editAccount(
-				{ params: { id: account.id }, data },
-				{
-					onSuccess: () => {
-						onClose();
-					},
-				},
-			);
+			if (!account) return;
+			editAccount({ params: { id: account.id }, data }, { onSuccess: onClose });
 		}
 	};
+
 	return (
-		<div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-				<Card className="grid gap-5 w-full max-w-sm max-h-[90dvh] overflow-y-auto">
-					<h3 className="text-h3 text-text-primary">{header}</h3>
-					<div className="border-[0.5px] border-border-subtle"></div>
-					<form onSubmit={handleSubmit(onSubmit)} className="grid gap-5">
+		<div className="fixed inset-0 z-50 bg-surface-overlay flex items-center justify-center p-4">
+			<Card className="grid gap-6 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
+				<h3 className="text-h3 text-text-primary">{header}</h3>
+				<form
+					onSubmit={handleSubmit(onSubmit)}
+					className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className="sm:col-span-2">
 						<Input
 							label="Account name"
 							type={"text"}
+							placeholder="e.g. Salary account"
 							error={errors.name?.message}
 							{...register("name")}
 						/>
-						<Input
-							label="Account number"
-							type={"text"}
-							error={errors.accountNumber?.message}
-							{...register("accountNumber")}
-						/>
-						<Controller
-							name="accountType"
-							control={control}
-							render={({ field }) => (
-								<Select
-									label={"Account type"}
-									options={toOptions(ACCOUNT_TYPE_LABELS)}
-									value={field.value}
-									onValueChange={field.onChange}
-									placeholder={"Select type"}
-									error={errors.accountType?.message}
-								/>
-							)}
-						/>
-						<div className="border-[0.5px] border-border-subtle"></div>
+					</div>
+					<Input
+						label="Account number"
+						type={"text"}
+						inputMode="numeric"
+						maxLength={12}
+						placeholder="12 digits"
+						error={errors.accountNumber?.message}
+						{...register("accountNumber")}
+					/>
+					<Controller
+						name="accountType"
+						control={control}
+						render={({ field }) => (
+							<Select
+								label={"Account type"}
+								options={toOptions(ACCOUNT_TYPE_LABELS)}
+								value={field.value}
+								onValueChange={field.onChange}
+								placeholder={"Select type"}
+								error={errors.accountType?.message}
+							/>
+						)}
+					/>
 
-						<div className="flex items-center justify-between">
-							<Button
-								type="button"
-								variant="secondary"
-								onClick={onClose}>
-								Cancel
-							</Button>
-							<Button type="submit" disabled={isCreating || isEditing}>
-								{mode === "add" ? "Save account" : "Save changes"}
-							</Button>
-						</div>
+					<div className="flex items-center justify-between sm:col-span-2">
+						<Button type="button" variant="secondary" onClick={onClose}>
+							Cancel
+						</Button>
+						<Button type="submit" disabled={isCreating || isEditing}>
+							{mode === "add" ? "Save account" : "Save changes"}
+						</Button>
+					</div>
 				</form>
 			</Card>
 		</div>

@@ -10,9 +10,13 @@ export const createCardSchema = z.object({
 		.regex(/^\d{4}$/),
 	expiryDate: z.date(),
 	type: z.enum(CardType),
-	limit: z.number().positive().multipleOf(0.001).max(1_000_000),
+	limit: z
+		.number({ error: "Enter the card limit" })
+		.positive()
+		.multipleOf(0.001)
+		.max(1_000_000),
 	outstandingBalance: z
-		.number()
+		.number({ error: "Enter the current balance" })
 		.multipleOf(0.001)
 		.min(-1_000_000)
 		.max(1_000_000),
