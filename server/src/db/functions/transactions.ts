@@ -23,6 +23,10 @@ import {
 	NON_MCC_CATEGORIES_MAP,
 	ROW_TYPE_LABELS,
 } from "../../lib/pdfConfig";
+import { NotFoundError } from "../../../errors/errors";
+import { dbGetCategory } from "./categories";
+import { dbGetLoan } from "./loans";
+import { dbGetCreditCard } from "./creditCards";
 
 const TRANSFER_ROW_TYPES: RowType[] = ["own_transfer", "credit_card_payment"];
 
@@ -174,6 +178,19 @@ export const dbUpdateTransaction = async (
 	const data = Object.fromEntries(
 		Object.entries(transaction).filter(([, v]) => v !== undefined),
 	);
+
+	if (transaction.categoryId !== undefined) {
+		const category = await dbGetCategory(transaction.categoryId, userId);
+		if (!category) throw new NotFoundError("Category not found");
+	}
+	if (transaction.loanId !== undefined) {
+		const loan = await dbGetLoan(transaction.loanId, userId);
+		if (!loan) throw new NotFoundError("Loan not found");
+	}
+	if (transaction.creditCardId !== undefined) {
+		const card = await dbGetCreditCard(userId, transaction.creditCardId);
+		if (!card) throw new NotFoundError("Credit card not found");
+	}
 
 	const updatedTransaction = await prisma.transaction.updateManyAndReturn({
 		where: { id, userId },

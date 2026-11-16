@@ -62,8 +62,8 @@ export const login: RequestHandler = async (req, res) => {
 	const email = validateRequest.data.email;
 	const user = await dbGetUserByEmail(email);
 	if (!user)
-		throw new NotFoundError(
-			"User with this email is not found, please sign up for a new account",
+		throw new UnauthorizedError(
+			"Wrong email or password",
 		);
 
 	const password = validateRequest.data.password;

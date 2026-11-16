@@ -14,7 +14,9 @@ export const isActiveSchema = z.object({
 	isActive: z.boolean(),
 });
 
-export const editAccountSchema = createAccountSchema.partial();
+export const editAccountSchema = createAccountSchema
+	.extend({ isPrimary: z.boolean().optional() })
+	.partial();
 
 export type CreateAccountData = z.infer<typeof createAccountSchema>;
 export type EditAccountData = z.infer<typeof editAccountSchema>;

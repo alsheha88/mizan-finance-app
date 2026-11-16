@@ -5,6 +5,7 @@ import cors from "cors";
 import { errorHandler } from "./middleware/errorHandlingMiddleware";
 
 const app = express();
+app.set("trust proxy", 1)
 const PORT = process.env.PORT || 3000;
 
 app.use(
@@ -19,7 +20,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(express.urlencoded({ extended: true }));
-
 app.use("/api", apiRouter);
 
 app.use(errorHandler);

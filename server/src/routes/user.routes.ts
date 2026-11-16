@@ -9,11 +9,12 @@ import {
 	deleteUser,
 } from "../controllers/user";
 import { authMiddleware } from "../../middleware/authMiddleware";
+import { loginRateLimit, signupRateLimit } from "../../middleware/rateLimiter";
 
 const router = express.Router();
 
-router.post("/login", login);
-router.post("/signup", signup);
+router.post("/login", loginRateLimit , login);
+router.post("/signup", signupRateLimit , signup);
 router.post("/logout", logout);
 router.post("/refresh", refresh);
 router.get("/me", authMiddleware, getUser);

@@ -28,14 +28,20 @@ export const toolDefinitions = [
 ];
 
 export async function runTool(name: string, input: unknown, userId: string) {
-	const runner = toolRunners[name];
+	try {
+		const runner = toolRunners[name];
 
-	if (!runner)
-		return {
-			error: `Unknown tool name ${name}`,
-		};
+		if (!runner)
+			return {
+				error: `Unknown tool name ${name}`,
+			};
 
-	const result = await runner(input, userId);
+		const result = await runner(input, userId);
 
-	return result;
+		return result;
+	} catch (err) {
+		console.error("[Tool]", name, err);
+
+		return { error: "The data couldn't be loaded right now. Try again." };
+	}
 }

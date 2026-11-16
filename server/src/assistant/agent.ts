@@ -12,6 +12,8 @@ export async function runAgent(
 	let text = "";
 	let totalInputTokens = 0;
 	let totalOutputTokens = 0;
+	const TOO_LONG_MESSAGE =
+		"That answer was too long. Please ask for less at once, e.g. one month or the top 10.";
 	while (counter < MAX_STEPS) {
 		console.log(`Step ${counter + 1}`);
 		const toolResults: Anthropic.ToolResultBlockParam[] = [];
@@ -23,9 +25,20 @@ export async function runAgent(
 			thinking: { type: "disabled" },
 			tools: toolDefinitions,
 		});
-		messages.push({ role: "assistant", content: response.content });
 		totalOutputTokens += response.usage.output_tokens;
 		totalInputTokens += response.usage.input_tokens;
+		if (response.stop_reason === "max_tokens") {
+			messages.push({
+				role: "assistant",
+				content: TOO_LONG_MESSAGE,
+			});
+			return {
+				text: TOO_LONG_MESSAGE,
+				inputTokens: totalInputTokens,
+				outputTokens: totalOutputTokens,
+			};
+		}
+		messages.push({ role: "assistant", content: response.content });
 		console.log(response.stop_reason);
 		console.log(`response_useage: {
                     input_Tokens: ${response.usage.input_tokens},
