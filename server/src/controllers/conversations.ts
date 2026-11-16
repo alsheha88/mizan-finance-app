@@ -107,6 +107,11 @@ export const getConversation: RequestHandler = async (req, res) => {
 				return { role: msg.role, text: content };
 			}
 
+			const isToolUse = content.some((block) => block.type === "tool_use");
+
+			if (isToolUse && msg.role === "assistant")
+				return { role: msg.role, text: "" };
+
 			// An array of blocks: keep only the text blocks, and join them
 			const text = content
 				.map((block) => (block.type === "text" ? block.text : ""))
