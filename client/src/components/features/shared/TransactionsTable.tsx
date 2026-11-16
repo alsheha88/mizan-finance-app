@@ -121,13 +121,15 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 	return (
 		<>
 			{/* Phones and small tablets: one card per transaction. */}
-			<div className="grid gap-3 md:hidden">
+			<div className="grid gap-3 lg:hidden">
 				{transactions.map((t) => (
 					<Card key={t.id} className="grid gap-3">
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex flex-col gap-1 min-w-0">
 								{merchantCell(t)}
-								<p className="text-body-sm text-text-tertiary wrap-break-word">
+								<p
+									className="text-body-sm text-text-tertiary wrap-break-word line-clamp-2"
+									title={t.description}>
 									{t.description}
 								</p>
 							</div>
@@ -147,8 +149,8 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 				))}
 			</div>
 
-			{/* Tablet and up: the full table. */}
-			<div className="hidden md:block">
+			{/* Desktop: the full table. */}
+			<div className="hidden lg:block">
 				<Table>
 					<THead>
 						<TRow>
@@ -168,7 +170,9 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 								<TCell>
 									<div className="flex flex-col gap-1">
 										{merchantCell(t)}
-										<p className="text-body-sm text-text-tertiary">
+										<p
+											className="text-body-sm text-text-tertiary line-clamp-1"
+											title={t.description}>
 											{t.description}
 										</p>
 									</div>

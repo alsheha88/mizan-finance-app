@@ -8,7 +8,7 @@ function App() {
 		<PrivateRoute>
 			<div className="bg-bg-primary flex min-h-dvh">
 				<Sidebar />
-				<main className="flex-1 px-6 pt-6 pb-20 w-full">
+				<main className="flex-1 px-6 pt-6 min-w-0 pb-[calc(5rem+env(safe-area-inset-bottom))]">
 					<Outlet />
 				</main>
 				<MobileTabBar />
