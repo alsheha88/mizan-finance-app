@@ -125,13 +125,25 @@ export async function resolveMonth(
 ): Promise<string> {
 	if (month) return month;
 
-	const latestTransaction = await prisma.transaction.findFirst({
-		where: { userId },
-		orderBy: { transactionDate: "desc" },
-		select: { transactionDate: true },
-	});
+	const [latestTransaction, latestCardTransation] = await Promise.all([
+		prisma.transaction.findFirst({
+			where: { userId },
+			orderBy: { transactionDate: "desc" },
+			select: { transactionDate: true },
+		}),
+		prisma.cardTransaction.findFirst({
+			where: { userId },
+			orderBy: { transactionDate: "desc" },
+			select: { transactionDate: true },
+		}),
+	]);
+	const transactionsArr = [latestTransaction, latestCardTransation];
+	const monthsArr = transactionsArr
+		.filter((i) => i !== null)
+		.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime());
 
-	if (!latestTransaction) return getCurrentKuwaitMonth();
+	const latestMonth = monthsArr[0];
+	if (!latestMonth) return getCurrentKuwaitMonth();
 
-	return latestTransaction.transactionDate.toISOString().slice(0, 7);
+	return latestMonth.transactionDate.toISOString().slice(0, 7);
 }

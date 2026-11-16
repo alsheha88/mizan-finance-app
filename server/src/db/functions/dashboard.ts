@@ -140,7 +140,7 @@ export const dbSpendingByCategory = async (userId: string, month: string) => {
 		}
 	}
 
-	return spending;
+	return spending.sort((a, b) => b.total - a.total);
 };
 
 export const dbGetDebtStats = async (userId: string) => {

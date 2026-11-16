@@ -1,30 +1,23 @@
 import z from "zod";
 import { TransactionType } from "../../generated/prisma/enums.js";
 
-export const spendingInput = z.object({
-	month: z
+const monthField = z
 		.string()
-		.regex(/^\d{4}-\d{2}$/)
-		.describe("Month to analyse, in YYYY-MM format, e.g. 2026-10"),
+		.regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Month must be YYYY-MM")
+		.describe("Month to analyse, in YYYY-MM format, e.g. 2026-10") 
+
+export const spendingInput = z.object({
+	month: monthField,
 });
 
 export const monthTotalsInput = z.object({
-	month: z
-		.string()
-		.regex(/^\d{4}-\d{2}$/)
-		.describe("Month to analyse, in YYYY-MM format, e.g. 2026-10"),
+	month: monthField,
 	type: z
 		.enum(["income", "expense"])
 		.describe("income for money received, expense for money spent"),
 });
 export const listTransactionsInput = z.object({
-	month: z
-		.string()
-		.regex(/^\d{4}-\d{2}$/)
-		.optional()
-		.describe(
-			"Month to analyse, in YYYY-MM format, e.g. 2026-10. leave empty to search all months",
-		),
+	month: monthField.optional().describe("Month to analyse, in YYYY-MM format, e.g. 2026-10. Leave empty to search all months."),
 	type: z
 		.enum(TransactionType)
 		.optional()
