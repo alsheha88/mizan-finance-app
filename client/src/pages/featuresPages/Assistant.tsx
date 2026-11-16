@@ -8,17 +8,26 @@ import {
 	useListConversations,
 	useSendMessage,
 } from "@/hooks/assistant";
-import { cn } from "@/lib/cn";
 import { getDateGroup } from "@/lib/helpers";
-import { MessageCircle, SendHorizonal } from "lucide-react";
+import { SendHorizonal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import ConversationsList from "@/components/features/assistant/ConversationsList";
+import { Drawer } from "@/components/primitives/Drawer";
+
+const questions = [
+	"How much did I spend this month?",
+	"Compare this month with last month",
+	"What are my biggest spending categories?",
+	"How much is left on my loans?",
+];
 
 function Assistant() {
 	const formRef = useRef<HTMLFormElement>(null);
 	const endRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useState("");
+	const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 	const [pendingMessage, setPendingMessage] = useState<string | null>(null);
 	const navigate = useNavigate();
 	const { conversationId } = useParams();
@@ -36,6 +45,9 @@ function Assistant() {
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
 	}, [pendingMessage, conversation?.messages.length]);
+	useEffect(() => {
+		setInput("");
+	}, [conversationId]);
 
 	const groupedConversations = Object.entries(
 		Object.groupBy(conversationList ?? [], (item) =>
@@ -43,109 +55,102 @@ function Assistant() {
 		),
 	);
 
-	const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		const text = input.trim();
-		if (!text || isSending) return;
+	const sendText = (text: string) => {
+		const message = text.trim();
+		if (!message || isSending) return;
 
-		setPendingMessage(text);
+		setPendingMessage(message);
 		setInput("");
 
 		mutate(
-			{ message: text, conversationId },
+			{ message, conversationId },
 			{
 				onSuccess: (data) => {
 					if (!conversationId) navigate(`/assistant/${data.conversationId}`);
 					setPendingMessage(null);
 				},
 				onError: () => {
-					setInput(text);
+					setInput(message);
 					setPendingMessage(null);
 				},
 			},
 		);
 	};
 
+	const handleSend = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		sendText(input);
+	};
+
 	const showEmptyState = !conversationId && !pendingMessage;
 
 	return (
-		<div className="flex flex-col gap-8 h-dvh min-h-0">
+		<div className="flex flex-col gap-8 h-[calc(100dvh-6.5rem)] min-h-0">
 			<PageHeader
 				title="AI Financial Assistant"
-				subTitle="Ask about your spending, transactions and debts"
-			/>
+				subTitle="Ask about your spending, transactions and debts">
+				<Button
+					className="md:hidden"
+					size="sm"
+					type="button"
+					variant="secondary"
+					onClick={() => setIsHistoryOpen(true)}>
+					Chat History
+				</Button>
+			</PageHeader>
 
 			<div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 flex-1 min-h-0">
 				{/* ---- History column ---- */}
 				<nav
 					aria-label="Conversation history"
-					className="hidden md:flex flex-col gap-4 p-4 border border-border-default bg-card-default rounded-md h-full min-h-0 overflow-y-auto">
-					{isLoadingList && (
-						<p className="text-caption-lg text-text-tertiary">Loading…</p>
-					)}
-					{isListError && (
-						<p className="text-caption-lg text-text-tertiary">
-							Couldn't load your conversations.
-						</p>
-					)}
-					{!isLoadingList &&
-						!isListError &&
-						groupedConversations.length === 0 && (
-							<p className="text-caption-lg text-text-tertiary">
-								No conversations yet.
-							</p>
-						)}
-
-					{groupedConversations.map(([label, list]) => (
-						<div className="grid gap-2" key={label}>
-							<p className="text-label-md text-text-tertiary">{label}</p>
-							{(list ?? []).map((item) => (
-								<NavLink
-									key={item.id}
-									to={`/assistant/${item.id}`}
-									className={({ isActive }) =>
-										cn(
-											"flex items-center gap-2 p-2 rounded-sm min-w-0",
-											isActive
-												? "bg-card-dark border border-border-default text-text-primary"
-												: "text-sidebar-foreground hover:bg-sidebar-hover",
-										)
-									}>
-									{({ isActive }) => (
-										<>
-											<MessageCircle
-												size={16}
-												className={cn(
-													"shrink-0",
-													isActive
-														? "stroke-interactive-primary"
-														: "stroke-text-secondary",
-												)}
-											/>
-											<p className="text-caption-lg truncate">
-												{item.title ?? "New conversation"}
-											</p>
-										</>
-									)}
-								</NavLink>
-							))}
-						</div>
-					))}
+					className="hidden md:flex md:flex-col md:gap-4 p-4 border border-border-default shadow-card rounded-md h-full min-h-0 overflow-y-auto">
+					<ConversationsList
+						isLoadingList={isLoadingList}
+						isListError={isListError}
+						groupedConversations={groupedConversations}
+					/>
 				</nav>
+				<Drawer
+					title={"Conversations"}
+					isOpen={isHistoryOpen}
+					onOpenChange={setIsHistoryOpen}
+					footer={<></>}>
+					<ConversationsList
+						isLoadingList={isLoadingList}
+						isListError={isListError}
+						groupedConversations={groupedConversations}
+						onNavigate={() => setIsHistoryOpen(false)}
+					/>
+				</Drawer>
 
 				{/* ---- Chat column ---- */}
 				<section
 					aria-label="Chat"
-					className="flex flex-col gap-4 p-6 border border-border-default bg-card-default rounded-md h-full min-h-0">
+					className="flex flex-col gap-4 p-6 border border-border-default shadow-card rounded-md h-full min-h-0">
 					{/* Messages: the only part that scrolls */}
 					<div
 						role="log"
 						aria-label="Conversation"
-						className="flex-1 min-h-0 overflow-y-auto grid content-start gap-6 scrollbar-track-transparent scrollbar-thumb-accent-foreground scrollbar-gutter-stable">
+						className="flex-1 min-h-0 overflow-y-auto grid content-start pr-2 gap-6 scrollbar-track-transparent scrollbar-thumb-border-strong scrollbar-gutter-stable">
 						{showEmptyState && (
-							<p className="text-body-sm text-text-tertiary place-self-center">
-								Ask me about your spending, transactions or debts.
-							</p>
+							<div className="place-self-center grid gap-4 justify-items-center text-center">
+								<div className="flex flex-wrap justify-center gap-2">
+									{questions.map((question) => (
+										<Button
+											key={question}
+											variant="secondary"
+											size="sm"
+											disabled={isSending}
+											className="rounded-full"
+											onClick={() => sendText(question)}>
+											{question}
+										</Button>
+									))}
+								</div>
+								<p className="text-body-sm text-text-tertiary place-self-center">
+									Ask me about your spending, transactions or debts.
+								</p>
+							</div>
 						)}
 
 						{conversationId && isLoadingConversation && (
