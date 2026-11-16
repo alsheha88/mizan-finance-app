@@ -9,9 +9,9 @@ import EmptyState from "@/components/state/EmptyState";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
 import { useGetAccounts } from "@/hooks/accounts";
+import { useMonthOptions } from "@/hooks/availableMonths";
 import { useGetDashboard } from "@/hooks/dashboard";
 import { useTransactionsFilters } from "@/hooks/transactionsFilters";
-import { getDateRange } from "@/lib/helpers";
 import { Calendar, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -23,6 +23,7 @@ function Dashboard() {
 		isPending: isAccountsPending,
 		isError: isAccountsError,
 	} = useGetAccounts();
+	const monthOptions = useMonthOptions();
 
 	if (isPending || isAccountsPending) return <LoadingState />;
 	if (isError || isAccountsError)
@@ -33,13 +34,6 @@ function Dashboard() {
 				onAction={refetch}
 			/>
 		);
-
-	const monthOptions = getDateRange().map((i) => {
-		return {
-			label: i,
-			value: i,
-		};
-	});
 
 	const hasAccounts = (accounts?.length ?? 0) > 0;
 
@@ -58,9 +52,7 @@ function Dashboard() {
 				/>
 			</PageHeader>
 			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-				<StatCard
-					title={"Income"}
-					subTitle={Number(data.income)}></StatCard>
+				<StatCard title={"Income"} subTitle={Number(data.income)}></StatCard>
 				<StatCard
 					title={"Expenses"}
 					subTitle={Number(data.expenses)}></StatCard>

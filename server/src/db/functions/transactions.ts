@@ -8,6 +8,7 @@ import { type TransactionType } from "../../../generated/prisma/enums";
 import {
 	extractMCC,
 	formatDate,
+	formatToKuwaitMonth,
 	getMerchant,
 	getMonthBounds,
 	getRowType,
@@ -415,4 +416,30 @@ export const dbDeleteTransactions = async (
 	userId: string,
 ) => {
 	return await prisma.transaction.deleteMany({ where: { accountId, userId } });
+};
+
+export const dbGetAvailableMonths = async (userId: string) => {
+	const [accountAvailableMonths, cardAvailableMonths] = await Promise.all([
+		prisma.transaction.findMany({
+			where: { userId },
+			select: { transactionDate: true },
+		}),
+		prisma.cardTransaction.findMany({
+			where: { userId },
+			select: { transactionDate: true },
+		}),
+	]);
+	const accountFormattedMonths = accountAvailableMonths.map((i) =>
+		formatToKuwaitMonth(i.transactionDate),
+	);
+	const cardFormattedMonths = cardAvailableMonths.map((i) =>
+		formatToKuwaitMonth(i.transactionDate),
+	);
+
+	const monthsSet = new Set([
+		...accountFormattedMonths,
+		...cardFormattedMonths,
+	]);
+	const availableMonths = [...monthsSet].sort((a, b) => b.localeCompare(a));
+	return availableMonths;
 };

@@ -9,10 +9,11 @@ import { Select } from "@/components/primitives/Select";
 import EmptyState from "@/components/state/EmptyState";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
+import { useMonthOptions } from "@/hooks/availableMonths";
 import { useGetCards } from "@/hooks/cards";
 import { useGetCardTransactions } from "@/hooks/transactions";
 import { useTransactionsFilters } from "@/hooks/transactionsFilters";
-import { formatKWD, getDateRange } from "@/lib/helpers";
+import { formatKWD } from "@/lib/helpers";
 import type { CreditCard } from "@/schema/creditCardsSchema";
 import { Calendar, CreditCardIcon } from "lucide-react";
 import { useState } from "react";
@@ -36,6 +37,8 @@ function CreditCards() {
 		limit,
 	});
 
+	const monthOptions = useMonthOptions()
+
 	if (isPending) return <LoadingState />;
 	if (isError)
 		return (
@@ -55,12 +58,6 @@ function CreditCards() {
 	const utilization =
 		totalLimit > 0 ? (totalOutstanding / totalLimit) * 100 : 0;
 
-	const monthOptions = getDateRange().map((i) => {
-		return {
-			label: i,
-			value: i,
-		};
-	});
 
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">

@@ -118,6 +118,13 @@ export function getCurrentKuwaitMonth(): string {
 		month: "2-digit",
 	}).format(new Date());
 }
+export function formatToKuwaitMonth(date:Date): string {
+	return new Intl.DateTimeFormat("en-CA", {
+		timeZone: "Asia/Kuwait",
+		year: "numeric",
+		month: "2-digit",
+	}).format(date);
+}
 export function getCurrentKuwaitDate(): string {
 	return new Intl.DateTimeFormat("en-CA", {
 		timeZone: "Asia/Kuwait",

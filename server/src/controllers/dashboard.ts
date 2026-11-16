@@ -10,6 +10,7 @@ import {
 import { ValidationError } from "../../errors/errors";
 import { Prisma } from "../../generated/prisma/client";
 import { resolveMonth } from "../lib/helpers";
+import { dbGetAvailableMonths } from "../db/functions/transactions";
 
 export const getDashboardStats: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -27,6 +28,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 		spendingByCategory,
 		debtStats,
 		recentTransactions,
+		availableMonths
 	] = await Promise.all([
 		dbGetIncomeOrExpenseStats(userId, month, "income"),
 		dbGetIncomeOrExpenseStats(userId, month, "expense"),
@@ -34,6 +36,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 		dbSpendingByCategory(userId, month),
 		dbGetDebtStats(userId),
 		dbGetRecentTransactions(userId),
+		dbGetAvailableMonths(userId)
 	]);
 	const income = incomeStat._sum.amount ?? new Prisma.Decimal(0);
 	const expenses = expensesStats._sum.amount ?? new Prisma.Decimal(0);
@@ -49,6 +52,7 @@ export const getDashboardStats: RequestHandler = async (req, res) => {
 			spendingByCategory,
 			debtStats,
 			recentTransactions,
+			availableMonths
 		},
 	});
 };

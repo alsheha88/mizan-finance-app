@@ -25,4 +25,5 @@ export type DashboardResponse = {
 	};
 	recentTransactions: TransactionListItem[];
 	month: string;
+	availableMonths: string[]
 };
