@@ -26,11 +26,11 @@ export function DatePicker({
 			onMonthChange={setMonth}
 			onDayClick={() => setIsPopoverOpen(false)}
 			required
-			className="w-full p-4 bg-bg-elevated border border-border-subtle rounded-md z-50 shadow-overlay"
+			className="w-full p-4 bg-bg-elevated border border-border-default rounded-md z-50 shadow-overlay"
 			classNames={{
 				chevron: "stroke-text-secondary fill-text-secondary h-4 w-4",
 				month:
-					"grid grid-cols-[auto_1fr_auto] text-label-lg text-center items-center gap-y-4 text-text-primary",
+					"grid grid-cols-[auto_1fr_auto] text-body-sm text-center items-center gap-y-4 text-text-primary",
 				caption_label: "col-start-2 row-start-1 text-center",
 				today:
 					"[&:not(.is-selected)>button]:text-interactive-primary [&>button]:border [&>button]:border-interactive-primary",
@@ -43,7 +43,7 @@ export function DatePicker({
 				month_grid: "w-full col-span-3 row-start-2",
 				day: "h-10 p-0 text-center",
 				day_button:
-					"cursor-pointer size-10 mx-auto h-full rounded-sm text-body-sm flex items-center justify-center",
+					"cursor-pointer size-10 mx-auto rounded-sm text-body-sm flex items-center justify-center",
 				weekday: "text-text-tertiary text-caption-sm",
 			}}></DayPicker>
 	);

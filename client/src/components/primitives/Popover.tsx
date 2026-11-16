@@ -17,7 +17,7 @@ export function Popover({
 }: PopoverProps) {
 	return (
 		<RadixPopover.Root open={open} onOpenChange={onOpenChange}>
-			<RadixPopover.Trigger className="flex items-center gap-1.5 bg-input-background px-3 py-2.5 border border-input-default rounded-sm text-text-secondary text-label-lg cursor-pointer focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-border-focus data-[state=open]:border-border-focus">
+			<RadixPopover.Trigger className="flex items-center gap-1.5 bg-input-background px-3 py-2.5 border border-input-default rounded-sm text-text-primary text-body-sm cursor-pointer focus:outline-none focus-visible:outline-none focus:ring-2 focus:ring-border-focus data-[state=open]:border-border-focus">
 				{triggerContent}
 			</RadixPopover.Trigger>
 
@@ -25,8 +25,7 @@ export function Popover({
 				<RadixPopover.Content
 					sideOffset={4}
 					side="bottom"
-					className="w-(--radix-popover-trigger-width) z-50"
-				>
+					className="w-(--radix-popover-trigger-width)">
 					{children}
 				</RadixPopover.Content>
 			</RadixPopover.Portal>
