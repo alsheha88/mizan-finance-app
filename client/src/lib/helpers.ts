@@ -132,4 +132,8 @@ export const getDateGroup = (updatedAt: Date | string) => {
 	}
 };
 
-console.log(new Date().toLocaleString());
+export const handleSingular = (number: number) => {
+	if (number < 1) return null;
+	if (number === 1) return "transaction";
+	if (number > 1) return "transactions";
+};
