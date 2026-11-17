@@ -1,15 +1,29 @@
+import { Button } from "@/components/primitives/Button";
 import { Upload } from "lucide-react";
+import { UploadBox, UploadStateLayout } from "./UploadStateLayout";
 
 function UploadProgress() {
 	return (
-		<>
-			<div className="flex items-center justify-center p-4 sm:p-6 border-b border-b-border-subtle">
-				<div className="w-full grid place-items-center gap-3 px-4 py-6 sm:px-8 sm:py-10 bg-input-background border-2 border-dashed border-border-default rounded-lg">
-					<Upload className="w-10 h-10 stroke-accent-foreground stroke-1 animate-pulse" />
-					<h4 className="text-h4 text-text-primary">Reading statement…</h4>
-				</div>
-			</div>
-		</>
+		<UploadStateLayout
+			// Same footer as the other states, so nothing jumps while uploading.
+			footer={
+				<Button type="button" disabled>
+					Uploading…
+				</Button>
+			}>
+			<UploadBox>
+				<Upload
+					className="size-10 stroke-accent-foreground stroke-1 animate-pulse"
+					aria-hidden
+				/>
+				<h4 className="text-h4 text-text-primary" role="status">
+					Reading statement…
+				</h4>
+				<p className="text-body-sm text-text-secondary">
+					This can take a few seconds for long statements.
+				</p>
+			</UploadBox>
+		</UploadStateLayout>
 	);
 }
 

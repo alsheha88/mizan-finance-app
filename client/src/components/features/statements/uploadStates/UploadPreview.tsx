@@ -1,7 +1,8 @@
 import { Button } from "@/components/primitives/Button";
 import { Table, TCell, TH, THead, TRow } from "@/components/primitives/Table";
 import { formatDate, formatKWD, handleSingular } from "@/lib/helpers";
-import { TriangleAlert } from "lucide-react";
+import { CircleCheck } from "lucide-react";
+import { UploadBox, UploadStateLayout } from "./UploadStateLayout";
 
 type UploadPreviewProps = {
 	transactions: {
@@ -14,55 +15,59 @@ type UploadPreviewProps = {
 	skipped?: number;
 };
 
-function UploadPreview({ transactions, onClose, skipped }: UploadPreviewProps) {
-	const allSkipped = transactions.length === 0 && (skipped ?? 0) > 0;
-	const someSkipped = transactions.length > 0 && !!skipped;
+function UploadPreview({ transactions, onClose, skipped = 0 }: UploadPreviewProps) {
+	const imported = transactions.length;
+	const allSkipped = imported === 0 && skipped > 0;
+
 	return (
-		<div className="grid gap-4 p-6 border-b border-b-border-subtle overflow-y-auto scrollbar-track-transparent scrollbar-thumb-accent-foreground scrollbar-gutter-stable">
-			{allSkipped ? (
-				<div className="grid place-items-center gap-3 px-8 py-10 bg-input-background border border-border-default rounded-lg">
-					<TriangleAlert className="w-10 h-10 stroke-interactive-primary stroke-1" />
-					<p className="text-body-md text-text-primary text-center">
-						This statement has already been uploaded.
-					</p>
-				</div>
-			) : (
-				someSkipped && (
-					<p className="text-body-sm text-text-secondary text-center">
-						Imported {transactions.length} new{" "}
-						{handleSingular(transactions.length)}. Skipped {skipped} that were
-						already imported.
-					</p>
-				)
-			)}
-			{transactions.length > 0 && (
-				<Table>
-					<THead>
-						<TRow>
-							<TH>Date</TH>
-							<TH>Merchant</TH>
-							<TH className="text-center">Amount</TH>
-						</TRow>
-					</THead>
-					<tbody>
-						{transactions.map((t) => (
-							<TRow key={t.id}>
-								<TCell>{formatDate(t.transactionDate)}</TCell>
-								<TCell>{t.merchant}</TCell>
-								<TCell className="text-center">
-									{formatKWD(Number(t.amount))}
-								</TCell>
-							</TRow>
-						))}
-					</tbody>
-				</Table>
-			)}
-			<div className="place-self-end">
+		<UploadStateLayout
+			footer={
 				<Button type="button" onClick={onClose}>
 					Done
 				</Button>
-			</div>
-		</div>
+			}>
+			{allSkipped ? (
+				<UploadBox>
+					<CircleCheck className="size-10 stroke-text-tertiary stroke-1" aria-hidden />
+					<h4 className="text-h4 text-text-primary">Already imported</h4>
+					<p className="text-body-sm text-text-secondary">
+						Every transaction in this statement was imported before. Nothing new
+						was added.
+					</p>
+				</UploadBox>
+			) : (
+				<>
+					<p className="text-body-sm text-text-secondary">
+						Imported {imported} new {handleSingular(imported)}
+						{skipped > 0 && `. Skipped ${skipped} already imported`}.
+					</p>
+					{imported > 0 && (
+						<Table>
+							<THead>
+								<TRow>
+									<TH>Date</TH>
+									<TH>Merchant</TH>
+									<TH className="text-end">Amount</TH>
+								</TRow>
+							</THead>
+							<tbody>
+								{transactions.map((t) => (
+									<TRow key={t.id}>
+										<TCell className="whitespace-nowrap">
+											{formatDate(t.transactionDate)}
+										</TCell>
+										<TCell>{t.merchant}</TCell>
+										<TCell className="text-end whitespace-nowrap tabular-nums">
+											{formatKWD(Number(t.amount))}
+										</TCell>
+									</TRow>
+								))}
+							</tbody>
+						</Table>
+					)}
+				</>
+			)}
+		</UploadStateLayout>
 	);
 }
 

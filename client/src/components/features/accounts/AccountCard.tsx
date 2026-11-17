@@ -93,6 +93,7 @@ function AccountCard({ account, onUpload }: AccountCardProps) {
 				open={isDialogOpen}
 				onOpenChange={setIsDialogOpen}
 			/>
+			
 		</Card>
 	);
 }
