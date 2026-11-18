@@ -1,4 +1,3 @@
-import type Anthropic from "@anthropic-ai/sdk";
 import { debtStatusToolDefinition, getDebtStatus } from "./debtStatus.js";
 import {
 	getTransactionsList,
@@ -9,6 +8,7 @@ import {
 	getSpendingByCategory,
 	spendingByCategoryToolDefinition,
 } from "./spending.js";
+import { getSalaryHealth, salaryHealthToolDefinition } from "./salaryHealth.js";
 
 export const toolRunners: Record<
 	string,
@@ -18,6 +18,7 @@ export const toolRunners: Record<
 	getMonthTotals: getMonthTotals,
 	getTransactionsList: getTransactionsList,
 	getDebtStatus: getDebtStatus,
+	getSalaryHealth: getSalaryHealth,
 };
 
 export const toolDefinitions = [
@@ -25,6 +26,7 @@ export const toolDefinitions = [
 	monthTotalsToolDefinition,
 	listTransactionsToolDefinition,
 	debtStatusToolDefinition,
+	salaryHealthToolDefinition,
 ];
 
 export async function runTool(name: string, input: unknown, userId: string) {

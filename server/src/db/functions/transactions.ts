@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
-import type {
-	MerchantMemory,
+import {
 	Prisma,
-	RowType,
+	type MerchantMemory,
+	type RowType,
 } from "../../../generated/prisma/client";
 import { type TransactionType } from "../../../generated/prisma/enums";
 import {
@@ -442,4 +442,91 @@ export const dbGetAvailableMonths = async (userId: string) => {
 	]);
 	const availableMonths = [...monthsSet].sort((a, b) => b.localeCompare(a));
 	return availableMonths;
+};
+
+export const dbGetSalaryRows = async (userId: string, count: number) => {
+	const transactions = await prisma.transaction.findMany({
+		where: { userId, type: "income", rowType: "salary" },
+		orderBy: [{ transactionDate: "desc" }, { statementRow: "desc" }],
+		take: count + 1,
+		select: { transactionDate: true, statementRow: true, amount: true },
+	});
+	const salaryTransactions = transactions.map((i) => {
+		return {
+			...i,
+			amount: Number(i.amount),
+		};
+	});
+
+	return salaryTransactions;
+};
+
+export const dbGetSalaryCycleTotals = async (
+	userId: string,
+	start: { transactionDate: Date; statementRow: number },
+	end: { transactionDate: Date; statementRow: number } | null,
+) => {
+	const afterStart: Prisma.TransactionWhereInput[] = [
+		{ transactionDate: { gt: start.transactionDate } },
+		{
+			transactionDate: { equals: start.transactionDate },
+			statementRow: { gt: start.statementRow },
+		},
+	];
+
+	const conditions: Prisma.TransactionWhereInput[] = [{ OR: afterStart }];
+	const cardConditions: Prisma.CardTransactionWhereInput = { userId };
+	cardConditions.transactionDate = {};
+	cardConditions.transactionDate.gte = start.transactionDate;
+	cardConditions.cardTransactionType = "purchase";
+
+	if (end) {
+		conditions.push({
+			OR: [
+				{ transactionDate: { lt: end.transactionDate } },
+				{
+					transactionDate: { equals: end.transactionDate },
+					statementRow: { lt: end.statementRow },
+				},
+			],
+		});
+		cardConditions.transactionDate.lt = end.transactionDate;
+	}
+
+	const inCycle: Prisma.TransactionWhereInput = {
+		userId,
+		AND: conditions,
+	};
+
+	const [otherIncome, loanInstallments, bankSpending, cardSpending] =
+		await Promise.all([
+			prisma.transaction.aggregate({
+				where: { ...inCycle, rowType: { not: "salary" }, type: "income" },
+				_sum: { amount: true },
+			}),
+			prisma.transaction.aggregate({
+				where: { ...inCycle, rowType: "loan_installment", type: "expense" },
+				_sum: { amount: true },
+			}),
+			prisma.transaction.aggregate({
+				where: {
+					...inCycle,
+					rowType: { not: "loan_installment" },
+					type: "expense",
+				},
+				_sum: { amount: true },
+			}),
+			prisma.cardTransaction.aggregate({
+				where: { ...cardConditions },
+				_sum: { amount: true },
+			}),
+		]);
+	const result = {
+		otherIncome: Number(otherIncome._sum.amount ?? 0),
+		loanInstallments: Number(loanInstallments._sum.amount ?? 0),
+		bankSpending: Number(bankSpending._sum.amount ?? 0),
+		cardSpending: Number(cardSpending._sum.amount ?? 0),
+	};
+
+	return result
 };

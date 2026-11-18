@@ -2,22 +2,26 @@ import z from "zod";
 import { TransactionType } from "../../generated/prisma/enums.js";
 
 const monthField = z
-		.string()
-		.regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Month must be YYYY-MM")
-		.describe("Month to analyse, in YYYY-MM format, e.g. 2026-10") 
+	.string()
+	.regex(/^\d{4}-(0[1-9]|1[0-2])$/, "Month must be YYYY-MM")
+	.describe("Month to analyse, in YYYY-MM format, e.g. 2026-10");
 
-export const spendingInput = z.object({
+export const spendingInput = z.strictObject({
 	month: monthField,
 });
 
-export const monthTotalsInput = z.object({
+export const monthTotalsInput = z.strictObject({
 	month: monthField,
 	type: z
 		.enum(["income", "expense"])
 		.describe("income for money received, expense for money spent"),
 });
-export const listTransactionsInput = z.object({
-	month: monthField.optional().describe("Month to analyse, in YYYY-MM format, e.g. 2026-10. Leave empty to search all months."),
+export const listTransactionsInput = z.strictObject({
+	month: monthField
+		.optional()
+		.describe(
+			"Month to analyse, in YYYY-MM format, e.g. 2026-10. Leave empty to search all months.",
+		),
 	type: z
 		.enum(TransactionType)
 		.optional()
@@ -50,7 +54,7 @@ export const listTransactionsInput = z.object({
 		),
 });
 
-export const debtStatusInput = z.object({
+export const debtStatusInput = z.strictObject({
 	name: z
 		.string()
 		.optional()
@@ -58,7 +62,16 @@ export const debtStatusInput = z.object({
 			"Loan name, e.g. car loan. Matched loosely, so part of the name is enough. Leave empty to get all loans.",
 		),
 });
-
+export const salaryHealthSchema = z.strictObject({
+	count: z
+		.int()
+		.min(1)
+		.max(6)
+		.default(3)
+		.describe(
+			"Number of complete salary cycles to analyse (1–6). The current, unfinished cycle is always included in addition.",
+		),
+});
 
 export type SpendingInput = z.infer<typeof spendingInput>;
 export type MonthTotalsInput = z.infer<typeof monthTotalsInput>;

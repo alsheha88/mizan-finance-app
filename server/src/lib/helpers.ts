@@ -118,7 +118,7 @@ export function getCurrentKuwaitMonth(): string {
 		month: "2-digit",
 	}).format(new Date());
 }
-export function formatToKuwaitMonth(date:Date): string {
+export function formatToKuwaitMonth(date: Date): string {
 	return new Intl.DateTimeFormat("en-CA", {
 		timeZone: "Asia/Kuwait",
 		year: "numeric",
@@ -161,4 +161,8 @@ export async function resolveMonth(
 	if (!latestMonth) return getCurrentKuwaitMonth();
 
 	return latestMonth.transactionDate.toISOString().slice(0, 7);
+}
+
+export function roundValues(value: number, decimal = 3) {
+	return Number(value.toFixed(decimal));
 }
