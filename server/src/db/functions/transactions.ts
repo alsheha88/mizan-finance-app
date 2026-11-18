@@ -449,7 +449,12 @@ export const dbGetSalaryRows = async (userId: string, count: number) => {
 		where: { userId, type: "income", rowType: "salary" },
 		orderBy: [{ transactionDate: "desc" }, { statementRow: "desc" }],
 		take: count + 1,
-		select: { transactionDate: true, statementRow: true, amount: true },
+		select: {
+			transactionDate: true,
+			statementRow: true,
+			amount: true,
+			accountId: true,
+		},
 	});
 	const salaryTransactions = transactions.map((i) => {
 		return {
@@ -463,14 +468,23 @@ export const dbGetSalaryRows = async (userId: string, count: number) => {
 
 export const dbGetSalaryCycleTotals = async (
 	userId: string,
-	start: { transactionDate: Date; statementRow: number },
-	end: { transactionDate: Date; statementRow: number } | null,
+	start: { transactionDate: Date; statementRow: number; accountId: string },
+	end: {
+		transactionDate: Date;
+		statementRow: number;
+		accountId: string;
+	} | null,
 ) => {
 	const afterStart: Prisma.TransactionWhereInput[] = [
 		{ transactionDate: { gt: start.transactionDate } },
 		{
-			transactionDate: { equals: start.transactionDate },
+			transactionDate: start.transactionDate,
 			statementRow: { gt: start.statementRow },
+			accountId: start.accountId,
+		},
+		{
+			transactionDate: start.transactionDate,
+			accountId: { not: start.accountId },
 		},
 	];
 
@@ -485,8 +499,9 @@ export const dbGetSalaryCycleTotals = async (
 			OR: [
 				{ transactionDate: { lt: end.transactionDate } },
 				{
-					transactionDate: { equals: end.transactionDate },
+					transactionDate: end.transactionDate,
 					statementRow: { lt: end.statementRow },
+					accountId: end.accountId,
 				},
 			],
 		});
@@ -528,5 +543,5 @@ export const dbGetSalaryCycleTotals = async (
 		cardSpending: Number(cardSpending._sum.amount ?? 0),
 	};
 
-	return result
+	return result;
 };
