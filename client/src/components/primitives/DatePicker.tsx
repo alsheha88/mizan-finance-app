@@ -24,6 +24,8 @@ export function DatePicker({
 			onSelect={(date: Date) => setSelected(toCalendarDate(date))}
 			month={month}
 			onMonthChange={setMonth}
+			fixedWeeks
+			showOutsideDays
 			onDayClick={() => setIsPopoverOpen(false)}
 			required
 			className="w-full p-4 bg-bg-elevated border border-border-default rounded-md z-50 shadow-overlay"
@@ -45,6 +47,8 @@ export function DatePicker({
 				day_button:
 					"cursor-pointer size-10 mx-auto rounded-sm text-body-sm flex items-center justify-center",
 				weekday: "text-text-tertiary text-caption-sm",
+				outside: "text-text-tertiary"
+				
 			}}></DayPicker>
 	);
 }
