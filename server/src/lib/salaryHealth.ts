@@ -29,6 +29,8 @@ export const calculateSalaryHealth = async (userId: string, count: number) => {
 				loanInstallments: roundValues(totals.loanInstallments),
 				bankSpending: roundValues(totals.bankSpending),
 				cardSpending: roundValues(totals.cardSpending),
+                loansReceived: roundValues(totals.loansReceived),
+                loanPayoffs: roundValues(totals.loanPayoffs),
 				salary: roundValues(salary),
 				totalSpending: roundValues(totalSpending),
 				net: roundValues(net),

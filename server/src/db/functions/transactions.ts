@@ -513,34 +513,64 @@ export const dbGetSalaryCycleTotals = async (
 		AND: conditions,
 	};
 
-	const [otherIncome, loanInstallments, bankSpending, cardSpending] =
-		await Promise.all([
-			prisma.transaction.aggregate({
-				where: { ...inCycle, rowType: { not: "salary" }, type: "income" },
-				_sum: { amount: true },
-			}),
-			prisma.transaction.aggregate({
-				where: { ...inCycle, rowType: "loan_installment", type: "expense" },
-				_sum: { amount: true },
-			}),
-			prisma.transaction.aggregate({
-				where: {
-					...inCycle,
-					rowType: { not: "loan_installment" },
-					type: "expense",
+	const [
+		otherIncome,
+		loanInstallments,
+		bankSpending,
+		cardSpending,
+		loansReceived,
+		loanPayoffs,
+	] = await Promise.all([
+		prisma.transaction.aggregate({
+			where: {
+				...inCycle,
+				rowType: { notIn: ["salary", "financing"] },
+				type: "income",
+			},
+			_sum: { amount: true },
+		}),
+		prisma.transaction.aggregate({
+			where: { ...inCycle, rowType: "loan_installment", type: "expense" },
+			_sum: { amount: true },
+		}),
+		prisma.transaction.aggregate({
+			where: {
+				...inCycle,
+				rowType: {
+					notIn: ["loan_installment", "loan_payoff"],
 				},
-				_sum: { amount: true },
-			}),
-			prisma.cardTransaction.aggregate({
-				where: { ...cardConditions },
-				_sum: { amount: true },
-			}),
-		]);
+				type: "expense",
+			},
+			_sum: { amount: true },
+		}),
+		prisma.cardTransaction.aggregate({
+			where: { ...cardConditions },
+			_sum: { amount: true },
+		}),
+		prisma.transaction.aggregate({
+			where: {
+				...inCycle,
+				rowType: "financing",
+				type: "income",
+			},
+			_sum: { amount: true },
+		}),
+		prisma.transaction.aggregate({
+			where: {
+				...inCycle,
+				rowType: "loan_payoff",
+				type: "expense",
+			},
+			_sum: { amount: true },
+		}),
+	]);
 	const result = {
 		otherIncome: Number(otherIncome._sum.amount ?? 0),
 		loanInstallments: Number(loanInstallments._sum.amount ?? 0),
 		bankSpending: Number(bankSpending._sum.amount ?? 0),
 		cardSpending: Number(cardSpending._sum.amount ?? 0),
+		loansReceived: Number(loansReceived._sum.amount ?? 0),
+		loanPayoffs: Number(loanPayoffs._sum.amount ?? 0),
 	};
 
 	return result;

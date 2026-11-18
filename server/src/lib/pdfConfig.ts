@@ -30,6 +30,7 @@ export const rowTypeRules: { rowType: RowType; patterns: string[] }[] = [
 	{ rowType: "person_transfer", patterns: ["ومض", "001o"] },
 	{ rowType: "bill_payment", patterns: ["bill payment"] },
 	{ rowType: "salary", patterns: ["راتب", "salary"] },
+	{ rowType: "loan_payoff", patterns: ["سداد أقساط"] },
 	{
 		rowType: "loan_installment",
 		patterns: [
@@ -39,7 +40,7 @@ export const rowTypeRules: { rowType: RowType; patterns: string[] }[] = [
 			"trading installments",
 		],
 	},
-	{ rowType: "financing", patterns: ["international tawarruq"] },
+	{ rowType: "financing", patterns: ["international tawarruq", "تورق"] },
 	{ rowType: "standing_order", patterns: ["أمر دفع دائم"] },
 	{ rowType: "bank_fee", patterns: ["رسوم", "swift chgs"] },
 	{ rowType: "incoming_wire", patterns: ["حواالت"] },
@@ -60,6 +61,7 @@ export const ROW_TYPE_LABELS: Record<RowType, string> = {
 	incoming_wire: "Incoming Transfer",
 	bill_payment: "Bills",
 	unknown: "Other",
+	loan_payoff: "Loan Payoff"
 };
 
 export const MCC_CATEGORIES: Record<string, CategoryName> = {
@@ -103,4 +105,5 @@ export const NON_MCC_CATEGORIES_MAP: Partial<Record<RowType, CategoryName>> = {
 	financing: "loan received",
 	incoming_wire: "other income",
 	salary: "salary",
+	loan_payoff: "loan payment"
 };

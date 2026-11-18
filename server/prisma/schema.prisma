@@ -142,6 +142,7 @@ enum RowType {
   card_refund
   financing
   unknown
+  loan_payoff
 }
 
 model Category {
