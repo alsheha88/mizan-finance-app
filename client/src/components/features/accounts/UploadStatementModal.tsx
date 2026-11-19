@@ -7,6 +7,7 @@ import UploadProgress from "../statements/uploadStates/UploadProgress";
 import { capitalizeFirstLetter } from "@/lib/helpers";
 import { getApiErrorMessage } from "@/lib/api";
 import UploadPreview from "../statements/uploadStates/UploadPreview";
+import { FormDialog } from "@/components/primitives/FormDialog";
 
 type UploadStatementModalProps = {
 	account: Account;
@@ -31,14 +32,15 @@ function UploadStatementModal({
 	};
 
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-surface-overlay p-4">
-			<div className="rounded-xl min-h-[min(30rem,85dvh)] max-h-[85dvh] border border-border-subtle bg-card-default shadow-overlay w-full max-w-2xl flex flex-col">
-				<div className="flex flex-col gap-1 p-6 border-b border-b-border-subtle">
-					<h3 className="text-h3 text-text-primary">Upload Statement</h3>
-					<p className="text-caption-md text-text-tertiary">
-						{capitalizeFirstLetter(account.name)} Account
-					</p>
-				</div>
+		<FormDialog
+			title="Upload statement"
+			description={`${capitalizeFirstLetter(account.name)} account`}
+			onClose={onClose}
+			canClose={!isPending}
+			size="lg"
+			padded={false}
+			// Same height in every upload state, so the dialog doesn't jump between them.
+			className="min-h-[min(30rem,85dvh)]">
 				{!isPending && !isError && !isSuccess && (
 					<UploadDropZone
 						file={file}
@@ -64,8 +66,7 @@ function UploadStatementModal({
 						skipped={data.skipped}
 					/>
 				)}
-			</div>
-		</div>
+		</FormDialog>
 	);
 }
 

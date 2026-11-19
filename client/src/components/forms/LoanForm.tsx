@@ -13,11 +13,11 @@ import {
 	type SubmitHandler,
 } from "react-hook-form";
 import { Button } from "../primitives/Button";
-import { Card } from "../primitives/Card";
 import { Input } from "../primitives/Input";
 import { DatePicker } from "../primitives/DatePicker";
 import { Popover } from "../primitives/Popover";
 import { formatDate, toCalendarDate } from "@/lib/helpers";
+import { FormDialog } from "@/components/primitives/FormDialog";
 
 const toFormValues = (loan: Loan | null): DefaultValues<CreateLoanData> => ({
 	name: loan?.name ?? "",
@@ -71,9 +71,10 @@ function LoanForm({ mode, setIsFormOpen, loan }: LoanFormProps) {
 	};
 
 	return (
-		<div className="fixed inset-0 z-50 bg-surface-overlay flex items-center justify-center p-4">
-			<Card className="grid gap-6 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
-				<h3 className="text-h3 text-text-primary">{header}</h3>
+		<FormDialog
+			title={header}
+			onClose={onClose}
+			canClose={!(isCreating || isEditing)}>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
 					className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -164,8 +165,7 @@ function LoanForm({ mode, setIsFormOpen, loan }: LoanFormProps) {
 						</Button>
 					</div>
 				</form>
-			</Card>
-		</div>
+		</FormDialog>
 	);
 }
 

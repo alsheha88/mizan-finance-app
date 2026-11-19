@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { Card } from "../primitives/Card";
 import { Input } from "../primitives/Input";
 import { Select } from "../primitives/Select";
 import { Button } from "../primitives/Button";
@@ -12,6 +11,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateAccount, useEditAccount } from "@/hooks/accounts";
 import { ACCOUNT_TYPE_LABELS, toOptions } from "@/lib/labels";
+import { FormDialog } from "@/components/primitives/FormDialog";
 
 const toFormValues = (account: Account | null): CreateAccountData => ({
 	name: account?.name ?? "",
@@ -55,9 +55,10 @@ function AccountForm({ mode, onClose, account }: AccountFormProps) {
 	};
 
 	return (
-		<div className="fixed inset-0 z-50 bg-surface-overlay flex items-center justify-center p-4">
-			<Card className="grid gap-6 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
-				<h3 className="text-h3 text-text-primary">{header}</h3>
+		<FormDialog
+			title={header}
+			onClose={onClose}
+			canClose={!(isCreating || isEditing)}>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
 					className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -103,8 +104,7 @@ function AccountForm({ mode, onClose, account }: AccountFormProps) {
 						</Button>
 					</div>
 				</form>
-			</Card>
-		</div>
+		</FormDialog>
 	);
 }
 

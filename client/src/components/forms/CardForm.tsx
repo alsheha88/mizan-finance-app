@@ -4,7 +4,6 @@ import {
 	type CreditCard,
 } from "@/schema/creditCardsSchema";
 import { useEffect, useState } from "react";
-import { Card } from "../primitives/Card";
 import { Button } from "../primitives/Button";
 import {
 	Controller,
@@ -20,6 +19,7 @@ import { formatDate, toCalendarDate } from "@/lib/helpers";
 import { Input } from "../primitives/Input";
 import { Select } from "../primitives/Select";
 import { CARD_TYPE_LABELS, toOptions } from "@/lib/labels";
+import { FormDialog } from "@/components/primitives/FormDialog";
 
 const toFormValues = (
 	card: CreditCard | null,
@@ -81,9 +81,10 @@ function CardForm({ mode, onClose, card }: CardFormProps) {
 	};
 
 	return (
-		<div className="fixed inset-0 z-50 bg-surface-overlay flex items-center justify-center p-4">
-			<Card className="grid gap-6 w-full max-w-lg max-h-[90dvh] overflow-y-auto">
-				<h3 className="text-h3 text-text-primary">{header}</h3>
+		<FormDialog
+			title={header}
+			onClose={onClose}
+			canClose={!(isCreating || isEditing)}>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
 					className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -163,8 +164,7 @@ function CardForm({ mode, onClose, card }: CardFormProps) {
 						</Button>
 					</div>
 				</form>
-			</Card>
-		</div>
+		</FormDialog>
 	);
 }
 
