@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	getAccounts,
 	getAccount,
@@ -12,13 +13,13 @@ import { getApiErrorMessage } from "@/lib/api";
 
 export const useGetAccounts = () => {
 	return useQuery({
-		queryKey: ["accounts"],
+		queryKey: queryKeys.accounts.all,
 		queryFn: getAccounts,
 	});
 };
 export const useGetAccount = (id: string) => {
 	return useQuery({
-		queryKey: ["accounts", id],
+		queryKey: queryKeys.accounts.detail(id),
 		queryFn: () => getAccount({ id: id }),
 	});
 };
@@ -28,9 +29,9 @@ export const useCreateAccount = () => {
 	return useMutation({
 		mutationFn: createAccount,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["accounts"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
 			toast.success("Account created");
 		},
 		onError: (error) => {
@@ -43,7 +44,7 @@ export const useEditAccount = () => {
 	return useMutation({
 		mutationFn: editAccount,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -56,7 +57,7 @@ export const useUpdateAccountActiveStatus = () => {
 	return useMutation({
 		mutationFn: updateAccountActiveStatus,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {

@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	getConversation,
 	listConversations,
@@ -9,13 +10,13 @@ import toast from "react-hot-toast";
 
 export const useListConversations = () => {
 	return useQuery({
-		queryKey: ["conversations"],
+		queryKey: queryKeys.conversations.all,
 		queryFn: listConversations,
 	});
 };
 export const useGetConversation = (id: string | undefined) => {
 	return useQuery({
-		queryKey: ["conversations", id],
+		queryKey: queryKeys.conversations.detail(id),
 		queryFn: () => getConversation({ id: id! }),
 		enabled: !!id,
 	});
@@ -30,12 +31,12 @@ export const useSendMessage = () => {
 		// onSuccess passed to mutate() in the page, which clears the pending
 		// bubble. So the real messages are in the cache before the bubble goes.
 		onSuccess: (data, variables) => {
-			const conversationKey = ["conversations", data.conversationId];
+			const conversationKey = queryKeys.conversations.detail(data.conversationId);
 
 			return Promise.all([
 				// The history list: new title or new order (updatedAt).
 				queryClient.invalidateQueries({
-					queryKey: ["conversations"],
+					queryKey: queryKeys.conversations.all,
 					exact: true,
 				}),
 				variables.conversationId

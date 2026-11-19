@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	createLoan,
 	deleteLoan,
@@ -12,13 +13,13 @@ import toast from "react-hot-toast";
 
 export const useGetLoans = () => {
 	return useQuery({
-		queryKey: ["loans"],
+		queryKey: queryKeys.loans.all,
 		queryFn: getLoans,
 	});
 };
 export const useGetLoan = (params: IdParams) => {
 	return useQuery({
-		queryKey: ["loans", params],
+		queryKey: queryKeys.loans.list(params),
 		queryFn: () => getLoan(params),
 	});
 };
@@ -28,8 +29,8 @@ export const useCreateLoan = () => {
 	return useMutation({
 		mutationFn: createLoan,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["loans"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			toast.success("Loan created successfully");
 		},
 		onError: (error) => {
@@ -42,8 +43,8 @@ export const useEditLoan = () => {
 	return useMutation({
 		mutationFn: editLoan,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["loans"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -56,8 +57,8 @@ export const useDeleteLoan = () => {
 	return useMutation({
 		mutationFn: deleteLoan,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["loans"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			toast.success("Loan deleted");
 		},
 		onError: (error) => {

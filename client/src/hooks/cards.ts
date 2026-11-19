@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	createCard,
 	deleteCard,
@@ -11,13 +12,13 @@ import toast from "react-hot-toast";
 
 export const useGetCards = () => {
 	return useQuery({
-		queryKey: ["cards"],
+		queryKey: queryKeys.cards.all,
 		queryFn: getCards,
 	});
 };
 export const useGetCard = (id: string) => {
 	return useQuery({
-		queryKey: ["cards", id],
+		queryKey: queryKeys.cards.detail(id),
 		queryFn: () => getCard({ id: id }),
 	});
 };
@@ -27,9 +28,9 @@ export const useCreateCard = () => {
 	return useMutation({
 		mutationFn: createCard,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["cards"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
 			toast.success("Card created successfully");
 		},
 		onError: (error) => {
@@ -43,9 +44,9 @@ export const useEditCard = () => {
 	return useMutation({
 		mutationFn: editCard,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["cards"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -59,10 +60,10 @@ export const useDeleteCard = () => {
 	return useMutation({
 		mutationFn: deleteCard,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["cards"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
 
 			toast.success("Card deleted");
 		},

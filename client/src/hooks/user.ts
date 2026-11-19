@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
 	getUser,
@@ -14,7 +15,7 @@ import { clearAuthToken, getApiErrorMessage, setAuthToken } from "@/lib/api";
 
 export const useGetUser = () => {
 	return useQuery({
-		queryKey: ["me"],
+		queryKey: queryKeys.me,
 		queryFn: getUser,
 		retry: false,
 	});
@@ -32,7 +33,7 @@ export const useLogin = () => {
 		mutationFn: login,
 		onSuccess: (token) => {
 			setAuthToken(token);
-			queryClient.invalidateQueries({ queryKey: ["me"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.me });
 			navigate(from, { replace: true });
 			toast.success("Welcome back!");
 		},
@@ -59,7 +60,7 @@ export const useEditUser = () => {
 	return useMutation({
 		mutationFn: editUser,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["me"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.me });
 			toast.success("Changes Saved");
 		},
 		onError: (error) => {

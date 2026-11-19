@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	createCategory,
 	deleteCategory,
@@ -10,7 +11,7 @@ import toast from "react-hot-toast";
 
 export const useGetCategories = () => {
 	return useQuery({
-		queryKey: ["categories"],
+		queryKey: queryKeys.categories.all,
 		queryFn: getCategories,
 	});
 };
@@ -19,7 +20,7 @@ export const useCreateCategory = () => {
 	return useMutation({
 		mutationFn: createCategory,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["categories"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -32,10 +33,10 @@ export const useEditCategory = () => {
 	return useMutation({
 		mutationFn: editCategory,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["categories"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -48,10 +49,10 @@ export const useDeleteCategory = () => {
 	return useMutation({
 		mutationFn: deleteCategory,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["categories"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.categories.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
 			toast.success("Category deleted");
 		},
 		onError: (error) => {

@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	uploadAccountStatement,
 	uploadCardStatement,
@@ -9,11 +10,11 @@ export const useUploadAccountStatement = () => {
 	return useMutation({
 		mutationFn: uploadAccountStatement,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["accounts"] });
-			queryClient.invalidateQueries({ queryKey: ["cards"] });
-			queryClient.invalidateQueries({ queryKey: ["loans"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
 		},
 	});
 };
@@ -24,9 +25,9 @@ export const useUploadCardStatement = () => {
 	return useMutation({
 		mutationFn: uploadCardStatement,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
-			queryClient.invalidateQueries({ queryKey: ["cards"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
 		},
 	});
 };

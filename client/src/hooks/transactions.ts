@@ -1,3 +1,4 @@
+import { queryKeys } from "@/lib/queryKeys";
 import {
 	deleteAccountTransaction,
 	editTransaction,
@@ -28,7 +29,7 @@ export const useGetTransactions = (
 	enabled: boolean = true,
 ) => {
 	return useQuery({
-		queryKey: ["transactions", params],
+		queryKey: queryKeys.transactions.list(params),
 		queryFn: () => getTransactions(params),
 		placeholderData: keepPreviousData,
 		enabled: enabled,
@@ -37,7 +38,7 @@ export const useGetTransactions = (
 
 export const useGetCardTransactions = (params: CardTransactionsOptions) => {
 	return useQuery({
-		queryKey: ["cardsTransactions", params],
+		queryKey: queryKeys.cardTransactions.list(params),
 		queryFn: () => getCardTransactions(params),
 		placeholderData: keepPreviousData,
 	});
@@ -48,20 +49,20 @@ export const useEditTransaction = () => {
 	return useMutation({
 		mutationFn: editTransaction,
 		onMutate: async ({ params, data }) => {
-			await queryClient.cancelQueries({ queryKey: ["transactions"] });
+			await queryClient.cancelQueries({ queryKey: queryKeys.transactions.all });
 
 			const previous = queryClient.getQueriesData({
-				queryKey: ["transactions"],
+				queryKey: queryKeys.transactions.all,
 			});
 
-			const categories = queryClient.getQueryData<Category[]>(["categories"]);
+			const categories = queryClient.getQueryData<Category[]>(queryKeys.categories.all);
 			const nextCategory =
 				data.categoryId === undefined
 					? undefined
 					: (categories?.find((c) => c.id === data.categoryId) ?? null);
 
 			queryClient.setQueriesData(
-				{ queryKey: ["transactions"] },
+				{ queryKey: queryKeys.transactions.all },
 				(
 					old:
 						| { transactions: TransactionResponse[]; count: number }
@@ -96,8 +97,8 @@ export const useEditTransaction = () => {
 			toast.error(getApiErrorMessage(error));
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 		},
 	});
 };
@@ -109,20 +110,20 @@ export const useEditCardTransaction = () => {
 			toast.success("Changes saved");
 		},
 		onMutate: async ({ params, data }) => {
-			await queryClient.cancelQueries({ queryKey: ["cardsTransactions"] });
+			await queryClient.cancelQueries({ queryKey: queryKeys.cardTransactions.all });
 
 			const previous = queryClient.getQueriesData({
-				queryKey: ["cardsTransactions"],
+				queryKey: queryKeys.cardTransactions.all,
 			});
 
-			const categories = queryClient.getQueryData<Category[]>(["categories"]);
+			const categories = queryClient.getQueryData<Category[]>(queryKeys.categories.all);
 			const nextCategory =
 				data.categoryId === undefined
 					? undefined
 					: (categories?.find((c) => c.id === data.categoryId) ?? null);
 
 			queryClient.setQueriesData(
-				{ queryKey: ["cardsTransactions"] },
+				{ queryKey: queryKeys.cardTransactions.all },
 				(
 					old: { transactions: CardTransaction[]; count: number } | undefined,
 				) => {
@@ -155,8 +156,8 @@ export const useEditCardTransaction = () => {
 			toast.error(getApiErrorMessage(error));
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["cardsTransactions"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 		},
 	});
 };
@@ -165,9 +166,9 @@ export const useDeleteAccountTransactions = () => {
 	return useMutation({
 		mutationFn: deleteAccountTransaction,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["transactions"] });
-			queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-			queryClient.invalidateQueries({ queryKey: ["accounts"] });
+			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
 			toast.success("All transaction deleted");
 		},
 		onError: (error) => {
