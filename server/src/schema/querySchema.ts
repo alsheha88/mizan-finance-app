@@ -17,6 +17,7 @@ export const queryParamsSchema = z.object({
 	limit: z.coerce.number().int().min(1).max(100).default(10),
 	minAmount: z.coerce.number().optional(),
 	maxAmount: z.coerce.number().optional(),
+	uncategorised: z.stringbool().optional(),
 });
 export const cardQueryParamsSchema = z.object({
 	type: z.enum(CardTransactionType).optional(),

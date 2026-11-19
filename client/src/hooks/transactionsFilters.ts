@@ -9,15 +9,22 @@ export const useTransactionsFilters = () => {
 	const month = searchParams.get("month") ?? undefined;
 	const categoryId = searchParams.get("categoryId") ?? undefined;
 	const accountId = searchParams.get("accountId") ?? undefined;
+	const isUncategorised = searchParams.get("uncategorised") === "true";
 	const limit = 10;
 	const handleChange = (id: string) => {
 		setSearchParams(
 			(prev) => {
 				if (id === "all") {
 					prev.delete("categoryId");
+					prev.delete("uncategorised");
+					prev.set("page", "1");
+				} else if (id === "uncategorised") {
+					prev.delete("categoryId");
+					prev.set("uncategorised", "true");
 					prev.set("page", "1");
 				} else {
 					prev.set("categoryId", id);
+					prev.delete("uncategorised");
 					prev.set("page", "1");
 				}
 
@@ -76,6 +83,7 @@ export const useTransactionsFilters = () => {
 		value,
 		categoryId,
 		accountId,
+		isUncategorised,
 		handleChange,
 		onSearch,
 		onMonthChange,

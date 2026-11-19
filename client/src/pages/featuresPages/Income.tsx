@@ -29,6 +29,7 @@ function Income() {
 		onPageChange,
 		onSearch,
 		handleChange,
+		isUncategorised,
 	} = useTransactionsFilters();
 
 	const {
@@ -43,6 +44,7 @@ function Income() {
 			limit,
 			type: "income",
 			categoryId,
+			uncategorised: isUncategorised,
 			search,
 			accountId,
 			month: selectedMonth,
@@ -77,9 +79,10 @@ function Income() {
 			id: i.id,
 			label: capitalizeFirstLetter(i.name),
 		})) ?? []),
+		{ id: "uncategorised", label: "Uncategorised" },
 	];
 
-	const isFiltered = !!categoryId || !!search;
+	const isFiltered = !!categoryId || !!search || isUncategorised;
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">
 			<PageHeader title={"Income"} subTitle="Every deposit, grouped by source.">
@@ -106,7 +109,7 @@ function Income() {
 			</PageHeader>
 			<FilterChips
 				options={options}
-				value={categoryId ?? "all"}
+				value={isUncategorised ? "uncategorised" : (categoryId ?? "all")}
 				onChange={handleChange}
 			/>
 			{data.count > 0 ? (

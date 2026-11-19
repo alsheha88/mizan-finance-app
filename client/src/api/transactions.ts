@@ -19,12 +19,13 @@ export const getTransactions = async ({
 	categoryId,
 	search,
 	type,
-    limit
+	limit,
+	uncategorised,
 }: TransactionsOptions) => {
 	const res = await api.get<{
 		data: { transactions: TransactionListItem[]; count: number };
 	}>("/api/transactions", {
-		params: { page,limit, type, categoryId, search, accountId, month },
+		params: { page, limit, type, categoryId, search, accountId, month, uncategorised },
 	});
 
 	return res.data.data;
@@ -43,7 +44,7 @@ export const editTransaction = async ({ params, data }: EditTransaction) => {
 
 	return res.data.data.transaction;
 };
-export const deleteAccountTransaction = async (params:IdParams) => {
+export const deleteAccountTransaction = async (params: IdParams) => {
 	const res = await api.delete<{
 		data: { message: string };
 	}>(`/api/accounts/${params.id}/transactions`);

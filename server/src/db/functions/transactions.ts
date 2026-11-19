@@ -111,7 +111,11 @@ export const dbGetTransactions = async (
 	const skip = (options.page - 1) * options.limit;
 
 	if (options.type !== undefined) where.type = options.type;
-	if (options.categoryId !== undefined) where.categoryId = options.categoryId;
+	if (options.uncategorised) {
+		where.categoryId = null;
+	} else if (options.categoryId !== undefined) {
+		where.categoryId = options.categoryId;
+	}
 	if (options.accountId !== undefined) where.accountId = options.accountId;
 	if (options.minAmount !== undefined || options.maxAmount !== undefined) {
 		where.amount = {};
@@ -141,6 +145,9 @@ export const dbGetTransactions = async (
 					contains: options.search,
 					mode: "insensitive",
 				},
+			},
+			{
+				category: { name: { contains: options.search, mode: "insensitive" } },
 			},
 		];
 	const [transactions, count] = await Promise.all([
