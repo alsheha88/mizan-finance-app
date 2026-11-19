@@ -274,9 +274,16 @@ export const dbAccountToAccountTransfers = async (userId: string) => {
 	// 1. The user's own accounts — needed to tell "my account" from someone else's
 	const accounts = await prisma.account.findMany({ where: { userId } });
 
-	// 2. Every row the parser classified as a transfer between accounts
+	// 2. Every unpaired "To/From Account" transfer. The parser labels them all
+	// own_transfer; ones we couldn't pair were relabelled person_transfer below.
+	// Both are checked again on every run, so adding the other account later
+	// (it turns out to be the user's) still pairs them.
 	const transactions = await prisma.transaction.findMany({
-		where: { userId, rowType: "own_transfer", transferGroupId: null },
+		where: {
+			userId,
+			rowType: { in: ["own_transfer", "person_transfer"] },
+			transferGroupId: null,
+		},
 	});
 
 	// 3. Keep only what pairing needs, and drop rows we can't pair
@@ -297,6 +304,7 @@ export const dbAccountToAccountTransfers = async (userId: string) => {
 				direction: match[1] === "From" ? "from" : "to",
 				date: t.transactionDate,
 				amount: t.amount,
+				isEdited: t.isEdited,
 			};
 		})
 		.filter((t) => t !== null);
@@ -311,6 +319,10 @@ export const dbAccountToAccountTransfers = async (userId: string) => {
 	const expenseIds: string[] = [];
 	const incomeIds: string[] = [];
 
+	// The other account isn't one of the user's: real money in or out, sent to or
+	// from someone else. It gets the same label as other transfers to people
+	// (person_transfer), so nothing downstream mistakes it for moving money
+	// between the user's own accounts.
 	for (const t of transfers) {
 		if (t.otherAccountId) continue;
 		if (t.direction === "to") {
@@ -320,23 +332,22 @@ export const dbAccountToAccountTransfers = async (userId: string) => {
 		}
 	}
 
-	if (expenseIds.length > 0) {
+	const relabel = (ids: string[], type: "expense" | "income") => {
+		if (ids.length === 0) return;
 		updates.push(
 			prisma.transaction.updateMany({
-				where: { id: { in: expenseIds } },
-				data: { type: "expense" },
+				where: { id: { in: ids } },
+				data: { type, rowType: "person_transfer" },
 			}),
-		);
-	}
-
-	if (incomeIds.length > 0) {
-		updates.push(
+			// The generic merchant name follows the label, unless the user renamed it.
 			prisma.transaction.updateMany({
-				where: { id: { in: incomeIds } },
-				data: { type: "income" },
+				where: { id: { in: ids }, isEdited: false },
+				data: { merchant: ROW_TYPE_LABELS.person_transfer },
 			}),
 		);
-	}
+	};
+	relabel(expenseIds, "expense");
+	relabel(incomeIds, "income");
 
 	for (const out of outgoing) {
 		const partner = incoming.find(
@@ -354,14 +365,22 @@ export const dbAccountToAccountTransfers = async (userId: string) => {
 
 		const groupId = randomUUID();
 
+		// Paired: money moved between the user's own accounts. rowType goes back
+		// to own_transfer in case these rows were relabelled on an earlier run.
+		const pairData = (isEdited: boolean) => ({
+			transferGroupId: groupId,
+			type: "transfer" as const,
+			rowType: "own_transfer" as const,
+			...(!isEdited && { merchant: ROW_TYPE_LABELS.own_transfer }),
+		});
 		updates.push(
 			prisma.transaction.update({
 				where: { id: out.id },
-				data: { transferGroupId: groupId, type: "transfer" },
+				data: pairData(out.isEdited),
 			}),
 			prisma.transaction.update({
 				where: { id: partner.id },
-				data: { transferGroupId: groupId, type: "transfer" },
+				data: pairData(partner.isEdited),
 			}),
 		);
 	}
