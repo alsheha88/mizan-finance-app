@@ -14,8 +14,10 @@ type AccessTokenPayload = {
 }
 
 
-export const hashPassword = (password:string) => {
-    return bcrypt.hashSync(password, saltRounds )
+// Async: the sync version blocks the whole server (every request) for the
+// ~250ms a 12-round hash takes.
+export const hashPassword = (password: string) => {
+    return bcrypt.hash(password, saltRounds);
 }
 
 export const checkPassword = (password:string, hash:string) => {

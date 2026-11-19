@@ -15,7 +15,6 @@ export async function runAgent(
 	const TOO_LONG_MESSAGE =
 		"That answer was too long. Please ask for less at once, e.g. one month or the top 10.";
 	while (counter < MAX_STEPS) {
-		console.log(`Step ${counter + 1}`);
 		const toolResults: Anthropic.ToolResultBlockParam[] = [];
 		const response = await client.messages.create({
 			max_tokens: 2000,
@@ -39,11 +38,13 @@ export async function runAgent(
 			};
 		}
 		messages.push({ role: "assistant", content: response.content });
-		console.log(response.stop_reason);
-		console.log(`response_useage: {
-                    input_Tokens: ${response.usage.input_tokens},
-                    outpu_Tokens: ${response.usage.output_tokens},
-                    }`);
+		// Debug output only while developing: production logs shouldn't fill up
+		// with every step, and never with what users searched for.
+		if (process.env.NODE_ENV !== "production") {
+			console.log(
+				`[agent] step ${counter + 1}: ${response.stop_reason}, tokens in ${response.usage.input_tokens} / out ${response.usage.output_tokens}`,
+			);
+		}
 		if (response.stop_reason !== "tool_use") {
 			for (const block of response.content) {
 				if (block.type === "text") {
@@ -58,10 +59,9 @@ export async function runAgent(
 		}
 		for (const block of response.content) {
 			if (block.type === "tool_use") {
-				console.log(`
-                    block name: ${block.name},
-                    input: ${JSON.stringify(block.input)}
-                    `);
+				if (process.env.NODE_ENV !== "production") {
+					console.log(`[agent] tool ${block.name}`, block.input);
+				}
 				const result = await runTool(block.name, block.input, userId);
 				const isError =
 					typeof result === "object" && result !== null && "error" in result;

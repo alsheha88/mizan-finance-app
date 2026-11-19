@@ -4,7 +4,6 @@ import { listTransactionsInput } from "../../schema/toolsSchema.js";
 import { toolInputError } from "./inputError.js";
 import {
 	dbGetCategories,
-	dbGetCategory,
 } from "../../db/functions/categories.js";
 import { dbGetTransactions } from "../../db/functions/transactions.js";
 import { prisma } from "../../lib/prisma.js";
@@ -31,8 +30,9 @@ export async function getTransactionsList(input: unknown, userId: string) {
 				name: { equals: validateRequest.data.category, mode: "insensitive" },
 			},
 		});
-		const categories = await dbGetCategories(userId);
 		if (!category) {
+			// Only now load the list, to tell the model which names exist.
+			const categories = await dbGetCategories(userId);
 			const categoriesNames = categories.map((i) => i.name);
 			return {
 				error: `Category ${validateRequest.data.category} not found`,
@@ -47,8 +47,8 @@ export async function getTransactionsList(input: unknown, userId: string) {
 				name: { equals: validateRequest.data.account, mode: "insensitive" },
 			},
 		});
-		const accounts = await dbGetAccounts(userId);
 		if (!account) {
+			const accounts = await dbGetAccounts(userId);
 			const accountsNames = accounts.map((i) => i.name);
 			return {
 				error: `Account ${validateRequest.data.account} not found`,

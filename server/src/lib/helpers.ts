@@ -1,4 +1,3 @@
-import { NotFoundError } from "../../errors/errors";
 import type { RowType } from "../../generated/prisma/enums";
 import { ROW_TYPE_LABELS, rowTypeRules } from "./pdfConfig";
 import { prisma } from "./prisma";
