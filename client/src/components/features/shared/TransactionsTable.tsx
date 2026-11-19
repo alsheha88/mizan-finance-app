@@ -179,7 +179,7 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 								</TCell>
 								<TCell>{categoryCell(t)}</TCell>
 								<TCell className="whitespace-nowrap">{t.account.name}</TCell>
-								<TCell className="text-end whitespace-nowrap">
+								<TCell className="text-end whitespace-nowrap tabular-nums">
 									{formatKWD(Number(t.amount))}
 								</TCell>
 							</TRow>
