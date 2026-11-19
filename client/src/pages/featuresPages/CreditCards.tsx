@@ -13,7 +13,6 @@ import { useMonthOptions } from "@/hooks/availableMonths";
 import { useGetCards } from "@/hooks/cards";
 import { useGetCardTransactions } from "@/hooks/transactions";
 import { useTransactionsFilters } from "@/hooks/transactionsFilters";
-import { formatKWD } from "@/lib/helpers";
 import type { CreditCard } from "@/schema/creditCardsSchema";
 import { Calendar, CreditCardIcon } from "lucide-react";
 import { useState } from "react";
@@ -96,10 +95,11 @@ function CreditCards() {
 					}></EmptyState>
 			) : (
 				<>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
 						<StatCard
-							title={"Total Outstanding"}
-							subTitle={formatKWD(totalOutstanding)}></StatCard>
+							className="col-span-2 lg:col-span-1"
+							title={"Total outstanding"}
+							subTitle={totalOutstanding}></StatCard>
 						<StatCard
 							title={"Utilization"}
 							subTitle={`${utilization.toFixed(1)}%`}></StatCard>
@@ -107,7 +107,7 @@ function CreditCards() {
 							title={"Number of cards owned"}
 							subTitle={cards.length.toString()}></StatCard>
 					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
 						{cards.map((i) => (
 							<CreditCardComponent
 								key={i.id}

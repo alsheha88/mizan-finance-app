@@ -1,11 +1,11 @@
-import { Button } from "@/components/primitives/Button";
 import { Card } from "@/components/primitives/Card";
 import Modal from "@/components/primitives/Modal";
 import { ProgressBar } from "@/components/primitives/ProgressBar";
 import { useDeleteLoan } from "@/hooks/loans";
 import { formatKWD } from "@/lib/helpers";
 import type { Loan, LoanWithOutstanding } from "@/schema/loansSchema";
-import { Edit, Trash } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
+import { IconButton } from "@/components/primitives/IconButton";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
 type LoanCardProps = {
@@ -20,76 +20,58 @@ function LoanCard({ loan, setLoan, setIsFormOpen, setMode }: LoanCardProps) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 	const onDelete = () => deleteLoan({ id: loan.id });
+	const original = Number(loan.originalAmount);
+	const outstanding = Number(loan.outstanding);
+	const repaid = original > 0 ? ((original - outstanding) / original) * 100 : 0;
 	return (
-		<Card className="grid gap-4">
-			<div className="flex items-center justify-between">
-				<div className="flex flex-col gap-1">
-					<h4 className="text-h4 text-text-primary">{loan.name}</h4>
-					<small className="text-caption-sm text-text-tertiary">
+		<Card className="grid grid-cols-[minmax(0,1fr)] gap-4 min-w-0">
+			{/* Name on the left, edit and delete as small icons on the right
+			    (a loan has no main action like "Upload statement"). */}
+			<div className="flex items-start justify-between gap-3">
+				<div className="flex flex-col gap-1 min-w-0">
+					<h4 className="text-h4 text-text-primary truncate" title={loan.name}>
+						{loan.name}
+					</h4>
+					<p className="text-caption-sm text-text-tertiary tabular-nums">
 						Invoice {loan.invoiceNumber}
-					</small>
+					</p>
 				</div>
 				<div className="flex items-center gap-2">
-					<Button
-						type="button"
-						variant="ghost"
-						className="hover:bg-transparent p-0"
+					<IconButton
+						label="Edit loan"
+						icon={<Pencil size={16} aria-hidden />}
 						onClick={() => {
 							setLoan(loan);
 							setMode("edit");
 							setIsFormOpen(true);
-						}}>
-						<Edit
-							size={16}
-							className="stroke-text-secondary hover:stroke-accent-foreground"></Edit>
-					</Button>
-					<Button
-						type="button"
-						variant="ghost"
-						className="hover:bg-transparent p-0"
-						onClick={() => setIsDialogOpen(true)}>
-						<Trash
-							size={16}
-							className="stroke-text-secondary hover:stroke-ring-destructive"></Trash>
-					</Button>
+						}}
+					/>
+					<IconButton
+						label="Delete loan"
+						tone="destructive"
+						icon={<Trash2 size={16} aria-hidden />}
+						onClick={() => setIsDialogOpen(true)}
+					/>
 				</div>
 			</div>
+
+			{/* What's left as the big number, the instalment as a line under it. */}
 			<div className="flex flex-col gap-1">
 				<p className="text-label-md text-text-secondary">Outstanding</p>
-				<h4 className="text-h4 text-text-primary">
-					{formatKWD(Number(loan.outstanding))}
-				</h4>
-			</div>
-			<div className="flex flex-col gap-1">
-				<p className="text-label-md text-text-secondary">
-					Monthly Installment
+				<p className="text-h3 text-text-primary tabular-nums">
+					{formatKWD(outstanding)}
 				</p>
-				<h4 className="text-h4 text-text-primary">
-					{formatKWD(Number(loan.installment))}
-				</h4>
+				<p className="text-label-sm text-text-tertiary tabular-nums">
+					{formatKWD(Number(loan.installment))} per month
+				</p>
 			</div>
-			<div className="flex flex-col gap-2">
-				<div className="flex items-center justify-between">
-					<p className="text-label-md text-text-secondary">Repaid</p>
-					<p className="text-label-md text-text-secondary">
-						{(
-							((Number(loan.originalAmount) - Number(loan.outstanding)) /
-								Number(loan.originalAmount)) *
-							100
-						).toFixed(1)}
-						%
-					</p>
-				</div>
 
-				<ProgressBar
-					progress={
-						((Number(loan.originalAmount) - Number(loan.outstanding)) /
-							Number(loan.originalAmount)) *
-						100
-					}
-					color={"mint"}
-					label={"Repaid"}
-				/>
+			<div className="flex flex-col gap-2">
+				<div className="flex items-center justify-between text-label-md text-text-secondary">
+					<p>Repaid</p>
+					<p className="tabular-nums">{repaid.toFixed(1)}%</p>
+				</div>
+				<ProgressBar progress={repaid} color={"mint"} label={"Repaid"} />
 			</div>
 			<Modal
 				title={"Delete"}

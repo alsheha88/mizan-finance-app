@@ -11,6 +11,8 @@ import {
 } from "@/lib/helpers";
 import type { AccountListItem } from "@/schema/accountsSchema";
 import { useState } from "react";
+import { Trash2, Upload } from "lucide-react";
+import { IconButton } from "@/components/primitives/IconButton";
 
 type AccountCardProps = {
 	account: AccountListItem;
@@ -22,57 +24,63 @@ function AccountCard({ account, onUpload }: AccountCardProps) {
 	const accountBalance =
 		account.balance === undefined ? undefined : Number(account.balance);
 	return (
-		<Card className="grid gap-4">
-			<div className="flex items-center justify-between">
-				<div className="flex flex-col gap-1">
-					<h4 className="text-h4 text-text-primary">
+		<Card className="grid grid-cols-[minmax(0,1fr)] gap-4 min-w-0">
+			{/* Name and status on one row; the badge never shrinks, the name truncates. */}
+			<div className="flex items-start justify-between gap-3">
+				<div className="flex flex-col gap-1 min-w-0">
+					<h4 className="text-h4 text-text-primary truncate" title={account.name}>
 						{capitalizeFirstLetter(account.name)}
 					</h4>
-
-					<div className="flex items-center gap-2">
-						<small className="text-caption-sm text-text-tertiary">
-							{capitalizeFirstLetter(account.accountType)} Account
-						</small>
-						<div className="border-2 rounded-full border-text-tertiary"></div>
-						<small className="text-caption-sm text-text-tertiary">
+					<p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption-sm text-text-tertiary">
+						<span>{capitalizeFirstLetter(account.accountType)} account</span>
+						<span aria-hidden className="size-1 rounded-full bg-text-tertiary" />
+						<span className="tabular-nums">
 							{maskAccountNumber(account.accountNumber)}
-						</small>
-					</div>
+						</span>
+					</p>
 				</div>
-				<Badge color={account.isActive ? "mint" : "rose"}>
-					{" "}
-					{account.isActive ? "Active" : "Inactive"}{" "}
+				<Badge className="shrink-0" color={account.isActive ? "mint" : "rose"}>
+					{account.isActive ? "Active" : "Inactive"}
 				</Badge>
 			</div>
-			<div className="flex flex-col gap-2">
+
+			<div className="flex flex-col gap-1">
 				<p className="text-label-md text-text-secondary">Current balance</p>
-				<h4 className="text-h4 text-text-primary tabular-nums">
+				<p className="text-h3 text-text-primary tabular-nums">
 					{accountBalance === undefined ? "--" : formatKWD(accountBalance)}
-				</h4>
+				</p>
 			</div>
-			<div className="flex items-center justify-between">
-				<small className="text-text-tertiary text-label-sm">
+
+			<div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-label-sm text-text-tertiary">
+				<span>
 					{account.count > 0
 						? `${account.count} transactions`
 						: "No transactions"}
-				</small>
-				<small className="text-text-tertiary text-label-sm">
+				</span>
+				<span>
 					{account.lastImportedAt
 						? `Last import on ${formatDateMonthDay(account.lastImportedAt)}`
 						: "No statement imported"}
-				</small>
+				</span>
 			</div>
-			<div className="grid grid-cols-2 gap-2">
-				<Button type="button" onClick={() => onUpload(account)}>
+
+			{/* One main action. Deleting is rare and destructive, so it's a small
+			    outlined icon button instead of a second full-size red button. */}
+			<div className="flex gap-2">
+				<Button
+					type="button"
+					className="flex-1 inline-flex items-center justify-center gap-2 whitespace-nowrap"
+					onClick={() => onUpload(account)}>
+					<Upload size={16} aria-hidden />
 					Upload statement
 				</Button>
-				<Button
-					variant="destructive"
-					type="button"
+				<IconButton
+					label="Delete transactions"
+					tone="destructive"
+					icon={<Trash2 size={16} aria-hidden />}
 					disabled={!account.count}
-					onClick={() => setIsDialogOpen(true)}>
-					Delete transactions
-				</Button>
+					onClick={() => setIsDialogOpen(true)}
+				/>
 			</div>
 			<Modal
 				title={`Delete ${account.name} transactions`}

@@ -82,8 +82,12 @@ function Accounts() {
 					Add account
 				</Button>
 			</PageHeader>
-			<div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
-				<StatCard title={"Total across accounts"} subTitle={totalBalance}>
+			{/* Total on its own row, money in/out side by side, three across from lg. */}
+			<div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+				<StatCard
+					className="col-span-2 lg:col-span-1"
+					title={"Total across accounts"}
+					subTitle={totalBalance}>
 					<small className="text-text-tertiary text-label-sm">
 						{accounts?.length} accounts connected
 					</small>
@@ -115,7 +119,9 @@ function Accounts() {
 					</>
 				)}
 			</div>
-			<div className="grid xl:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+			{/* Columns follow the space left next to the sidebar (it appears at md),
+			    so a card is never squeezed below ~320px. */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
 				{accounts?.map((i) => (
 					<AccountCard
 						key={i.id}
