@@ -51,7 +51,7 @@ function Dashboard() {
 					className="w-full sm:w-auto sm:min-w-3xs"
 				/>
 			</PageHeader>
-			<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+			<div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
 				<StatCard title={"Income"} subTitle={Number(data.income)}></StatCard>
 				<StatCard
 					title={"Expenses"}

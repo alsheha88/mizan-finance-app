@@ -116,8 +116,10 @@ function Expenses() {
 			/>
 			{data.count > 0 ? (
 				<>
-					<div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+					{/* Total on its own row, the other two side by side, until there's room for three. */}
+					<div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
 						<StatCard
+							className="col-span-2 lg:col-span-1"
 							title={"Total expenses"}
 							subTitle={Number(dashbaord?.expenses ?? 0)}
 						/>

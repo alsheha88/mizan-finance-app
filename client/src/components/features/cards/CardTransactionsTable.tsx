@@ -123,73 +123,73 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 	return (
 		<>
 			{isDesktop ? (
-			<div>
-				<Table>
-					<THead>
-						<TRow>
-							<TH>Date</TH>
-							<TH>Merchant/Description</TH>
-							<TH>Category</TH>
-							<TH>Card</TH>
-							<TH className="text-end">Amount</TH>
-						</TRow>
-					</THead>
-					<tbody>
-						{transactions.map((t) => (
-							<TRow key={t.id}>
-								<TCell className="whitespace-nowrap">
-									{formatDate(t.transactionDate)}
-								</TCell>
-								<TCell>
-									<div className="flex flex-col gap-1">
-										{merchantCell(t)}
-										<p
-											className="text-body-sm text-text-tertiary line-clamp-1"
-											title={t.description}>
-											{t.description}
-										</p>
-									</div>
-								</TCell>
-								<TCell>{categoryCell(t)}</TCell>
-								<TCell className="whitespace-nowrap text-text-secondary">
-									{t.card?.name}
-								</TCell>
-								<TCell className="text-end whitespace-nowrap tabular-nums">
-									{formatKWD(Number(t.amount))}
-								</TCell>
+				<div className="min-w-0">
+					<Table>
+						<THead>
+							<TRow>
+								<TH>Date</TH>
+								<TH>Merchant/Description</TH>
+								<TH>Category</TH>
+								<TH>Card</TH>
+								<TH className="text-end">Amount</TH>
 							</TRow>
-						))}
-					</tbody>
-				</Table>
-			</div>
+						</THead>
+						<tbody>
+							{transactions.map((t) => (
+								<TRow key={t.id}>
+									<TCell className="whitespace-nowrap">
+										{formatDate(t.transactionDate)}
+									</TCell>
+									<TCell>
+										<div className="flex flex-col gap-1">
+											{merchantCell(t)}
+											<p
+												className="text-body-sm text-text-tertiary line-clamp-1"
+												title={t.description}>
+												{t.description}
+											</p>
+										</div>
+									</TCell>
+									<TCell>{categoryCell(t)}</TCell>
+									<TCell className="whitespace-nowrap text-text-secondary">
+										{t.card?.name}
+									</TCell>
+									<TCell className="text-end whitespace-nowrap tabular-nums">
+										{formatKWD(Number(t.amount))}
+									</TCell>
+								</TRow>
+							))}
+						</tbody>
+					</Table>
+				</div>
 			) : (
-			<div className="grid gap-3">
-				{transactions.map((t) => (
-					<Card key={t.id} className="grid gap-3">
-						<div className="flex items-start justify-between gap-3">
-							<div className="flex flex-col gap-1 min-w-0">
-								{merchantCell(t)}
-								<p
-									className="text-body-sm text-text-tertiary wrap-break-word line-clamp-2"
-									title={t.description}>
-									{t.description}
+				<div className="grid gap-3">
+					{transactions.map((t) => (
+						<Card key={t.id} className="grid gap-3">
+							<div className="flex items-start justify-between gap-3">
+								<div className="flex flex-col gap-1 min-w-0">
+									{merchantCell(t)}
+									<p
+										className="text-body-sm text-text-tertiary wrap-break-word line-clamp-2"
+										title={t.description}>
+										{t.description}
+									</p>
+								</div>
+								<p className="text-body-sm text-text-primary whitespace-nowrap tabular-nums">
+									{formatKWD(Number(t.amount))}
 								</p>
 							</div>
-							<p className="text-body-sm text-text-primary whitespace-nowrap tabular-nums">
-								{formatKWD(Number(t.amount))}
-							</p>
-						</div>
-						<div className="flex items-center justify-between gap-3 flex-wrap">
-							{categoryCell(t)}
-							<div className="flex items-center gap-2 text-caption-sm text-text-tertiary">
-								<span>{t.card?.name}</span>
-								<span aria-hidden="true">·</span>
-								<span>{formatDate(t.transactionDate)}</span>
+							<div className="flex items-center justify-between gap-3 flex-wrap">
+								{categoryCell(t)}
+								<div className="flex items-center gap-2 text-caption-sm text-text-tertiary">
+									<span>{t.card?.name}</span>
+									<span aria-hidden="true">·</span>
+									<span>{formatDate(t.transactionDate)}</span>
+								</div>
 							</div>
-						</div>
-					</Card>
-				))}
-			</div>
+						</Card>
+					))}
+				</div>
 			)}
 		</>
 	);

@@ -75,9 +75,11 @@ function PieChart({ data }: PieChartProps) {
 	};
 
 	return (
-		<div className="flex flex-col gap-6 items-center">
+		// Donut beside the legend when the card is wide (full-width card, md to xl),
+		// above it on phones and in the narrow desktop column.
+		<div className="flex flex-col md:flex-row xl:flex-col gap-6 items-center">
 			{/* Fixed size: the donut never shrinks with the screen. */}
-			<div className="relative size-48">
+			<div className="relative size-48 shrink-0">
 				<Doughnut
 					data={chartData}
 					options={{
@@ -87,8 +89,8 @@ function PieChart({ data }: PieChartProps) {
 				/>
 			</div>
 
-			{/* Two columns on tablets (full-width card), one on desktop (narrow card). */}
-			<div className="w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
+			{/* Columns follow the width the legend actually gets next to or below the donut. */}
+			<div className="w-full min-w-0 md:flex-1 xl:flex-none grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-1 gap-4">
 				{categories.map((i) => (
 					<div
 						key={i.categoryId ?? "uncategorised"}

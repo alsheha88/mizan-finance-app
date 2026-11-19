@@ -36,62 +36,64 @@ function Profile() {
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">
 			<PageHeader title="Profile" subTitle="Manage your account" />
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				<Card className="grid gap-4">
-					<h4 className="text-h4 text-text-primary">Account</h4>
-					<div className="flex gap-4">
-						<div className="rounded-full w-14 h-14 bg-interactive-primary flex items-center justify-center text-h4 text-interactive-primary-foreground">
-							{getInitials(user?.fullName!)}
-						</div>
-						<div className="grid gap-1">
-							<p className="text-text-primary text-h4">{user?.fullName}</p>
-							<p className="text-label-md text-text-secondary">{user?.email}</p>
-						</div>
-					</div>
-				</Card>
+			{/* Who you are, with sign out next to it: one compact row across the page. */}
+			<Card className="flex flex-wrap items-center gap-4">
+				<div className="shrink-0 rounded-full size-14 bg-interactive-primary flex items-center justify-center text-h4 text-interactive-primary-foreground">
+					{getInitials(user?.fullName!)}
+				</div>
+				<div className="grid gap-1 min-w-0 flex-1">
+					<p className="text-text-primary text-h4 wrap-break-word">
+						{user?.fullName}
+					</p>
+					<p
+						className="text-label-md text-text-secondary truncate"
+						title={user?.email}>
+						{user?.email}
+					</p>
+				</div>
+				<Button
+					type="button"
+					variant="secondary"
+					className="w-full sm:w-auto"
+					onClick={() => logout()}
+					disabled={loggingOut}>
+					{loggingOut ? "Signing out…" : "Sign out"}
+				</Button>
+			</Card>
+
+			{/* items-start: each card keeps its own height instead of stretching to
+			    match the taller one next to it. */}
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
 				<Card className="grid gap-4">
 					<h4 className="text-h4 text-text-primary">Preferences</h4>
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-						<div className="flex items-center justify-between">
-							<p className="text-text-primary text-body-md">Currency</p>
-							<p className="text-label-sm text-text-secondary">
-								{user?.currency}
-							</p>
+					<dl className="grid">
+						{[
+							["Currency", user?.currency],
+							["Date format", user?.dateFormat],
+							["Week start", user?.weekStart === "sun" ? "Sunday" : "Monday"],
+							["Language", user?.language === "en" ? "English" : "Arabic"],
+						].map(([label, value]) => (
+							<div
+								key={label}
+								className="flex items-center justify-between gap-4 py-2.5 border-b border-border-subtle">
+								<dt className="text-text-primary text-body-md">{label}</dt>
+								<dd className="text-body-sm text-text-secondary">{value}</dd>
+							</div>
+						))}
+						<div className="flex items-center justify-between gap-4 pt-2.5">
+							<dt className="text-text-primary text-body-md">Theme</dt>
+							<dd className="flex items-center gap-2">
+								<span className="text-label-sm text-text-secondary">Light</span>
+								<Switch
+									checked={theme === "dark"}
+									onCheckedChange={toggleTheme}
+									aria-label="Dark mode"
+								/>
+								<span className="text-label-sm text-text-secondary">Dark</span>
+							</dd>
 						</div>
-						<div className="flex items-center justify-between">
-							<p className="text-text-primary text-body-md">Date format</p>
-							<p className="text-label-sm text-text-secondary">
-								{user?.dateFormat}
-							</p>
-						</div>
-						<div className="flex items-center justify-between">
-							<p className="text-text-primary text-body-md">Week start</p>
-							<p className="text-label-sm text-text-secondary">
-								{user?.weekStart === "sun" ? "Sunday" : "Monday"}
-							</p>
-						</div>
-						<div className="flex items-center justify-between">
-							<p className="text-text-primary text-body-md">Language</p>
-							<p className="text-label-sm text-text-secondary">
-								{user?.language === "en" ? "English" : "Arabic"}
-							</p>
-						</div>
-					</div>
-					<div className="flex items-center justify-between">
-						<p className="text-text-primary text-body-md">Theme</p>
-						<div className="flex items-center gap-2">
-							<p className="text-label-sm text-text-secondary">Light</p>
-							<Switch
-								checked={theme === "dark"}
-								onCheckedChange={toggleTheme}
-								aria-label="Dark mode"
-							/>
-							<p className="text-label-sm text-text-secondary">Dark</p>
-						</div>
-					</div>
+					</dl>
 				</Card>
-			</div>
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<Card className="grid gap-5">
 					<div className="flex flex-col gap-1">
 						<h4 className="text-text-primary text-h4">Categories</h4>
@@ -114,32 +116,25 @@ function Profile() {
 						}
 					/>
 				</Card>
-				<Card className="grid gap-5">
-					<h4 className="text-h4 text-text-primary">Data & account</h4>
-					<Button
-						type="button"
-						variant="secondary"
-						onClick={() => logout()}
-						disabled={loggingOut}>
-						{loggingOut ? "Logging out" : "Sign out"}
-					</Button>
-					<div className="grid gap-3 p-4 bg-status-danger rounded-md">
-						<p className="text-label-lg text-status-danger-fg">
-							Delete account
-						</p>
-						<p className="text-caption-md text-status-danger-fg">
-							Removes your accounts, imported transactions, liabilities and
-							holdings. This can't be undone.
-						</p>
-						<Button
-							type="button"
-							variant="destructive"
-							onClick={() => setIsDialogOpen(true)}>
-							Delete my account
-						</Button>
-					</div>
-				</Card>
 			</div>
+
+			{/* The dangerous action on its own, at the bottom, text and button in one row. */}
+			<Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-status-danger border-status-danger">
+				<div className="grid gap-1">
+					<p className="text-label-lg text-status-danger-fg">Delete account</p>
+					<p className="text-caption-md text-status-danger-fg">
+						Removes your accounts, imported transactions, liabilities and
+						holdings. This can't be undone.
+					</p>
+				</div>
+				<Button
+					type="button"
+					variant="destructive"
+					className="shrink-0 w-full sm:w-auto"
+					onClick={() => setIsDialogOpen(true)}>
+					Delete my account
+				</Button>
+			</Card>
 			<Modal
 				title={"Delete"}
 				content={"Are you sure you want to delete your account?"}
