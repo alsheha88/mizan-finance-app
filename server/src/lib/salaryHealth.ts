@@ -17,7 +17,9 @@ export const calculateSalaryHealth = async (userId: string, count: number) => {
 			const end = list[index - 1] ?? null;
 			const totals = await dbGetSalaryCycleTotals(userId, row, end);
 			const salary = row.amount;
-			const totalSpending = totals.bankSpending + totals.cardSpending;
+			// Refunds give back money already counted as spent, so they reduce spending.
+			const totalSpending =
+				totals.bankSpending + totals.cardSpending - totals.refunds;
 			const net =
 				salary + totals.otherIncome - totals.loanInstallments - totalSpending;
 			const savingRatePercent = (net / salary) * 100;
@@ -29,8 +31,13 @@ export const calculateSalaryHealth = async (userId: string, count: number) => {
 				loanInstallments: roundValues(totals.loanInstallments),
 				bankSpending: roundValues(totals.bankSpending),
 				cardSpending: roundValues(totals.cardSpending),
-                loansReceived: roundValues(totals.loansReceived),
-                loanPayoffs: roundValues(totals.loanPayoffs),
+				refunds: roundValues(totals.refunds),
+				loansReceived: roundValues(totals.loansReceived),
+				loanPayoffs: roundValues(totals.loanPayoffs),
+				cardsWithoutStatements: totals.cardsWithoutStatements.map((c) => ({
+					...c,
+					paid: roundValues(c.paid),
+				})),
 				salary: roundValues(salary),
 				totalSpending: roundValues(totalSpending),
 				net: roundValues(net),

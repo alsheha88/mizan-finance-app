@@ -539,20 +539,39 @@ export const dbGetSalaryCycleTotals = async (
 		AND: conditions,
 	};
 
+	// A refund is money back for something already counted as spending, so it
+	// lowers spending instead of counting as extra income. Refunds are the
+	// parser's card_refund rows plus anything the user put in a "refunds" category.
+	const isRefund: Prisma.TransactionWhereInput = {
+		OR: [
+			{ rowType: "card_refund" },
+			{ category: { name: { equals: "refunds", mode: "insensitive" } } },
+		],
+	};
+
 	const [
 		otherIncome,
+		refunds,
 		loanInstallments,
 		bankSpending,
 		cardSpending,
 		loansReceived,
 		loanPayoffs,
+		cardPaymentsByCard,
+		cardPurchasesByCard,
+		cards,
 	] = await Promise.all([
 		prisma.transaction.aggregate({
 			where: {
 				...inCycle,
 				rowType: { notIn: ["salary", "financing"] },
 				type: "income",
+				NOT: isRefund,
 			},
+			_sum: { amount: true },
+		}),
+		prisma.transaction.aggregate({
+			where: { ...inCycle, type: "income", ...isRefund },
 			_sum: { amount: true },
 		}),
 		prisma.transaction.aggregate({
@@ -570,7 +589,7 @@ export const dbGetSalaryCycleTotals = async (
 			_sum: { amount: true },
 		}),
 		prisma.cardTransaction.aggregate({
-			where: { ...cardConditions },
+			where: cardConditions,
 			_sum: { amount: true },
 		}),
 		prisma.transaction.aggregate({
@@ -589,14 +608,44 @@ export const dbGetSalaryCycleTotals = async (
 			},
 			_sum: { amount: true },
 		}),
+		// Which cards were paid from the bank in this cycle…
+		prisma.transaction.groupBy({
+			by: ["creditCardId"],
+			where: { ...inCycle, rowType: "credit_card_payment" },
+			_sum: { amount: true },
+		}),
+		// …and which of them have purchases imported for it.
+		prisma.cardTransaction.groupBy({
+			by: ["creditCardId"],
+			where: cardConditions,
+		}),
+		prisma.creditCard.findMany({
+			where: { userId },
+			select: { id: true, name: true },
+		}),
 	]);
+
+	// A card paid this cycle with no purchases imported: its spending is missing
+	// from cardSpending (the payment itself is a transfer, so it isn't counted
+	// either). Reported so the AI can say the totals are incomplete. A payment
+	// that couldn't be linked to any card is reported as "Unknown card".
+	const cardsWithPurchases = new Set(cardPurchasesByCard.map((c) => c.creditCardId));
+	const cardsWithoutStatements = cardPaymentsByCard
+		.filter((p) => !p.creditCardId || !cardsWithPurchases.has(p.creditCardId))
+		.map((p) => ({
+			card: cards.find((c) => c.id === p.creditCardId)?.name ?? "Unknown card",
+			paid: Number(p._sum.amount ?? 0),
+		}));
+
 	const result = {
 		otherIncome: Number(otherIncome._sum.amount ?? 0),
+		refunds: Number(refunds._sum.amount ?? 0),
 		loanInstallments: Number(loanInstallments._sum.amount ?? 0),
 		bankSpending: Number(bankSpending._sum.amount ?? 0),
 		cardSpending: Number(cardSpending._sum.amount ?? 0),
 		loansReceived: Number(loansReceived._sum.amount ?? 0),
 		loanPayoffs: Number(loanPayoffs._sum.amount ?? 0),
+		cardsWithoutStatements,
 	};
 
 	return result;
