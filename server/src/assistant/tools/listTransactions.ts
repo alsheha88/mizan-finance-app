@@ -2,7 +2,10 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { toJSONSchema } from "zod";
 import { listTransactionsInput } from "../../schema/toolsSchema.js";
 import { toolInputError } from "./inputError.js";
-import { dbGetCategories, dbGetCategory } from "../../db/functions/categories.js";
+import {
+	dbGetCategories,
+	dbGetCategory,
+} from "../../db/functions/categories.js";
 import { dbGetTransactions } from "../../db/functions/transactions.js";
 import { prisma } from "../../lib/prisma.js";
 import { dbGetAccounts } from "../../db/functions/accounts.js";

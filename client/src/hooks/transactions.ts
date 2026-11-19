@@ -55,7 +55,9 @@ export const useEditTransaction = () => {
 				queryKey: queryKeys.transactions.all,
 			});
 
-			const categories = queryClient.getQueryData<Category[]>(queryKeys.categories.all);
+			const categories = queryClient.getQueryData<Category[]>(
+				queryKeys.categories.all,
+			);
 			const nextCategory =
 				data.categoryId === undefined
 					? undefined
@@ -110,13 +112,17 @@ export const useEditCardTransaction = () => {
 			toast.success("Changes saved");
 		},
 		onMutate: async ({ params, data }) => {
-			await queryClient.cancelQueries({ queryKey: queryKeys.cardTransactions.all });
+			await queryClient.cancelQueries({
+				queryKey: queryKeys.cardTransactions.all,
+			});
 
 			const previous = queryClient.getQueriesData({
 				queryKey: queryKeys.cardTransactions.all,
 			});
 
-			const categories = queryClient.getQueryData<Category[]>(queryKeys.categories.all);
+			const categories = queryClient.getQueryData<Category[]>(
+				queryKeys.categories.all,
+			);
 			const nextCategory =
 				data.categoryId === undefined
 					? undefined
@@ -156,7 +162,9 @@ export const useEditCardTransaction = () => {
 			toast.error(getApiErrorMessage(error));
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.cardTransactions.all,
+			});
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 		},
 	});

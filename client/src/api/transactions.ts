@@ -25,7 +25,16 @@ export const getTransactions = async ({
 	const res = await api.get<{
 		data: { transactions: TransactionListItem[]; count: number };
 	}>("/api/transactions", {
-		params: { page, limit, type, categoryId, search, accountId, month, uncategorised },
+		params: {
+			page,
+			limit,
+			type,
+			categoryId,
+			search,
+			accountId,
+			month,
+			uncategorised,
+		},
 	});
 
 	return res.data.data;

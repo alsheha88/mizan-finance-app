@@ -10,5 +10,8 @@ export function useMediaQuery(query: string) {
 		[query],
 	);
 
-	return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches);
+	return useSyncExternalStore(
+		subscribe,
+		() => window.matchMedia(query).matches,
+	);
 }
