@@ -5,6 +5,7 @@ import { AppRoutes } from "./routes/AppRoutes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "./context/ThemeContext";
 
 // Non-null assertion is safe here: #root is declared in index.html,
 // which ships in this same repo.
@@ -20,20 +21,23 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<BrowserRouter>
-				<AppRoutes />
-				<Toaster
-					position="top-center"
-					toastOptions={{
-						style: {
-							color: "hsla(0, 0%, 98%, 1)",
-							backgroundColor: "hsla(240, 10%, 4%, 1)",
-							fontSize: "14px",
-							border: "1px solid hsla(240, 4%, 16%, 1)",
-						},
-					}}
-				/>
-			</BrowserRouter>
+			<ThemeProvider>
+				<BrowserRouter>
+					<AppRoutes />
+					<Toaster
+						position="top-center"
+						toastOptions={{
+							style: {
+								color: "var(--color-text-primary)",
+								backgroundColor: "var(--color-bg-elevated)",
+								border: "1px solid var(--color-border-default)",
+								boxShadow: "var(--shadow-overlay)",
+								fontSize: "var(--text-body-sm)",
+							},
+						}}
+					/>
+				</BrowserRouter>
+			</ThemeProvider>
 		</QueryClientProvider>
 	</StrictMode>,
 );

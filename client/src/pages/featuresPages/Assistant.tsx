@@ -106,7 +106,7 @@ function Assistant() {
 				{/* ---- History column ---- */}
 				<nav
 					aria-label="Conversation history"
-					className="hidden md:flex md:flex-col md:gap-4 p-4 border border-border-default shadow-card rounded-md h-full min-h-0 overflow-y-auto">
+					className="hidden md:flex md:flex-col md:gap-4 p-4 border border-border-default shadow-card rounded-md h-full min-h-0 overflow-y-auto scrollbar-track-transparent scrollbar-thumb-border-strong scrollbar-gutter-stable">
 					<ConversationsList
 						isLoadingList={isLoadingList}
 						isListError={isListError}
@@ -172,7 +172,7 @@ function Assistant() {
 								<Card
 									key={i}
 									dir="auto"
-									className="max-w-full min-w-0 place-self-start p-3 text-label-lg prose prose-invert prose-sm prose-td:whitespace-nowrap prose-th:whitespace-nowrap prose-td:tabular-nums prose-strong:text-text-primary prose-headings:text-text-primary prose-a:text-text-link prose-th:text-text-secondary prose-td:border-border-subtle">
+									className="max-w-full min-w-0 place-self-start p-3 text-label-lg prose prose-invert prose-sm  prose-td:whitespace-nowrap prose-th:whitespace-nowrap prose-td:tabular-nums prose-strong:text-text-primary prose-headings:text-text-primary prose-a:text-text-link prose-th:text-text-secondary prose-tr:border-border-subtle prose-thead:border-border-default ">
 									<Markdown
 										remarkPlugins={[remarkGfm]}
 										components={markdownComponents}>
@@ -193,7 +193,7 @@ function Assistant() {
 									role="status"
 									aria-label="Assistant is thinking"
 									className="place-self-start p-3">
-									<ThreeDots color="#ff6b3d" width={20} height={20} />
+									<ThreeDots color="var(--color-interactive-primary)" width={20} height={20} />
 								</Card>
 							</>
 						)}

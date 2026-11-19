@@ -443,3 +443,215 @@
 		appearance: textfield;
 	}
 }
+
+/* ===================================================================
+   Light theme
+   Same variable names as @theme (dark = default). Only the values change.
+   Activated by <html data-theme="light">.
+   =================================================================== */
+:root {
+	color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+
+	/* Feedback */
+	--color-success-light: #e4f2cb;
+	--color-success: #477321;
+	--color-success-dark: #305316;
+	--color-warning-light: #fff0c2;
+	--color-warning: #896000;
+	--color-warning-dark: #684700;
+	--color-error-light: #ffe3df;
+	--color-error: #b43743;
+	--color-error-dark: #902a37;
+	--color-info-light: #f1e7ff;
+	--color-info: #713bc1;
+	--color-info-dark: #5d2c9f;
+
+	/* Chart */
+	--color-chart-emerald: #36764f;
+	--color-chart-blue: #277b87;
+	--color-chart-purple: #9e3f85;
+	--color-chart-amber: #956500;
+	--color-chart-rose: #bc405e;
+	--color-chart-cyan: #245e65;
+	--color-chart-indigo: #554ab5;
+	--color-chart-orange: #aa5029;
+
+	/* Backgrounds and surfaces */
+	--color-bg-primary: #fff9f2; /* page */
+	--color-bg-secondary: #f8f0e8; /* inset */
+	--color-bg-tertiary: #ffffff; /* card */
+	--color-bg-elevated: #ffffff; /* raised: in light, elevation = shadow, not colour */
+	--color-bg-dark: #ffffff; /* card */
+	--color-bg-deep: #ffffff; /* card */
+
+	--color-surface-default: #ffffff;
+	--color-surface-hover: #faf5ff;
+	--color-surface-active: #f1e7ff;
+	--color-surface-overlay: #302039cc; /* modal backdrop */
+	--color-surface-dark: #f8f0e8;
+
+	/* Borders */
+	--color-border-default: #ddcabf;
+	--color-border-subtle: #e5d5cc;
+	--color-border-strong: #806b80;
+	--color-border-focus: #713bc1;
+
+	/* Text */
+	--color-text-primary: #302039;
+	--color-text-secondary: #66516a;
+	--color-text-tertiary: #806b80;
+	--color-text-disabled: #ad979d;
+	--color-text-inverse: #fff9f2;
+	--color-text-link: #713bc1;
+
+	/* Interactive */
+	--color-interactive-primary: #713bc1;
+	--color-interactive-primary-hover: #5d2c9f;
+	--color-interactive-primary-active: #48237b;
+	--color-interactive-primary-foreground: #ffffff;
+
+	--color-interactive-secondary: transparent;
+	--color-interactive-secondary-hover: #faf5ff;
+	--color-interactive-secondary-active: #f1e7ff;
+	--color-interactive-secondary-foreground: #513c58;
+	--color-interactive-secondary-border: #806b80;
+
+	--color-interactive-destructive: #b43743;
+	--color-interactive-destructive-hover: #902a37;
+	--color-interactive-destructive-active: #74232e;
+	--color-interactive-destructive-foreground: #ffffff;
+
+	--color-interactive-ghost-hover: #f1e7ff;
+	--color-interactive-ghost-active: #e3cdff;
+	--color-interactive-ghost-foreground: #513c58;
+
+	--color-accent-default: #f1e7ff;
+	--color-accent-foreground: #5d2c9f;
+
+	/* Components */
+	--color-card-default: #ffffff;
+	--color-card-foreground: #302039;
+	--color-card-hover: #faf5ff;
+	--color-card-dark: #ffffff;
+
+	--color-popover-default: #ffffff;
+	--color-popover-foreground: #302039;
+
+	--color-input-default: #806b80;
+	--color-input-focus: #713bc1;
+	--color-input-invalid: #b43743;
+	--color-input-placeholder: #806b80;
+	--color-input-background: #ffffff;
+
+	--color-ring-default: #713bc1;
+	--color-ring-destructive: #b43743;
+	--color-ring-offset: #fff9f2;
+
+	--color-sidebar-background: #f8f0e8;
+	--color-sidebar-foreground: #66516a;
+	--color-sidebar-active: #713bc1;
+	--color-sidebar-active-foreground: #ffffff;
+	--color-sidebar-hover: #f1e7ff;
+	--color-sidebar-border: #e5d5cc;
+
+	--color-badge-default: #ede1d8;
+	--color-badge-foreground: #513c58;
+	--color-badge-success: #e4f2cb;
+	--color-badge-success-foreground: #305316;
+	--color-badge-warning: #fff0c2;
+	--color-badge-warning-foreground: #684700;
+	--color-badge-error: #ffe3df;
+	--color-badge-error-foreground: #902a37;
+	--color-badge-info: #f1e7ff;
+	--color-badge-info-foreground: #5d2c9f;
+
+	--color-table-header: #f8f0e8;
+	--color-table-row-hover: #faf5ff;
+	--color-table-border: #e5d5cc;
+
+	--color-toggle-off: #806b80;
+	--color-toggle-on: #713bc1;
+	--color-toggle-thumb: #ffffff;
+
+	/* Categories — expense (mapped by hue from the reference) */
+	--color-palette-mint: #e4f2cb; /* groceries */
+	--color-palette-mint-fg: #305316;
+	--color-palette-cyan: #def1ef; /* transport */
+	--color-palette-cyan-fg: #245e65;
+	--color-palette-sky: #def1ef; /* transport (same as cyan) */
+	--color-palette-sky-fg: #245e65;
+	--color-palette-indigo: #eae5ff; /* subscription */
+	--color-palette-indigo-fg: #4a3b91;
+	--color-palette-violet: #f1e7ff; /* entertainment */
+	--color-palette-violet-fg: #5d2c9f;
+	--color-palette-pink: #ffe1ea; /* health */
+	--color-palette-pink-fg: #922b50;
+	--color-palette-rose: #ffe3df; /* error */
+	--color-palette-rose-fg: #902a37;
+	--color-palette-orange: #ffe4d5; /* dining */
+	--color-palette-orange-fg: #8f3d23;
+	--color-palette-coral: #ffe4d5; /* dining (same as orange) */
+	--color-palette-coral-fg: #8f3d23;
+	--color-palette-amber: #fff0c2; /* shopping */
+	--color-palette-amber-fg: #684700;
+	--color-palette-yellow: #fff0c2; /* shopping (same as amber) */
+	--color-palette-yellow-fg: #684700;
+	--color-palette-mauve: #ede1d8; /* neutral */
+	--color-palette-mauve-fg: #66516a;
+
+	/* Categories — income */
+	--color-category-salary: #e4f2cb;
+	--color-category-salary-fg: #305316;
+	--color-category-transfer: #def1ef;
+	--color-category-transfer-fg: #245e65;
+	--color-category-gift: #f1e7ff;
+	--color-category-gift-fg: #5d2c9f;
+	--color-category-refund: #eae5ff;
+	--color-category-refund-fg: #4a3b91;
+	--color-category-interest: #e4f2cb;
+	--color-category-interest-fg: #305316;
+
+	/* Categories — internal */
+	--color-category-internal: #ede1d8;
+	--color-category-internal-fg: #66516a;
+
+	/* Status, priority, financial, tier */
+	--color-status-success: #e4f2cb;
+	--color-status-success-fg: #305316;
+	--color-status-warning: #fff0c2;
+	--color-status-warning-fg: #684700;
+	--color-status-danger: #ffe3df;
+	--color-status-danger-fg: #902a37;
+	--color-status-neutral: #ede1d8;
+	--color-status-neutral-fg: #66516a;
+	--color-status-info: #f1e7ff;
+	--color-status-info-fg: #5d2c9f;
+
+	--color-priority-critical: #ffe3df;
+	--color-priority-critical-fg: #902a37;
+	--color-priority-high: #ffe1ea;
+	--color-priority-high-fg: #922b50;
+	--color-priority-medium: #fff0c2;
+	--color-priority-medium-fg: #684700;
+	--color-priority-low: #e4f2cb;
+	--color-priority-low-fg: #305316;
+
+	--color-financial-gain: #e4f2cb;
+	--color-financial-gain-fg: #305316;
+	--color-financial-loss: #ffe1ea;
+	--color-financial-loss-fg: #922b50;
+
+	--color-tier-gold: #fff0c2;
+	--color-tier-gold-fg: #684700;
+	--color-tier-premium: #f1e7ff;
+	--color-tier-premium-fg: #5d2c9f;
+
+	/* Shadows — light UI: soft drop shadows, no top highlight */
+	--shadow-card: 0 1px 2px 0 rgb(48 32 57 / 0.06), 0 1px 3px 0 rgb(48 32 57 / 0.04);
+	--shadow-raised: 0 4px 12px -2px rgb(48 32 57 / 0.1);
+	--shadow-overlay: 0 16px 40px -8px rgb(48 32 57 / 0.18);
+}

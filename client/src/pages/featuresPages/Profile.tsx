@@ -3,8 +3,10 @@ import { Button } from "@/components/primitives/Button";
 import { Card } from "@/components/primitives/Card";
 import Modal from "@/components/primitives/Modal";
 import PageHeader from "@/components/primitives/PageHeader";
+import { Switch } from "@/components/primitives/Switch";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
+import { useTheme } from "@/context/ThemeContext";
 import { useGetCategories } from "@/hooks/categories";
 import { useDeleteUser, useGetUser, useLogout } from "@/hooks/user";
 import { getInitials } from "@/lib/helpers";
@@ -12,6 +14,7 @@ import { useState } from "react";
 
 function Profile() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
+	const { toggleTheme, theme } = useTheme();
 	const { mutate: deleteUser, isPending: deletingUser } = useDeleteUser();
 	const { mutate: logout, isPending: loggingOut } = useLogout();
 
@@ -72,6 +75,18 @@ function Profile() {
 							<p className="text-label-sm text-text-secondary">
 								{user?.language === "en" ? "English" : "Arabic"}
 							</p>
+						</div>
+					</div>
+					<div className="flex items-center justify-between">
+						<p className="text-text-primary text-body-md">Theme</p>
+						<div className="flex items-center gap-2">
+							<p className="text-label-sm text-text-secondary">Light</p>
+							<Switch
+								toggleTheme={toggleTheme}
+								value={theme}
+								ariaLabel={`${theme} mode`}
+							/>
+							<p className="text-label-sm text-text-secondary">Dark</p>
 						</div>
 					</div>
 				</Card>
