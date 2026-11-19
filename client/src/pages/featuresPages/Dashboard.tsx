@@ -63,11 +63,11 @@ function Dashboard() {
 					title={"Total outstanding debt"}
 					subTitle={Number(data.debtStats.outstandingLoan)}></StatCard>
 			</div>
-			<div className="grid grid-cols-1 gap-4">
-				<Card>
+			<div className="grid grid-cols-1 xl:grid-cols-5 gap-4">
+				<Card className="flex flex-col min-w-0 xl:col-span-3">
 					<BarChart data={data.cashflow} />
 				</Card>
-				<Card>
+				<Card className="min-w-0 xl:col-span-2">
 					<PieChart data={data} />
 				</Card>
 			</div>

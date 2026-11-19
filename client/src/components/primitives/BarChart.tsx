@@ -11,15 +11,10 @@ import {
 import { Bar } from "react-chartjs-2";
 import ChartEmpty from "../state/ChartEmpty";
 import { BarChart3 } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { chartColors } from "@/lib/paletteColors";
 
-ChartJs.register(
-	CategoryScale,
-	LinearScale,
-	BarElement,
-	Title,
-	Tooltip,
-	Legend,
-);
+ChartJs.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 type BarChartProps = {
 	data: {
@@ -31,6 +26,8 @@ type BarChartProps = {
 };
 
 function BarChart({ data }: BarChartProps) {
+	const { theme } = useTheme();
+	const colors = chartColors[theme];
 	const hasAnyActivity = data.some((i) => i.income > 0 || i.expense > 0);
 
 	if (!hasAnyActivity) {
@@ -49,47 +46,47 @@ function BarChart({ data }: BarChartProps) {
 		);
 	}
 
-	const income = data.map((i) => i.income);
-	const expense = data.map((i) => i.expense);
-	const labels = data.map((i) => getShortMonthName(i.monthIndex + 1));
 	const cashflow = {
-		labels,
+		labels: data.map((i) => getShortMonthName(i.monthIndex + 1)),
 		datasets: [
 			{
 				label: "Income",
-				data: income,
-				backgroundColor: "rgba(61, 220, 151, 1)",
+				data: data.map((i) => i.income),
+				backgroundColor: colors.income,
 				borderRadius: 4,
-				color: "rgba(61, 220, 151, 1)",
 			},
 			{
 				label: "Expense",
-				data: expense,
-				backgroundColor: "rgba(255, 107, 157, 1)",
+				data: data.map((i) => i.expense),
+				backgroundColor: colors.expense,
 				borderRadius: 4,
-				color: "rgba(255, 107, 157, 1)",
 			},
 		],
 	};
 
 	return (
-		<Bar
-			data={cashflow}
-			className="text-text-secondary"
-			options={{
-				color: "#6f6494",
-				scales: {
-					x: {
-						ticks: {
-							color: "#6f6494",
+		// Chart.js sizes the canvas from this wrapper: it must be relative
+		// and contain only the chart. flex-1 lets it grow to the card's height
+		// on desktop; min-h-64 keeps it readable on small screens.
+		<div className="relative flex-1 min-h-64">
+			<Bar
+				data={cashflow}
+				options={{
+					maintainAspectRatio: false,
+					color: colors.tick,
+					scales: {
+						x: {
+							ticks: { color: colors.tick },
+							grid: { color: colors.grid },
+						},
+						y: {
+							ticks: { color: colors.tick },
+							grid: { color: colors.grid },
 						},
 					},
-					y: {
-						ticks: { color: "#6f6494" },
-					},
-				},
-			}}
-		/>
+				}}
+			/>
+		</div>
 	);
 }
 
