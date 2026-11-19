@@ -4,6 +4,7 @@ import { Input } from "@/components/primitives/Input";
 import { Select } from "@/components/primitives/Select";
 import { TRow, TH, TCell, THead, Table } from "@/components/primitives/Table";
 import { useGetCategories } from "@/hooks/categories";
+import { useMediaQuery } from "@/hooks/mediaQuery";
 import { useEditTransaction } from "@/hooks/transactions";
 import { capitalizeFirstLetter, formatDate, formatKWD } from "@/lib/helpers";
 import type { TransactionListItem } from "@/schema/transactionsSchema";
@@ -22,6 +23,8 @@ type Option = { label: string; value: string };
 
 function TransactionsTable({ transactions }: TransactionsTableProps) {
 	const [editing, setEditing] = useState<EditingCell | null>(null);
+	// Tailwind's lg breakpoint (64rem). Only one layout is rendered at a time.
+	const isDesktop = useMediaQuery("(min-width: 64rem)");
 	const [value, setValue] = useState("");
 	const { mutate } = useEditTransaction();
 	const { data } = useGetCategories();
@@ -76,7 +79,7 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 		if (isEditing(t.id, "category")) {
 			return (
 				<Select
-					className="p-2 w-40"
+					className="w-44"
 					options={optionsFor(t)}
 					placeholder="Select category"
 					value={t.categoryId ?? undefined}
@@ -104,7 +107,7 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 						{capitalizeFirstLetter(t.category.name)}
 					</Badge>
 				) : (
-					<Badge color={null}>Unassigned</Badge>
+					<Badge color={null}>Uncategorised</Badge>
 				)}
 			</button>
 		);
@@ -120,37 +123,8 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 
 	return (
 		<>
-			{/* Phones and small tablets: one card per transaction. */}
-			<div className="grid gap-3 lg:hidden">
-				{transactions.map((t) => (
-					<Card key={t.id} className="grid gap-3">
-						<div className="flex items-start justify-between gap-3">
-							<div className="flex flex-col gap-1 min-w-0">
-								{merchantCell(t)}
-								<p
-									className="text-body-sm text-text-tertiary wrap-break-word line-clamp-2"
-									title={t.description}>
-									{t.description}
-								</p>
-							</div>
-							<p className="text-body-sm text-text-primary whitespace-nowrap tabular-nums">
-								{formatKWD(Number(t.amount))}
-							</p>
-						</div>
-						<div className="flex items-center justify-between gap-3 flex-wrap">
-							{categoryCell(t)}
-							<div className="flex items-center gap-2 text-caption-sm text-text-tertiary">
-								<span>{t.account.name}</span>
-								<span aria-hidden="true">·</span>
-								<span>{formatDate(t.transactionDate)}</span>
-							</div>
-						</div>
-					</Card>
-				))}
-			</div>
-
-			{/* Desktop: the full table. */}
-			<div className="hidden lg:block">
+			{isDesktop ? (
+			<div>
 				<Table>
 					<THead>
 						<TRow>
@@ -187,6 +161,35 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 					</tbody>
 				</Table>
 			</div>
+			) : (
+			<div className="grid gap-3">
+				{transactions.map((t) => (
+					<Card key={t.id} className="grid gap-3">
+						<div className="flex items-start justify-between gap-3">
+							<div className="flex flex-col gap-1 min-w-0">
+								{merchantCell(t)}
+								<p
+									className="text-body-sm text-text-tertiary wrap-break-word line-clamp-2"
+									title={t.description}>
+									{t.description}
+								</p>
+							</div>
+							<p className="text-body-sm text-text-primary whitespace-nowrap tabular-nums">
+								{formatKWD(Number(t.amount))}
+							</p>
+						</div>
+						<div className="flex items-center justify-between gap-3 flex-wrap">
+							{categoryCell(t)}
+							<div className="flex items-center gap-2 text-caption-sm text-text-tertiary">
+								<span>{t.account.name}</span>
+								<span aria-hidden="true">·</span>
+								<span>{formatDate(t.transactionDate)}</span>
+							</div>
+						</div>
+					</Card>
+				))}
+			</div>
+			)}
 		</>
 	);
 }
