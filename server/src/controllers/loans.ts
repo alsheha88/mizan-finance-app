@@ -76,6 +76,29 @@ export const editLoan: RequestHandler = async (req, res) => {
 			validateRequest.error.issues,
 		);
 
+	const { startDate, lastInstallmentDate } = validateRequest.data;
+
+	// The schema can only compare the two dates when both are sent. When only one
+	// is sent, compare it with the saved value, so an edit can't put the last
+	// installment before the start.
+	if (!startDate !== !lastInstallmentDate) {
+		const existing = await dbGetLoan(id, userId);
+		if (!existing) throw new NotFoundError("Loan not found");
+
+		const start = startDate ?? existing.startDate;
+		const end = lastInstallmentDate ?? existing.lastInstallmentDate;
+		if (end < start)
+			throw new ValidationError("Failed to validate input data", [
+				{
+					code: "custom",
+					path: [startDate ? "startDate" : "lastInstallmentDate"],
+					message: startDate
+						? "Must be on or before the last installment date"
+						: "Must be on or after the start date",
+				},
+			]);
+	}
+
 	const loan = await dbUpdateLoan(id, userId, validateRequest.data);
 	if (loan.length === 0) throw new NotFoundError("Loan not found");
 
