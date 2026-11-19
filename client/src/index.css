@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap");
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -7,7 +7,9 @@
 	/* ---------------------------------------------------------------
 	   Font family
 	--------------------------------------------------------------- */
-	--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+	/* Plus Jakarta Sans for Latin text and numbers; Arabic characters fall through to
+	   IBM Plex Sans Arabic, since Plus Jakarta Sans has no Arabic glyphs. */
+	--font-sans: "Plus Jakarta Sans", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
 
 	/* ---------------------------------------------------------------
 	   Palette — raw scale
@@ -554,7 +556,7 @@
 	--color-sidebar-background: #f8f0e8;
 	--color-sidebar-foreground: #66516a;
 	--color-sidebar-active: #713bc1;
-	--color-sidebar-active-foreground: #ffffff;
+	--color-sidebar-active-foreground: #713bc1;
 	--color-sidebar-hover: #f1e7ff;
 	--color-sidebar-border: #e5d5cc;
 
