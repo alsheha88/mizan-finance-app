@@ -12,6 +12,9 @@ type InputProps = {
 	error?: string | undefined;
 	startIcon?: ReactNode;
 	ref?: Ref<HTMLInputElement>;
+	// Layout classes for the outer wrapper (width, grid placement). `className`
+	// styles the <input> itself, which sits inside that wrapper.
+	wrapperClassName?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
 function Input({
@@ -22,6 +25,7 @@ function Input({
 	ref,
 	startIcon,
 	className,
+	wrapperClassName,
 	...props
 }: InputProps) {
 	const generatedId = useId();
@@ -29,7 +33,7 @@ function Input({
 	const errorId = `${inputId}-error`;
 
 	return (
-		<div className="grid gap-1.5">
+		<div className={cn("grid gap-1.5 min-w-0", wrapperClassName)}>
 			{label && (
 				<label
 					htmlFor={inputId}
@@ -37,7 +41,7 @@ function Input({
 					{label}
 				</label>
 			)}
-				<div className="relative grid">
+			<div className="relative grid min-w-0">
 				{startIcon && (
 					<span className="absolute inset-s-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-text-tertiary">
 						{startIcon}
@@ -51,11 +55,12 @@ function Input({
 					aria-invalid={!!error}
 					aria-describedby={error ? errorId : undefined}
 					className={cn(
-						"px-3 py-2.5 bg-input-background border rounded-sm text-body-sm text-text-primary placeholder:text-input-placeholder focus:outline-none focus:ring-2",
+						"w-full min-w-0 px-3 py-2.5 bg-input-background border rounded-sm text-body-sm text-text-primary placeholder:text-input-placeholder focus:outline-none focus:ring-2",
 						error
 							? "border-ring-destructive focus:ring-ring-destructive"
 							: "border-input-default focus:ring-ring-default",
-						startIcon && "ps-10", className
+						startIcon && "ps-10",
+						className,
 					)}
 					{...props}
 				/>

@@ -91,7 +91,7 @@ function Income() {
 						type={"text"}
 						placeholder="Search by merchant, category…"
 						startIcon={<Search size={16} />}
-						className="w-full sm:w-64"
+						wrapperClassName="w-full sm:w-64"
 						value={value}
 						onChange={onSearch}
 					/>
