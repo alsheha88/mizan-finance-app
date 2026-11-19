@@ -172,7 +172,7 @@ function Assistant() {
 								<Card
 									key={i}
 									dir="auto"
-									className="max-w-full min-w-0 place-self-start p-3 text-label-lg prose prose-invert prose-sm  prose-td:whitespace-nowrap prose-th:whitespace-nowrap prose-td:tabular-nums prose-strong:text-text-primary prose-headings:text-text-primary prose-a:text-text-link prose-th:text-text-secondary prose-tr:border-border-subtle prose-thead:border-border-default ">
+									className="max-w-full min-w-0 place-self-start p-3 text-label-lg prose prose-sm prose-mizan prose-td:whitespace-nowrap prose-th:whitespace-nowrap prose-td:tabular-nums prose-th:text-text-secondary">
 									<Markdown
 										remarkPlugins={[remarkGfm]}
 										components={markdownComponents}>
