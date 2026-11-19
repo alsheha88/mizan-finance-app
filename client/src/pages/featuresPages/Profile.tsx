@@ -82,9 +82,9 @@ function Profile() {
 						<div className="flex items-center gap-2">
 							<p className="text-label-sm text-text-secondary">Light</p>
 							<Switch
-								toggleTheme={toggleTheme}
-								value={theme}
-								ariaLabel={`${theme} mode`}
+								checked={theme === "dark"}
+								onCheckedChange={toggleTheme}
+								aria-label="Dark mode"
 							/>
 							<p className="text-label-sm text-text-secondary">Dark</p>
 						</div>

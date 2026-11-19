@@ -1,19 +1,21 @@
 import * as RadixSwitch from "radix-ui/switch";
+import type { ComponentProps } from "react";
+import { cn } from "@/lib/cn";
 
-type SwitchProps = {
-	ariaLabel?: string;
-	value: "dark" | "light";
-	toggleTheme: () => void;
-};
+// A generic on/off switch. Takes Radix's own props (checked, onCheckedChange,
+// aria-label, disabled…), so it works for any setting, not only the theme.
+type SwitchProps = ComponentProps<typeof RadixSwitch.Root>;
 
-export function Switch({ value, toggleTheme, ariaLabel }: SwitchProps) {
+export function Switch({ className, ...props }: SwitchProps) {
 	return (
 		<RadixSwitch.Root
-			className="bg-toggle-off data-[state=checked]:bg-toggle-on w-10.5 h-6.25 px-0.5 rounded-full focus-visible:ring-2 focus-visible:ring-ring-default transition-colors cursor-pointer relative"
-			checked={value === "dark"}
-			aria-label={ariaLabel}
-			onCheckedChange={toggleTheme}>
-			<RadixSwitch.Thumb className="block bg-toggle-thumb w-5.25 h-5.25 rounded-full  data-[state=checked]:translate-x-4.75 transition-transform" />
+			className={cn(
+				"relative w-10.5 h-6.25 px-0.5 rounded-full cursor-pointer transition-colors bg-toggle-off data-[state=checked]:bg-toggle-on focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-default disabled:cursor-not-allowed disabled:opacity-50",
+				className,
+			)}
+			{...props}>
+			{/* In right-to-left pages (Arabic), "on" moves the thumb to the left. */}
+			<RadixSwitch.Thumb className="block size-5.25 rounded-full bg-toggle-thumb transition-transform data-[state=checked]:translate-x-4.75 rtl:data-[state=checked]:-translate-x-4.75" />
 		</RadixSwitch.Root>
 	);
 }
