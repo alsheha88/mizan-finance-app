@@ -6,13 +6,16 @@ type NavItemProp = {
 	to: string;
 	icon: LucideIcon;
 	content: string;
+	// Runs when the link is clicked, e.g. to close the mobile drawer.
+	onClick?: () => void;
 };
 
-export function NavItem({ to, icon, content }: NavItemProp) {
+export function NavItem({ to, icon, content, onClick }: NavItemProp) {
 	const Icon = icon;
 	return (
 		<NavLink
 			to={to}
+			onClick={onClick}
 			className={({ isActive }) =>
 				cn(
 					"px-3 py-2 flex items-center gap-3 rounded-sm text-label-lg transition-colors relative",

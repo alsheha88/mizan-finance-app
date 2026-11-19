@@ -4,6 +4,7 @@ import { Ellipsis } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { primaryNavItems, secondaryNavItems } from "@/lib/navItems";
 import { Drawer } from "./Drawer";
+import { NavItem } from "./NavItem";
 
 const slot =
 	"flex flex-col items-center justify-center gap-1 flex-1 py-2 text-caption-sm";
@@ -55,21 +56,13 @@ export function MobileTabBar() {
 				footer={<></>}>
 				<div className="grid gap-1 content-start">
 					{secondaryNavItems.map((i) => (
-						<NavLink
+						<NavItem
 							key={i.id}
 							to={i.to}
+							icon={i.icon}
+							content={i.item}
 							onClick={() => setIsMoreOpen(false)}
-							className={({ isActive }) =>
-								cn(
-									"px-3 py-2 flex items-center gap-3 rounded-sm text-label-lg transition-colors relative",
-									isActive
-										? "bg-sidebar-hover text-sidebar-active-foreground [&>svg]:stroke-interactive-primary before:absolute before:inset-s-0 before:h-full before:w-0.75 before:rounded-full before:bg-interactive-primary"
-										: "text-sidebar-foreground hover:bg-sidebar-hover hover:text-text-primary",
-								)
-							}>
-							{<i.icon size={18} aria-hidden />}
-							{i.item}
-						</NavLink>
+						/>
 					))}
 				</div>
 			</Drawer>
