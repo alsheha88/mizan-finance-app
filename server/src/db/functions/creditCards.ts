@@ -33,7 +33,7 @@ export type CardTransaction = {
 export const dbGetCreditCards = async (userId: string) => {
 	return await prisma.creditCard.findMany({ where: { userId } });
 };
-export const dbGetCreditCard = async (userId: string, id: string) => {
+export const dbGetCreditCard = async (id: string, userId: string) => {
 	return await prisma.creditCard.findFirst({ where: { userId, id } });
 };
 export const dbCreateCreditCard = async (
@@ -54,8 +54,8 @@ export const dbCreateCreditCard = async (
 };
 
 export const dbUpdateCreditCard = async (
-	userId: string,
 	id: string,
+	userId: string,
 	card: UpdateCardData,
 ) => {
 	const data = Object.fromEntries(
@@ -68,7 +68,7 @@ export const dbUpdateCreditCard = async (
 	});
 };
 
-export const dbDeleteCreditCard = async (userId: string, id: string) => {
+export const dbDeleteCreditCard = async (id: string, userId: string) => {
 	return await prisma.creditCard.deleteMany({ where: { userId, id } });
 };
 

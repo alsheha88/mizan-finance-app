@@ -23,8 +23,8 @@ export const dbCreateConversation = async (userId: string, title: string) => {
 	return conversation;
 };
 export const dbGetConversationMessages = async (
-	userId: string,
 	conversationId: string,
+	userId: string,
 ) => {
 	return await prisma.conversation.findFirst({
 		where: { id: conversationId, userId },
@@ -69,6 +69,6 @@ export const dbListConversations = async (userId: string) => {
 	});
 };
 
-export const dbGetConversation = async (userId: string, id: string) => {
+export const dbGetConversation = async (id: string, userId: string) => {
 	return await prisma.conversation.findFirst({ where: { userId, id } });
 };

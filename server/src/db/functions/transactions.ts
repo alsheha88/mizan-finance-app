@@ -196,7 +196,7 @@ export const dbUpdateTransaction = async (
 		if (!loan) throw new NotFoundError("Loan not found");
 	}
 	if (transaction.creditCardId !== undefined) {
-		const card = await dbGetCreditCard(userId, transaction.creditCardId);
+		const card = await dbGetCreditCard(transaction.creditCardId, userId);
 		if (!card) throw new NotFoundError("Credit card not found");
 	}
 

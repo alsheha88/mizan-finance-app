@@ -26,8 +26,8 @@ export const dbCreateCategory = async (
 	});
 };
 export const dbUpdateCategory = async (
-	userId: string,
 	id: string,
+	userId: string,
 	data: UpdateCategory,
 ) => {
 	const category = Object.fromEntries(
@@ -41,7 +41,7 @@ export const dbUpdateCategory = async (
 		},
 	});
 };
-export const dbDeleteCategory = async (userId: string, id: string) => {
+export const dbDeleteCategory = async (id: string, userId: string) => {
 	return await prisma.category.deleteMany({
 		where: { id, userId },
 	});

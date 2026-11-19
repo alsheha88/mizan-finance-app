@@ -78,7 +78,7 @@ export const editCategory: RequestHandler = async (req, res) => {
 			validateRequest.error.issues,
 		);
 
-	const category = await dbUpdateCategory(userId, id, validateRequest.data);
+	const category = await dbUpdateCategory(id, userId, validateRequest.data);
 	if (category.length === 0) throw new NotFoundError("No categroies found");
 
 	res.status(200).json({ data: { category: category[0] } });
@@ -94,7 +94,7 @@ export const deleteCategory: RequestHandler = async (req, res) => {
 		);
 	const id = parsedId.data.id;
 
-	const category = await dbDeleteCategory(userId, id);
+	const category = await dbDeleteCategory(id, userId);
 	if (category.count === 0) throw new NotFoundError("No categories found");
 
 	res.status(200).json({ data: { message: "Category deleted successfully" } });

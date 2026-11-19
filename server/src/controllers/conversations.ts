@@ -3,7 +3,6 @@ import { chatSchema } from "../schema/conversationsSchema";
 import { NotFoundError, ValidationError } from "../../errors/errors";
 import {
 	dbCreateConversation,
-	dbGetConversation,
 	dbGetConversationMessages,
 	dbListConversations,
 	dbSaveMessages,
@@ -38,7 +37,7 @@ export const chat: RequestHandler = async (req, res) => {
 		const newConversation = await dbCreateConversation(userId, message);
 		conversationId = newConversation.id;
 	} else {
-		const conversation = await dbGetConversationMessages(userId, requestedId);
+		const conversation = await dbGetConversationMessages(requestedId, userId);
 		if (!conversation) throw new NotFoundError("Conversation not found");
 		conversationId = conversation.id;
 		messages = conversation.messages.map((row) => ({
@@ -94,7 +93,7 @@ export const getConversation: RequestHandler = async (req, res) => {
 		);
 
 	// 2. Load the conversation (only if it belongs to this user)
-	const data = await dbGetConversationMessages(userId, parsedId.data.id);
+	const data = await dbGetConversationMessages(parsedId.data.id, userId);
 	if (!data) throw new NotFoundError("Conversation not found");
 
 	// 3. Turn each saved message into { role, text }

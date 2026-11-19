@@ -41,7 +41,7 @@ export const getCreditCard: RequestHandler = async (req, res) => {
 		);
 	const id = parsedId.data.id;
 
-	const card = await dbGetCreditCard(userId, id);
+	const card = await dbGetCreditCard(id, userId);
 	if (!card) throw new NotFoundError("Card not found");
 
 	res.status(200).json({ data: { card } });
@@ -84,7 +84,7 @@ export const editCreditCard: RequestHandler = async (req, res) => {
 			"Failed to validate input data",
 			validateRequest.error.issues,
 		);
-	const card = await dbUpdateCreditCard(userId, id, validateRequest.data);
+	const card = await dbUpdateCreditCard(id, userId, validateRequest.data);
 	if (card.length === 0) throw new NotFoundError("Card not found");
 
 	res.status(200).json({ data: { card: card[0] } });
@@ -99,7 +99,7 @@ export const deleteCreditCard: RequestHandler = async (req, res) => {
 		);
 	const id = parsedId.data.id;
 
-	const card = await dbDeleteCreditCard(userId, id);
+	const card = await dbDeleteCreditCard(id, userId);
 	if (card.count === 0) throw new NotFoundError("Card not found");
 
 	res.status(200).json({ data: { message: "Card deleted successfully" } });

@@ -93,7 +93,7 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 			"Failed to validate input",
 			validateRequest.error.issues,
 		);
-	const card = await dbGetCreditCard(userId, validateRequest.data.creditCardId);
+	const card = await dbGetCreditCard(validateRequest.data.creditCardId, userId);
 	if (!card) throw new NotFoundError("Card not found");
 	if (!file)
 		throw new ValidationError(
