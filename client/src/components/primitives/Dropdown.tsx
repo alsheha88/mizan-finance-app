@@ -16,7 +16,7 @@ function DropdownMenuComponent({ trigger, children, align = "end", sideOffset = 
 				<DropdownMenu.Content
 					sideOffset={sideOffset}
 					align={align}
-					className="p-2 flex flex-col min-w-64 bg-popover-default border text-text-primary border-border-default rounded-sm z-50">
+					className="p-1 flex flex-col min-w-64 z-50 bg-bg-elevated text-text-primary border border-border-default rounded-md shadow-overlay">
 					{children}
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>

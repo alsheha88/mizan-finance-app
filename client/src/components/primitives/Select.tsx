@@ -78,17 +78,17 @@ export function Select({
 					<RadixSelect.Content
 						position="popper"
 						sideOffset={4}
-						className="w-(--radix-select-trigger-width) min-w-max z-50 p-1 bg-bg-elevated rounded-sm border border-input-default shadow-overlay">
+						className="w-[max(12rem,var(--radix-select-trigger-width))] min-w-max z-50 p-1 bg-bg-elevated rounded-md border border-border-default shadow-overlay">
 						<RadixSelect.ScrollUpButton className="flex justify-center py-1 text-text-secondary">
 							<ChevronUp className="size-4" />
 						</RadixSelect.ScrollUpButton>
 
-						<RadixSelect.Viewport className="max-h-64">
+						<RadixSelect.Viewport className="max-h-80">
 							{options.map((o) => (
 								<RadixSelect.Item
 									key={o.value}
 									value={o.value}
-									className="flex items-center justify-between gap-2 p-2.5 rounded-xs text-body-sm text-text-primary cursor-pointer focus:outline-none data-highlighted:bg-interactive-primary-hover/20 data-[state=checked]:text-interactive-primary">
+									className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-sm text-body-md text-text-primary cursor-pointer focus:outline-none data-highlighted:bg-surface-active data-[state=checked]:text-accent-foreground">
 									<RadixSelect.ItemText>{o.label}</RadixSelect.ItemText>
 									<RadixSelect.ItemIndicator>
 										<Check className="size-4" />

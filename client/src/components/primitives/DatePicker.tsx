@@ -28,7 +28,7 @@ export function DatePicker({
 			showOutsideDays
 			onDayClick={() => setIsPopoverOpen(false)}
 			required
-			className="w-full p-4 bg-bg-elevated border border-border-default rounded-md z-50 shadow-overlay"
+			className="w-full p-4 bg-bg-elevated border border-border-default rounded-md shadow-overlay"
 			classNames={{
 				chevron: "stroke-text-secondary fill-text-secondary h-4 w-4",
 				month:
@@ -37,15 +37,15 @@ export function DatePicker({
 				today:
 					"[&:not(.is-selected)>button]:text-interactive-primary [&>button]:border [&>button]:border-interactive-primary",
 				selected:
-					"overflow-hidden is-selected [&>button]:bg-interactive-primary [&>button]:text-interactive-primary-foreground",
+					"overflow-hidden is-selected [&>button]:bg-interactive-primary! [&>button]:text-interactive-primary-foreground",
 				button_next:
-					"col-start-3 row-start-1 rounded-sm p-2 border border-border-default",
+					"col-start-3 row-start-1 rounded-sm p-2 border border-border-default cursor-pointer hover:bg-surface-active",
 				button_previous:
-					"col-start-1 row-start-1 rounded-sm p-2 border border-border-default",
+					"col-start-1 row-start-1 rounded-sm p-2 border border-border-default cursor-pointer hover:bg-surface-active",
 				month_grid: "w-full col-span-3 row-start-2",
 				day: "h-10 p-0 text-center",
 				day_button:
-					"cursor-pointer size-10 mx-auto rounded-sm text-body-sm flex items-center justify-center",
+					"cursor-pointer size-10 mx-auto rounded-sm text-body-sm flex items-center justify-center hover:bg-surface-active",
 				weekday: "text-text-tertiary text-caption-sm",
 				outside: "text-text-tertiary"
 				
