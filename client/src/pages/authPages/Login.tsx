@@ -18,19 +18,19 @@ function Login() {
 	});
 	const onSubmit: SubmitHandler<LoginUser> = (data) => mutate(data);
 	return (
-		<div className="flex py-8 px-5 items-center justify-center bg-bg-primary h-dvh ">
+		<div className="flex py-8 px-5 items-center justify-center bg-bg-primary min-h-dvh">
 			<form
 				noValidate
 				onSubmit={handleSubmit(onSubmit)}
-				className="grid gap-6 sm:p-8 p-4 bg-card-default border border-border-subtle rounded-xl max-w-[90%] w-[clamp(w-sm, w-lg ,95%)] ">
+				className="grid gap-6 sm:p-8 p-4 bg-card-default border border-border-subtle rounded-xl w-full max-w-md">
 				<div className="flex items-center gap-3">
 					<div className="p-2 flex items-center justify-center rounded-xs bg-interactive-primary">
 						<Scale className="stroke-interactive-primary-foreground" />
 					</div>
-					<h3 className="text-h3 text-text-primary">Mizan</h3>
+					<span className="text-h3 text-text-primary">Mizan</span>
 				</div>
 				<div className="flex flex-col gap-2">
-					<h2 className="text-h2 text-text-primary">Welcome back</h2>
+					<h1 className="text-h2 text-text-primary">Welcome back</h1>
 					<p className="text-body-sm text-text-secondary">
 						Sign in to see this month's income, expenses and balances.
 					</p>

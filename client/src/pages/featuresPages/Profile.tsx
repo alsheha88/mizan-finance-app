@@ -12,6 +12,13 @@ import { useDeleteUser, useGetUser, useLogout } from "@/hooks/user";
 import { getInitials } from "@/lib/helpers";
 import { useState } from "react";
 
+// Show the format the way it looks, not the stored enum name.
+const DATE_FORMAT_LABELS = {
+	dd_MM_yyyy: "31/10/2026",
+	MM_dd_yyyy: "10/31/2026",
+	yyyy_MM_dd: "2026-10-31",
+} as const;
+
 function Profile() {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const { toggleTheme, theme } = useTheme();
@@ -69,7 +76,7 @@ function Profile() {
 					<dl className="grid">
 						{[
 							["Currency", user?.currency],
-							["Date format", user?.dateFormat],
+							["Date format", user?.dateFormat ? DATE_FORMAT_LABELS[user.dateFormat] : ""],
 							["Week start", user?.weekStart === "sun" ? "Sunday" : "Monday"],
 							["Language", user?.language === "en" ? "English" : "Arabic"],
 						].map(([label, value]) => (

@@ -80,7 +80,14 @@ function BarChart({ data }: BarChartProps) {
 							grid: { color: colors.grid },
 						},
 						y: {
-							ticks: { color: colors.tick },
+							ticks: {
+								color: colors.tick,
+								// "5k KWD" instead of a bare "5,000", so the axis has a unit.
+								callback: (value) => {
+									const n = Number(value);
+									return Math.abs(n) >= 1000 ? `${n / 1000}k KWD` : `${n} KWD`;
+								},
+							},
 							grid: { color: colors.grid },
 						},
 					},

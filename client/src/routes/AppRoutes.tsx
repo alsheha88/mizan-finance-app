@@ -42,7 +42,6 @@ export function AppRoutes() {
 				<Route path="/cards" element={<Cards />} />
 				<Route path="/loans" element={<Loans />} />
 				<Route path="/profile" element={<Profile />} />
-				<Route path="/assistant" element={<Assistant />} />
 				<Route path="/assistant/:conversationId?" element={<Assistant />} />
 			</Route>
 

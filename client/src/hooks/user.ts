@@ -48,7 +48,7 @@ export const useSignup = () => {
 		mutationFn: signup,
 		onSuccess: () => {
 			navigate("/login");
-			toast.success("Signup Successful, Please login with your credintials");
+			toast.success("Signup Successful, Please log in with your credentials");
 		},
 		onError: (error) => {
 			toast.error(getApiErrorMessage(error));
