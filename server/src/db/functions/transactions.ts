@@ -128,8 +128,8 @@ export const dbGetTransactions = async (
 	}
 	if (options.month) {
 		where.transactionDate = {};
-		const { startDate, endDate } = getMonthBounds(options.month);
-		where.transactionDate.lte = endDate;
+		const { startDate, nextMonthStart } = getMonthBounds(options.month);
+		where.transactionDate.lt = nextMonthStart;
 		where.transactionDate.gte = startDate;
 	}
 	if (options.search !== undefined)

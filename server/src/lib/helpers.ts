@@ -25,14 +25,13 @@ export function getMonthBounds(dateStr: string) {
 	if (isNaN(month) || isNaN(year)) {
 		throw new Error("Invalid date format. Expected 'YYYY-M' or 'YYYY-MM'.");
 	}
-	const first = new Date(Date.UTC(year, month - 1, 1));
+	// The end is the first day of the NEXT month, used with "lt" (less than).
+	// "Up to and including the last day" (lte) only works while every stored date
+	// is midnight; an exclusive end is correct for any time of day.
+	const startDate = new Date(Date.UTC(year, month - 1, 1));
+	const nextMonthStart = new Date(Date.UTC(year, month, 1));
 
-	const last = new Date(Date.UTC(year, month, 0));
-
-	return {
-		startDate: first,
-		endDate: last,
-	};
+	return { startDate, nextMonthStart };
 }
 
 export function getRowType(input: string) {

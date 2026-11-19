@@ -188,9 +188,9 @@ export const dbGetCardTransactions = async (
 	}
 	if (options.month) {
 		where.transactionDate = {};
-		const { startDate, endDate } = getMonthBounds(options.month);
+		const { startDate, nextMonthStart } = getMonthBounds(options.month);
 		where.transactionDate.gte = startDate;
-		where.transactionDate.lte = endDate;
+		where.transactionDate.lt = nextMonthStart;
 	}
 	const [transactions, count] = await Promise.all([
 		prisma.cardTransaction.findMany({

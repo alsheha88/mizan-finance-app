@@ -8,13 +8,13 @@ export const dbGetIncomeOrExpenseStats = async (
 	month: string,
 	type: "income" | "expense",
 ) => {
-	const { startDate, endDate } = getMonthBounds(month);
+	const { startDate, nextMonthStart } = getMonthBounds(month);
 	const data = await prisma.transaction.aggregate({
 		where: {
 			userId,
 			type,
 			transactionDate: {
-				lte: endDate,
+				lt: nextMonthStart,
 				gte: startDate,
 			},
 		},
@@ -30,7 +30,7 @@ export const dbGetCashflow = async (userId: string, month: string) => {
 	const anchorYear = Number(yearPart);
 	const anchorMonth = Number(monthPart) - 1;
 
-	const { endDate } = getMonthBounds(month);
+	const { nextMonthStart } = getMonthBounds(month);
 	const start = new Date(Date.UTC(anchorYear, anchorMonth - 5, 1));
 
 	const transactions = await prisma.transaction.findMany({
@@ -38,7 +38,7 @@ export const dbGetCashflow = async (userId: string, month: string) => {
 			userId,
 			type: { in: ["income", "expense"] },
 			transactionDate: {
-				lte: endDate,
+				lt: nextMonthStart,
 				gte: start,
 			},
 		},
@@ -72,13 +72,13 @@ export const dbGetCashflow = async (userId: string, month: string) => {
 };
 
 export const dbSpendingByCategory = async (userId: string, month: string) => {
-	const { startDate, endDate } = getMonthBounds(month);
+	const { startDate, nextMonthStart } = getMonthBounds(month);
 	const accountTransactions = await prisma.transaction.groupBy({
 		where: {
 			userId,
 			transactionDate: {
 				gte: startDate,
-				lte: endDate,
+				lt: nextMonthStart,
 			},
 			type: "expense",
 			creditCardId: null,
@@ -91,7 +91,7 @@ export const dbSpendingByCategory = async (userId: string, month: string) => {
 			userId,
 			transactionDate: {
 				gte: startDate,
-				lte: endDate,
+				lt: nextMonthStart,
 			},
 			cardTransactionType: "purchase",
 		},
