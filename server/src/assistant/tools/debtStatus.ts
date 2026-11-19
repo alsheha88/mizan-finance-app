@@ -1,6 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { toJSONSchema } from "zod";
 import { debtStatusInput } from "../../schema/toolsSchema.js";
+import { toolInputError } from "./inputError.js";
 import { dbGetLoan, dbGetLoans } from "../../db/functions/loans";
 import { dbGetDebtStats } from "../../db/functions/dashboard.js";
 
@@ -14,12 +15,7 @@ export const debtStatusToolDefinition = {
 export async function getDebtStatus(input: unknown, userId: string) {
 	// 1. Check the model's input before touching the database
 	const validateRequest = debtStatusInput.safeParse(input);
-	if (!validateRequest.success) {
-		return {
-			error: "failed to validate input data",
-			details: validateRequest.error.message,
-		};
-	}
+	if (!validateRequest.success) return toolInputError(validateRequest.error);
 
 	const loans = await dbGetLoans(userId);
 	const loanNames = loans.map((loan) => loan.name);

@@ -1,7 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { toJSONSchema } from "zod";
 import { salaryHealthSchema } from "../../schema/toolsSchema";
-import { z } from "zod";
+import { toolInputError } from "./inputError.js";
 import { calculateSalaryHealth } from "../../lib/salaryHealth.js";
 
 export const salaryHealthToolDefinition = {
@@ -16,9 +16,7 @@ export const salaryHealthToolDefinition = {
 export const getSalaryHealth = async (input: unknown, userId: string) => {
 	const parsed = salaryHealthSchema.safeParse(input);
 
-	if (!parsed.success) {
-		return { error: z.prettifyError(parsed.error) };
-	}
+	if (!parsed.success) return toolInputError(parsed.error);
 
 	return calculateSalaryHealth(userId, parsed.data.count);
 };

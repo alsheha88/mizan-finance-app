@@ -2,6 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import z from "zod";
 import { dbSpendingByCategory } from "../../db/functions/dashboard.js";
 import { spendingInput } from "../../schema/toolsSchema.js";
+import { toolInputError } from "./inputError.js";
 
 export const spendingByCategoryToolDefinition = {
 	name: "getSpendingByCategory",
@@ -12,11 +13,7 @@ export const spendingByCategoryToolDefinition = {
 
 export async function getSpendingByCategory(input: unknown, userId: string) {
 	const validateRequest = spendingInput.safeParse(input);
-	if (!validateRequest.success)
-		return {
-			error: "month must be in YYYY-MM format",
-			details: validateRequest.error.message,
-		};
+	if (!validateRequest.success) return toolInputError(validateRequest.error);
 	const data = await dbSpendingByCategory(userId, validateRequest.data.month);
 	const spending = data
 		.map((i) => {

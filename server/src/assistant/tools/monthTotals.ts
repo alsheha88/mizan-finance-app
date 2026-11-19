@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { toJSONSchema } from "zod";
 import { dbGetIncomeOrExpenseStats } from "../../db/functions/dashboard.js";
 import { monthTotalsInput } from "../../schema/toolsSchema.js";
+import { toolInputError } from "./inputError.js";
 
 export const monthTotalsToolDefinition = {
 	name: "getMonthTotals",
@@ -12,12 +13,7 @@ export const monthTotalsToolDefinition = {
 
 export async function getMonthTotals(input: unknown, userId: string) {
 	const validateRequest = monthTotalsInput.safeParse(input);
-	if (!validateRequest.success)
-		return {
-			error:
-				"month must be in YYYY-MM format, and type should be either income or expenses",
-			details: validateRequest.error.message,
-		};
+	if (!validateRequest.success) return toolInputError(validateRequest.error);
 	const data = await dbGetIncomeOrExpenseStats(
 		userId,
 		validateRequest.data.month,

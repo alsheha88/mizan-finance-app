@@ -1,6 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { toJSONSchema } from "zod";
 import { listTransactionsInput } from "../../schema/toolsSchema.js";
+import { toolInputError } from "./inputError.js";
 import { dbGetCategories, dbGetCategory } from "../../db/functions/categories.js";
 import { dbGetTransactions } from "../../db/functions/transactions.js";
 import { prisma } from "../../lib/prisma.js";
@@ -17,11 +18,7 @@ export const listTransactionsToolDefinition = {
 
 export async function getTransactionsList(input: unknown, userId: string) {
 	const validateRequest = listTransactionsInput.safeParse(input);
-	if (!validateRequest.success)
-		return {
-			error: "failed to validate input data",
-			details: validateRequest.error.message,
-		};
+	if (!validateRequest.success) return toolInputError(validateRequest.error);
 	let category;
 	let account;
 	if (validateRequest.data.category) {
