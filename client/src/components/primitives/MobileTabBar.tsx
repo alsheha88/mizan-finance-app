@@ -19,7 +19,7 @@ export function MobileTabBar() {
 				className="md:hidden fixed bottom-0 inset-x-0 z-40 flex items-stretch bg-bg-primary border-t border-t-sidebar-border pb-[env(safe-area-inset-bottom)]">
 				{primaryNavItems.map((i) => (
 					<NavLink
-						key={i.id}
+						key={i.to}
 						to={i.to}
 						className={({ isActive }) =>
 							cn(
@@ -57,7 +57,7 @@ export function MobileTabBar() {
 				<div className="grid gap-1 content-start">
 					{secondaryNavItems.map((i) => (
 						<NavItem
-							key={i.id}
+							key={i.to}
 							to={i.to}
 							icon={i.icon}
 							content={i.item}

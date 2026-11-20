@@ -2,63 +2,96 @@ import {
 	LayoutDashboard,
 	Wallet,
 	CreditCard,
-	ArrowDownLeft,
 	Landmark,
 	Sparkles,
 	CircleUser,
-	ArrowUpRight,
+	Calendar,
+	CalendarCheck2Icon,
+	type LucideIcon,
+	TrendingUp,
+	TrendingDown,
 } from "lucide-react";
 
-export const navItems = [
+export type NavItem = {
+	item: string;
+	to: string;
+	icon: LucideIcon;
+};
+export const navGroups: { label: string; items: NavItem[] }[] = [
 	{
-		id: 1,
-		item: "Dashboard",
-		to: "/dashboard",
-		icon: LayoutDashboard,
+		label: "Overview",
+		items: [
+			{
+				item: "Dashboard",
+				to: "/dashboard",
+				icon: LayoutDashboard,
+			},
+			{
+				item: "Cashflow Calendar",
+				to: "/cashflow",
+				icon: Calendar,
+			},
+		],
 	},
 	{
-		id: 2,
-		item: "Accounts",
-		to: "/accounts",
-		icon: Wallet,
+		label: "Money",
+		items: [
+			{
+				item: "Accounts",
+				to: "/accounts",
+				icon: Wallet,
+			},
+			{
+				item: "Income",
+				to: "/income",
+				icon: TrendingUp,
+			},
+			{
+				item: "Expenses",
+				to: "/expenses",
+				icon: TrendingDown,
+			},
+		],
 	},
 	{
-		id: 3,
-		item: "Income",
-		to: "/income",
-		icon: ArrowDownLeft,
+		label: "Debt",
+		items: [
+			{
+				item: "Credit Cards",
+				to: "/cards",
+				icon: CreditCard,
+			},
+			{
+				item: "Loans",
+				to: "/loans",
+				icon: Landmark,
+			},
+			{
+				item: "Debt Planner",
+				to: "/planner",
+				icon: CalendarCheck2Icon,
+			},
+		],
 	},
 	{
-		id: 4,
-		item: "Expenses",
-		to: "/expenses",
-		icon: ArrowUpRight,
-	},
-	{
-		id: 5,
-		item: "Credit Cards",
-		to: "/cards",
-		icon: CreditCard,
-	},
-	{
-		id: 6,
-		item: "Loans",
-		to: "/loans",
-		icon: Landmark,
-	},
-	{
-		id: 7,
-		item: "Assistant",
-		to: "/assistant",
-		icon: Sparkles,
-	},
-	{
-		id: 8,
-		item: "Profile",
-		to: "/profile",
-		icon: CircleUser,
+		label: "Personal",
+		items: [
+			{
+				item: "Assistant",
+				to: "/assistant",
+				icon: Sparkles,
+			},
+			{
+				item: "Profile",
+				to: "/profile",
+				icon: CircleUser,
+			},
+		],
 	},
 ];
+
+
+export const navItems = navGroups.flatMap((group) => group.items)
 
 const PRIMARY_PATHS = ["/dashboard", "/accounts", "/expenses", "/income"];
 

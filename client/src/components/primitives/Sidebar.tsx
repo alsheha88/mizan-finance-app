@@ -1,4 +1,4 @@
-import { navItems } from "@/lib/navItems";
+import { navGroups } from "@/lib/navItems";
 import { NavItem } from "./NavItem";
 import { Scale } from "lucide-react";
 
@@ -11,11 +11,22 @@ export function Sidebar() {
 				</div>
 				<span className="text-h4 text-text-primary">Mizan</span>
 			</div>
-			<nav aria-label="Main">
-				<ul className="flex flex-col gap-1">
-					{navItems.map((i) => (
-						<li key={i.id}>
-							<NavItem to={i.to} icon={i.icon} content={i.item} />
+			<nav aria-label="Main" className="flex-1 min-h-0 overflow-y-auto">
+				<ul className="flex flex-col gap-4">
+					{navGroups.map((group) => (
+						<li key={group.label} className="flex flex-col gap-1">
+							<p
+								id={`nav-${group.label}`}
+								className="text-label-md text-text-tertiary tracking-widest uppercase">
+								{group.label}
+							</p>
+							<ul aria-labelledby={`nav-${group.label}`} className="flex flex-col gap-1">
+								{group.items.map((item) => (
+									<li key={item.to}>
+										<NavItem to={item.to} icon={item.icon} content={item.item} />
+									</li>
+								))}
+							</ul>
 						</li>
 					))}
 				</ul>

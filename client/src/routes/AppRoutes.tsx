@@ -12,6 +12,8 @@ import Loans from "@/pages/featuresPages/Loans";
 import Profile from "@/pages/featuresPages/Profile";
 import NotFound from "@/pages/NotFound";
 import Assistant from "@/pages/featuresPages/Assistant";
+import DebtPlanner from "@/pages/featuresPages/DebtPlanner";
+import CashflowCalendar from "@/pages/featuresPages/CashflowCalendar";
 
 export function AppRoutes() {
 	return (
@@ -42,6 +44,8 @@ export function AppRoutes() {
 				<Route path="/cards" element={<Cards />} />
 				<Route path="/loans" element={<Loans />} />
 				<Route path="/profile" element={<Profile />} />
+				<Route path="/planner" element={<DebtPlanner />} />
+				<Route path="/cashflow" element={<CashflowCalendar />} />
 				<Route path="/assistant/:conversationId?" element={<Assistant />} />
 			</Route>
 
