@@ -6,6 +6,7 @@ import {
 	getMonthBounds,
 	normaliseMerchant,
 	stripCommas,
+	stripUndefined,
 } from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
 import type { CardStatementRow } from "../../parser/creditCardStatementParser";
@@ -40,15 +41,18 @@ export const dbCreateCreditCard = async (
 	userId: string,
 	data: CreateCardData,
 ) => {
+	const installmentPercentage =
+		data.type === "fullDeduction" ? null : (data.installmentPercentage ?? null);
 	return await prisma.creditCard.create({
 		data: {
 			userId,
 			expiryDate: data.expiryDate,
-			limit: data.limit,
+			creditLimit: data.creditLimit,
 			type: data.type,
-			cardNumber: data.cardNumber,
+			cardLast4: data.cardLast4,
 			outstandingBalance: data.outstandingBalance,
 			name: data.name,
+			installmentPercentage,
 		},
 	});
 };
@@ -58,10 +62,17 @@ export const dbUpdateCreditCard = async (
 	userId: string,
 	card: UpdateCardData,
 ) => {
-	const data = Object.fromEntries(
-		Object.entries(card).filter(([, v]) => v !== undefined),
-	);
-
+	const data = stripUndefined({
+		name: card.name,
+		type: card.type,
+		creditLimit: card.creditLimit,
+		expiryDate: card.expiryDate,
+		outstandingBalance: card.outstandingBalance,
+		outstandingBalanceUpdatedAt:
+			card.outstandingBalance !== undefined ? new Date() : undefined,
+		installmentPercentage:
+			card.type === "fullDeduction" ? null : card.installmentPercentage,
+	});
 	return await prisma.creditCard.updateManyAndReturn({
 		where: { userId, id },
 		data,

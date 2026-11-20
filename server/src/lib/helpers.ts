@@ -164,3 +164,12 @@ export async function resolveMonth(
 export function roundValues(value: number, decimal = 3) {
 	return Number(value.toFixed(decimal));
 }
+
+export type StripUndefined<T> = {
+	[K in keyof T]?: Exclude<T[K], undefined>;
+};
+
+export const stripUndefined = <T extends object>(obj: T): StripUndefined<T> =>
+	Object.fromEntries(
+		Object.entries(obj).filter(([, value]) => value !== undefined),
+	) as StripUndefined<T>;

@@ -192,21 +192,23 @@ model Loan {
 }
 
 model CreditCard {
-  id                 String            @id @default(uuid()) @db.Uuid
-  name               String
-  limit              Decimal           @db.Decimal(12, 3)
-  type               CardType
-  cardNumber         String
-  outstandingBalance Decimal           @db.Decimal(12, 3)
-  expiryDate         DateTime          @db.Date
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  transactions       Transaction[]
-  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId             String            @db.Uuid
-  cardTransactions   CardTransaction[]
+  id                          String            @id @default(uuid()) @db.Uuid
+  name                        String
+  type                        CardType
+  cardLast4                   String
+  creditLimit                 Decimal           @db.Decimal(12, 3)
+  expiryDate                  DateTime          @db.Date
+  outstandingBalanceUpdatedAt DateTime          @default(now())
+  installmentPercentage       Decimal?          @db.Decimal(5, 2)
+  outstandingBalance          Decimal           @db.Decimal(12, 3)
+  createdAt                   DateTime          @default(now())
+  updatedAt                   DateTime          @updatedAt
+  transactions                Transaction[]
+  user                        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                      String            @db.Uuid
+  cardTransactions            CardTransaction[]
 
-  @@unique([userId, cardNumber])
+  @@unique([userId, cardLast4])
   @@unique([userId, name])
 }
 

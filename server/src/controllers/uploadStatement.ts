@@ -107,7 +107,7 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 		throw new ValidationError(
 			"Couldn't read the card number from this statement",
 		);
-	if (cardNumber !== card.cardNumber)
+	if (cardNumber !== card.cardLast4)
 		throw new ConflictError("This statement belongs to a different card");
 	if (transactionsCount === 0 || allTransactions.length !== transactionsCount) {
 		console.error(

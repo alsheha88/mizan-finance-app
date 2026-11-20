@@ -173,7 +173,7 @@ export const dbGetTransaction = async (id: string, userId: string) => {
 			category: { select: { name: true, color: true } },
 			loan: { select: { invoiceNumber: true } },
 			creditCard: {
-				select: { cardNumber: true },
+				select: { cardLast4: true },
 			},
 		},
 	});
@@ -412,7 +412,7 @@ export const dbMatchCardPayments = async (userId: string) => {
 	const idsByCard = new Map<string, string[]>();
 
 	for (const item of cleanList) {
-		const card = cards.find((i) => i.cardNumber === item.cardNumber);
+		const card = cards.find((i) => i.cardLast4 === item.cardNumber);
 		if (!card) continue;
 		const ids = idsByCard.get(card.id) ?? [];
 		ids.push(item.id);
@@ -629,7 +629,9 @@ export const dbGetSalaryCycleTotals = async (
 	// from cardSpending (the payment itself is a transfer, so it isn't counted
 	// either). Reported so the AI can say the totals are incomplete. A payment
 	// that couldn't be linked to any card is reported as "Unknown card".
-	const cardsWithPurchases = new Set(cardPurchasesByCard.map((c) => c.creditCardId));
+	const cardsWithPurchases = new Set(
+		cardPurchasesByCard.map((c) => c.creditCardId),
+	);
 	const cardsWithoutStatements = cardPaymentsByCard
 		.filter((p) => !p.creditCardId || !cardsWithPurchases.has(p.creditCardId))
 		.map((p) => ({
