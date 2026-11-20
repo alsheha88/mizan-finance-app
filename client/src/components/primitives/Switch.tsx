@@ -2,8 +2,6 @@ import * as RadixSwitch from "radix-ui/switch";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/cn";
 
-// A generic on/off switch. Takes Radix's own props (checked, onCheckedChange,
-// aria-label, disabled…), so it works for any setting, not only the theme.
 type SwitchProps = ComponentProps<typeof RadixSwitch.Root>;
 
 export function Switch({ className, ...props }: SwitchProps) {
@@ -15,7 +13,7 @@ export function Switch({ className, ...props }: SwitchProps) {
 			)}
 			{...props}>
 			{/* In right-to-left pages (Arabic), "on" moves the thumb to the left. */}
-			<RadixSwitch.Thumb className="block size-5.25 rounded-full bg-toggle-thumb transition-transform data-[state=checked]:translate-x-4.75 rtl:data-[state=checked]:-translate-x-4.75" />
+			<RadixSwitch.Thumb className="block size-5.25 rounded-full bg-toggle-thumb transition-transform data-[state=checked]:translate-x-4.25 rtl:data-[state=checked]:-translate-x-4.25" />
 		</RadixSwitch.Root>
 	);
 }
