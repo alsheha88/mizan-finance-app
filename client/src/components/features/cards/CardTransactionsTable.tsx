@@ -112,6 +112,8 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 		);
 	};
 
+	console.log(transactions)
+
 	if (transactions.length === 0) {
 		return (
 			<div className="rounded-md border border-border-default py-10 text-center text-body-sm text-text-tertiary">
@@ -154,8 +156,8 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 									<TCell className="whitespace-nowrap text-text-secondary">
 										{t.card?.name}
 									</TCell>
-									<TCell className="text-end whitespace-nowrap tabular-nums">
-										{formatKWD(Number(t.amount))}
+									<TCell className={`text-end whitespace-nowrap tabular-nums ${t.cardTransactionType === "payment" ? "text-financial-gain-fg" : ""}`}>
+										{`${t.cardTransactionType === "payment" ? "–" : ""}${formatKWD(Number(t.amount))}`}
 									</TCell>
 								</TRow>
 							))}
