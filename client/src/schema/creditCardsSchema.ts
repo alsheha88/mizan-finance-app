@@ -12,7 +12,7 @@ export const requireInstallmentPercentage = (
 	if (data.type === "installment" && data.installmentPercentage == null) {
 		ctx.addIssue({
 			code: "custom",
-			message: "Instalment cards need a deduction percentage",
+			message: "Installment cards need a deduction percentage",
 			path: ["installmentPercentage"],
 		});
 	}

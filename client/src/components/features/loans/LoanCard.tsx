@@ -55,7 +55,7 @@ function LoanCard({ loan, setLoan, setIsFormOpen, setMode }: LoanCardProps) {
 				</div>
 			</div>
 
-			{/* What's left as the big number, the instalment as a line under it. */}
+			{/* What's left as the big number, the installment as a line under it. */}
 			<div className="flex flex-col gap-1">
 				<p className="text-label-md text-text-secondary">Outstanding</p>
 				<p className="text-h3 text-text-primary tabular-nums">
