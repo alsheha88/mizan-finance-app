@@ -19,7 +19,7 @@ type CreditCardProps = {
 function CreditCardComponent({ card, onUpload, onEdit }: CreditCardProps) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const { mutate: deleteCard, isPending } = useDeleteCard();
-	const limit = Number(card.limit);
+	const limit = Number(card.creditLimit);
 	const balance = Number(card.outstandingBalance);
 	const utilization = limit > 0 ? (balance / limit) * 100 : 0;
 
@@ -34,7 +34,7 @@ function CreditCardComponent({ card, onUpload, onEdit }: CreditCardProps) {
 					<p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-caption-sm text-text-tertiary">
 						<span>{CARD_TYPE_LABELS[card.type]}</span>
 						<span aria-hidden className="size-1 rounded-full bg-text-tertiary" />
-						<span className="tabular-nums">ending {card.cardNumber}</span>
+						<span className="tabular-nums">ending {card.cardLast4}</span>
 					</p>
 				</div>
 				<IconButton

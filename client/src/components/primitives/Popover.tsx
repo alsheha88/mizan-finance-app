@@ -25,7 +25,7 @@ export function Popover({
 				<RadixPopover.Content
 					sideOffset={4}
 					side="bottom"
-					className="w-(--radix-popover-trigger-width) z-50">
+					className="min-w-(--radix-popover-trigger-width) z-50">
 					{children}
 				</RadixPopover.Content>
 			</RadixPopover.Portal>

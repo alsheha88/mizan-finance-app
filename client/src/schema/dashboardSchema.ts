@@ -21,7 +21,7 @@ export type DashboardResponse = {
 		originalAmount: string;
 		outstandingLoan: string;
 		balance: string;
-		limit: string;
+		creditLimit: string;
 	};
 	recentTransactions: TransactionListItem[];
 	month: string;

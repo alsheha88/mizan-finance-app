@@ -155,26 +155,30 @@ export const dbGetDebtStats = async (userId: string) => {
 		_sum: { amount: true },
 	});
 
-	const outstandingLoan = (
-		loanAmount._sum.originalAmount ?? new Prisma.Decimal(0)
-	).minus(loanTransactions._sum.amount ?? new Prisma.Decimal(0));
+	const outstandingLoan = originalAmount.minus(
+		loanTransactions._sum.amount ?? new Prisma.Decimal(0),
+	);
 
 	const cardLimitAndBalance = await prisma.creditCard.aggregate({
 		where: { userId },
-		_sum: { outstandingBalance: true, limit: true },
+		_sum: { outstandingBalance: true, creditLimit: true },
 	});
 	const balance =
 		cardLimitAndBalance._sum.outstandingBalance ?? new Prisma.Decimal(0);
-	const limit = cardLimitAndBalance._sum.limit ?? new Prisma.Decimal(0);
+	const creditLimit =
+		cardLimitAndBalance._sum.creditLimit ?? new Prisma.Decimal(0);
 
-	return { originalAmount, outstandingLoan, balance, limit };
+	return { originalAmount, outstandingLoan, balance, creditLimit };
 };
 
 export const dbGetRecentTransactions = async (userId: string) => {
 	const recentTransactions = await prisma.transaction.findMany({
 		where: { userId },
 		orderBy: [{ transactionDate: "desc" }, { statementRow: "desc" }],
-		include: { category: { select: { name: true, color: true } }, account: {select: {name: true}} },
+		include: {
+			category: { select: { name: true, color: true } },
+			account: { select: { name: true } },
+		},
 		take: 5,
 	});
 

@@ -36,7 +36,7 @@ function CreditCards() {
 		limit,
 	});
 
-	const monthOptions = useMonthOptions()
+	const monthOptions = useMonthOptions();
 
 	if (isPending) return <LoadingState />;
 	if (isError)
@@ -52,11 +52,10 @@ function CreditCards() {
 		.map((i) => Number(i.outstandingBalance))
 		.reduce((acc, b) => acc + b, 0);
 	const totalLimit = cards
-		.map((i) => Number(i.limit))
+		.map((i) => Number(i.creditLimit))
 		.reduce((acc, b) => acc + b, 0);
 	const utilization =
 		totalLimit > 0 ? (totalOutstanding / totalLimit) * 100 : 0;
-
 
 	return (
 		<div className="flex flex-col gap-8 min-h-dvh">

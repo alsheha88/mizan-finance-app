@@ -1,17 +1,33 @@
-import z from "zod";
+import z, { type RefinementCtx } from "zod";
 import { CardType } from "./enums";
 import type { CardTransactionType, PaletteColor } from "./enums";
 
-export const createCardSchema = z.object({
+export const requireInstallmentPercentage = (
+	data: {
+		type?: CardType | undefined;
+		installmentPercentage?: number | null | undefined;
+	},
+	ctx: RefinementCtx,
+) => {
+	if (data.type === "installment" && data.installmentPercentage == null) {
+		ctx.addIssue({
+			code: "custom",
+			message: "Instalment cards need a deduction percentage",
+			path: ["installmentPercentage"],
+		});
+	}
+};
+
+export const cardBaseSchema = z.object({
 	name: z.string().min(1, "This field is required"),
-	cardNumber: z
+	cardLast4: z
 		.string()
 		.length(4)
 		.regex(/^\d{4}$/),
 	expiryDate: z.date(),
 	type: z.enum(CardType),
-	limit: z
-		.number({ error: "Enter the card limit" })
+	creditLimit: z
+		.number({ error: "Enter the credit card limit" })
 		.positive()
 		.multipleOf(0.001)
 		.max(1_000_000),
@@ -20,11 +36,23 @@ export const createCardSchema = z.object({
 		.multipleOf(0.001)
 		.min(-1_000_000)
 		.max(1_000_000),
+	installmentPercentage: z
+		.number({ error: "Enter the deduction percentage" })
+		.positive()
+		.max(100)
+		.multipleOf(0.01)
+		.optional()
+		.nullable(),
 });
 
-export const updateCardSchema = createCardSchema
-	.omit({ cardNumber: true })
-	.partial();
+export const createCardSchema = cardBaseSchema.superRefine(
+	requireInstallmentPercentage,
+);
+
+export const updateCardSchema = cardBaseSchema
+	.omit({ cardLast4: true })
+	.partial()
+	.superRefine(requireInstallmentPercentage);
 export const updateCardTransactionSchema = z.object({
 	merchant: z.string().min(1, "This field is required").optional(),
 	categoryId: z.uuid().optional(),
@@ -37,14 +65,16 @@ export type UpdateCardData = z.infer<typeof updateCardSchema>;
 export type CreditCard = {
 	id: string;
 	name: string;
-	cardNumber: string;
+	cardLast4: string;
 	type: CardType;
-	limit: string;
+	creditLimit: string;
 	outstandingBalance: string;
 	expiryDate: string;
 	createdAt: string;
 	updatedAt: string;
 	userId: string;
+	installmentPercentage: string | null;
+	outstandingBalanceUpdatedAt: string;
 };
 
 export type CardTransaction = {

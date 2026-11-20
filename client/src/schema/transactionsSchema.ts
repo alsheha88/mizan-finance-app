@@ -9,7 +9,6 @@ import type {
 export const updatedTransactionSchema = z.object({
 	merchant: z.string().min(1, "This field is required").optional(),
 	categoryId: z.uuid().optional(),
-
 });
 
 export type UpdateTransaction = z.infer<typeof updatedTransactionSchema>;
@@ -60,7 +59,7 @@ export type Transaction = {
 	loanId: string | null;
 	creditCardId: string | null;
 	creditCard: {
-		cardNumber: string;
+		cardLast4: string;
 	} | null;
 	category: {
 		name: string;
