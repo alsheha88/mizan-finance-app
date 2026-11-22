@@ -97,3 +97,27 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 
 	return { month, payoffMonths, totals };
 }
+
+export function planDebts(debts: Debt[], extra: number) {
+	const withPlan = simulateSnowball(debts, extra);
+	const withoutPlan = simulateMinimums(debts);
+
+	const monthsSaved = withoutPlan.month - withPlan.month;
+	const order = debts
+		.map((i) => {
+			return {
+				id: i.id,
+				name: i.name,
+				balance: i.balance,
+				payoffMonth: withPlan.payoffMonths[i.id] ?? null,
+			};
+		})
+		.sort((a, b) => {
+			if (a.payoffMonth === null && b.payoffMonth === null) return 0;
+			if (a.payoffMonth === null) return 1;
+			if (b.payoffMonth === null) return -1;
+			return a.payoffMonth - b.payoffMonth;
+		});
+
+	return { withPlan, withoutPlan, monthsSaved, order };
+}
