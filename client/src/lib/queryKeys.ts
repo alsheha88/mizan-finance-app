@@ -38,4 +38,8 @@ export const queryKeys = {
 		all: ["conversations"],
 		detail: (id: string | undefined) => ["conversations", id],
 	},
+	debtPlan: {
+		all: ["debtPlan"],
+		byExtra: (extra: number) => ["debtPlan", extra],
+	},
 } as const;
