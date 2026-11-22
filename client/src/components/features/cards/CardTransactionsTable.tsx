@@ -4,7 +4,7 @@ import { Input } from "@/components/primitives/Input";
 import { Select } from "@/components/primitives/Select";
 import { Table, TCell, TH, THead, TRow } from "@/components/primitives/Table";
 import { useGetCategories } from "@/hooks/categories";
-import { useMediaQuery } from "@/hooks/mediaQuery";
+import { useMediaQuery } from "@/hooks/custom/mediaQuery";
 import { useEditCardTransaction } from "@/hooks/transactions";
 import { capitalizeFirstLetter, formatDate, formatKWD } from "@/lib/helpers";
 import type { CardTransaction } from "@/schema/creditCardsSchema";
@@ -112,8 +112,6 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 		);
 	};
 
-	console.log(transactions)
-
 	if (transactions.length === 0) {
 		return (
 			<div className="rounded-md border border-border-default py-10 text-center text-body-sm text-text-tertiary">
@@ -156,7 +154,8 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 									<TCell className="whitespace-nowrap text-text-secondary">
 										{t.card?.name}
 									</TCell>
-									<TCell className={`text-end whitespace-nowrap tabular-nums ${t.cardTransactionType === "payment" ? "text-financial-gain-fg" : ""}`}>
+									<TCell
+										className={`text-end whitespace-nowrap tabular-nums ${t.cardTransactionType === "payment" ? "text-financial-gain-fg" : ""}`}>
 										{`${t.cardTransactionType === "payment" ? "–" : ""}${formatKWD(Number(t.amount))}`}
 									</TCell>
 								</TRow>

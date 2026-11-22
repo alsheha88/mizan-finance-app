@@ -1,4 +1,4 @@
-import { useLocalStorage } from "@/hooks/localStorage";
+import { useLocalStorage } from "@/hooks/custom/localStorage";
 import { useContext, createContext, useEffect } from "react";
 
 interface ThemeContextType {

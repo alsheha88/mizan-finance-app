@@ -1,5 +1,5 @@
 import { formatMonthLabel, getCurrentMonth } from "@/lib/helpers";
-import { useGetDashboard } from "./dashboard";
+import { useGetDashboard } from "../dashboard";
 
 export const useMonthOptions = () => {
 	const { data } = useGetDashboard();

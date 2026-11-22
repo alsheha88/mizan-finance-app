@@ -9,9 +9,9 @@ import EmptyState from "@/components/state/EmptyState";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
 import { useGetAccounts } from "@/hooks/accounts";
-import { useMonthOptions } from "@/hooks/availableMonths";
+import { useMonthOptions } from "@/hooks/custom/availableMonths"
 import { useGetDashboard } from "@/hooks/dashboard";
-import { useTransactionsFilters } from "@/hooks/transactionsFilters";
+import { useTransactionsFilters } from "@/hooks/custom/transactionsFilters";
 import { Calendar, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 

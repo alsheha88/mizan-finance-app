@@ -8,11 +8,11 @@ import { Select } from "@/components/primitives/Select";
 import EmptyState from "@/components/state/EmptyState";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
-import { useMonthOptions } from "@/hooks/availableMonths";
+import { useMonthOptions } from "@/hooks/custom/availableMonths"
 import { useGetCategories } from "@/hooks/categories";
 import { useGetDashboard } from "@/hooks/dashboard";
 import { useGetTransactions } from "@/hooks/transactions";
-import { useTransactionsFilters } from "@/hooks/transactionsFilters";
+import { useTransactionsFilters } from "@/hooks/custom/transactionsFilters";
 import { capitalizeFirstLetter } from "@/lib/helpers";
 import { ArrowDownLeft, Calendar, Search } from "lucide-react";
 
@@ -52,8 +52,7 @@ function Income() {
 		!!selectedMonth,
 	);
 	const { data: categoriesArr } = useGetCategories();
-		const monthOptions = useMonthOptions();
-
+	const monthOptions = useMonthOptions();
 
 	if (isError || isDashboardError)
 		return (

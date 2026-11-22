@@ -4,7 +4,7 @@ import { Input } from "@/components/primitives/Input";
 import { Select } from "@/components/primitives/Select";
 import { TRow, TH, TCell, THead, Table } from "@/components/primitives/Table";
 import { useGetCategories } from "@/hooks/categories";
-import { useMediaQuery } from "@/hooks/mediaQuery";
+import { useMediaQuery } from "@/hooks/custom/mediaQuery";
 import { useEditTransaction } from "@/hooks/transactions";
 import { capitalizeFirstLetter, formatDate, formatKWD } from "@/lib/helpers";
 import type { TransactionListItem } from "@/schema/transactionsSchema";
