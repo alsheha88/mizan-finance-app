@@ -31,6 +31,8 @@ export const useCreateCard = () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+
 			toast.success("Card created successfully");
 		},
 		onError: (error) => {
@@ -47,6 +49,8 @@ export const useEditCard = () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -64,6 +68,8 @@ export const useDeleteCard = () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.transactions.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+
 
 			toast.success("Card deleted");
 		},

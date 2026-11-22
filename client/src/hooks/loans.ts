@@ -31,6 +31,7 @@ export const useCreateLoan = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
 			toast.success("Loan created successfully");
 		},
 		onError: (error) => {
@@ -45,6 +46,8 @@ export const useEditLoan = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+
 			toast.success("Changes saved");
 		},
 		onError: (error) => {
@@ -59,6 +62,8 @@ export const useDeleteLoan = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+
 			toast.success("Loan deleted");
 		},
 		onError: (error) => {

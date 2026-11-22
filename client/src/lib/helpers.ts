@@ -137,3 +137,30 @@ export const handleSingular = (number: number) => {
 	if (number === 1) return "transaction";
 	if (number > 1) return "transactions";
 };
+
+export const monthsFromNow = (n: number) => {
+	const now = new Date();
+	const day = 15;
+	return formatDateShort(new Date(now.getFullYear(), now.getMonth() + n, day));
+};
+
+export const getDuration = (n: number) => {
+	const years = Math.floor(n / 12);
+	const months = n % 12;
+
+	if (years === 0) return plural(months, "month");
+	if (months === 0) return plural(years, "year");
+	return `${plural(years, "year")} and ${plural(months, "month")}`;
+};
+
+export const plural = (count: number, word: string, pluralWord = `${word}s`) =>
+	`${count} ${count === 1 ? word : pluralWord}`;
+
+export const toSafeExtra = (text: string) => {
+	const n = Number(text);
+	if (isNaN(n)) return 0;
+
+	const safeExtra = Math.min(Math.max(n, 0), 1000000);
+
+	return Math.round(safeExtra * 1000) / 1000;
+};

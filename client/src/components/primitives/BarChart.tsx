@@ -65,9 +65,6 @@ function BarChart({ data }: BarChartProps) {
 	};
 
 	return (
-		// Chart.js sizes the canvas from this wrapper: it must be relative
-		// and contain only the chart. flex-1 lets it grow to the card's height
-		// on desktop; min-h-64 keeps it readable on small screens.
 		<div className="relative flex-1 min-h-64">
 			<Bar
 				data={cashflow}
@@ -82,7 +79,6 @@ function BarChart({ data }: BarChartProps) {
 						y: {
 							ticks: {
 								color: colors.tick,
-								// "5k KWD" instead of a bare "5,000", so the axis has a unit.
 								callback: (value) => {
 									const n = Number(value);
 									return Math.abs(n) >= 1000 ? `${n / 1000}k KWD` : `${n} KWD`;
