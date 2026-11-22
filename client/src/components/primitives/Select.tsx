@@ -1,13 +1,20 @@
 // Select.tsx
 import * as RadixSelect from "radix-ui/select";
-import { ChevronDown, ChevronUp, Check } from "lucide-react";
+import { ChevronDown, Check } from "lucide-react";
 import { useId, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { paletteColors, type PaletteColor } from "@/lib/paletteColors";
+
+export type SelectOption = {
+	label: string;
+	value: string;
+	color?: PaletteColor | undefined;
+};
 
 type SelectProps = {
 	label?: string;
 	ariaLabel?: string;
-	options: { label: string; value: string }[];
+	options: SelectOption[];
 	placeholder: string;
 	error?: string | undefined;
 	value?: string | undefined;
@@ -78,28 +85,31 @@ export function Select({
 					<RadixSelect.Content
 						position="popper"
 						sideOffset={4}
-						className="w-[max(12rem,var(--radix-select-trigger-width))] min-w-max z-50 p-1 bg-bg-elevated rounded-md border border-border-default shadow-overlay">
-						<RadixSelect.ScrollUpButton className="flex justify-center py-1 text-text-secondary">
-							<ChevronUp className="size-4" />
-						</RadixSelect.ScrollUpButton>
-
-						<RadixSelect.Viewport className="max-h-80">
+						className="min-w-(--radix-select-trigger-width) z-50 p-1 bg-bg-elevated rounded-md border border-border-default shadow-overlay">
+						<RadixSelect.Viewport className="max-h-64">
 							{options.map((o) => (
 								<RadixSelect.Item
 									key={o.value}
 									value={o.value}
-									className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-sm text-body-md text-text-primary cursor-pointer focus:outline-none data-highlighted:bg-surface-active data-[state=checked]:text-accent-foreground">
-									<RadixSelect.ItemText>{o.label}</RadixSelect.ItemText>
+									className="flex items-center justify-between gap-3 px-2.5 py-2 rounded-sm text-body-sm text-text-primary cursor-pointer transition-colors focus:outline-none data-highlighted:bg-surface-active data-[state=checked]:text-accent-foreground">
+									<span className="flex items-center gap-2.5 min-w-0">
+										{o.color && (
+											<span
+												aria-hidden="true"
+												className={cn(
+													"size-2 shrink-0 rounded-full",
+													paletteColors[o.color].swatch,
+												)}
+											/>
+										)}
+										<RadixSelect.ItemText>{o.label}</RadixSelect.ItemText>
+									</span>
 									<RadixSelect.ItemIndicator>
 										<Check className="size-4" />
 									</RadixSelect.ItemIndicator>
 								</RadixSelect.Item>
 							))}
 						</RadixSelect.Viewport>
-
-						<RadixSelect.ScrollDownButton className="flex justify-center py-1 text-text-secondary">
-							<ChevronDown className="size-4" />
-						</RadixSelect.ScrollDownButton>
 					</RadixSelect.Content>
 				</RadixSelect.Portal>
 			</RadixSelect.Root>

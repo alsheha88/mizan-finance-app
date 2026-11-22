@@ -71,7 +71,7 @@
 	--color-bg-primary: #0e0a16; /* page */
 	--color-bg-secondary: #170f22; /* inset */
 	--color-bg-tertiary: #1c1629; /* card */
-	--color-bg-elevated: #272038; /* raised */
+	--color-bg-elevated: #1f182d; /* raised: a step above cards, border + shadow carry the depth */
 	--color-bg-dark: #1c1629; /* card */
 	--color-bg-deep: #1c1629; /* card */
 

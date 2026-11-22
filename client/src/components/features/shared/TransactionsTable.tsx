@@ -1,7 +1,7 @@
 import Badge from "@/components/primitives/Badge";
 import { Card } from "@/components/primitives/Card";
 import { Input } from "@/components/primitives/Input";
-import { Select } from "@/components/primitives/Select";
+import { Select, type SelectOption } from "@/components/primitives/Select";
 import { TRow, TH, TCell, THead, Table } from "@/components/primitives/Table";
 import { useGetCategories } from "@/hooks/categories";
 import { useMediaQuery } from "@/hooks/custom/mediaQuery";
@@ -19,8 +19,6 @@ type EditingCell = {
 	field: "merchant" | "category";
 };
 
-type Option = { label: string; value: string };
-
 function TransactionsTable({ transactions }: TransactionsTableProps) {
 	const [editing, setEditing] = useState<EditingCell | null>(null);
 	// Tailwind's lg breakpoint (64rem). Only one layout is rendered at a time.
@@ -36,10 +34,14 @@ function TransactionsTable({ transactions }: TransactionsTableProps) {
 	const isEditing = (id: string, field: EditingCell["field"]) =>
 		editing?.id === id && editing.field === field;
 
-	const optionsFor = (t: TransactionListItem): Option[] =>
+	const optionsFor = (t: TransactionListItem): SelectOption[] =>
 		(data ?? [])
 			.filter((c) => c.appliesTo === t.type)
-			.map((c) => ({ label: capitalizeFirstLetter(c.name), value: c.id }));
+			.map((c) => ({
+				label: capitalizeFirstLetter(c.name),
+				value: c.id,
+				color: c.color,
+			}));
 
 	// The merchant name, editable in place. Shared by the table and the card list.
 	const merchantCell = (t: TransactionListItem) =>

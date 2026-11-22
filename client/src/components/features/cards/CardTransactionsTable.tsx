@@ -30,7 +30,11 @@ function CardTransactionsTable({ transactions }: CardTransactionsTableProps) {
 	// Card purchases are always expenses, so only expense categories apply.
 	const categoryOptions = (data ?? [])
 		.filter((c) => c.appliesTo === "expense")
-		.map((c) => ({ label: capitalizeFirstLetter(c.name), value: c.id }));
+		.map((c) => ({
+			label: capitalizeFirstLetter(c.name),
+			value: c.id,
+			color: c.color,
+		}));
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
 		setValue(e.target.value);
