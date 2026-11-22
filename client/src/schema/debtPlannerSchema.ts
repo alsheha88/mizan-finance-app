@@ -38,6 +38,7 @@ export type DebtPlanResponse = {
 		id: string;
 		name: string;
 		payoffMonth: number | null;
+		kind: "card" | "loan";
 	}[];
 };
 export type DebtPlannerQuery = z.infer<typeof debtPlannerQuerySchema>;

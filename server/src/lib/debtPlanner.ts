@@ -110,6 +110,7 @@ export function planDebts(debts: Debt[], extra: number) {
 				name: i.name,
 				balance: i.balance,
 				payoffMonth: withPlan.payoffMonths[i.id] ?? null,
+				kind: i.rule.type === "percent" ? "card" : "loan",
 			};
 		})
 		.sort((a, b) => {
