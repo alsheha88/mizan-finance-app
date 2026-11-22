@@ -95,7 +95,7 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 		totals.push(sum);
 	}
 
-	return { month, payoffMonths, totals };
+	return { month, payoffMonths, totals, monthlyBudget: fixedBudget };
 }
 
 export function planDebts(debts: Debt[], extra: number) {

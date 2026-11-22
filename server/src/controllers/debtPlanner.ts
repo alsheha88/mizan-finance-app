@@ -26,6 +26,7 @@ export const getDebtPlan: RequestHandler = async (req, res) => {
 		withPlan: {
 			...plan.withPlan,
 			totals: plan.withPlan.totals.map((i) => i / 1000),
+			monthlyBudget: plan.withPlan.monthlyBudget / 1000
 		},
 		withoutPlan: {
 			...plan.withoutPlan,
