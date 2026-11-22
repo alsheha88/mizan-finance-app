@@ -9,6 +9,7 @@ import cardsRouter from "./cards.routes";
 import cardTransactionsRouter from "./cardTransactions.routes";
 import dashboardRouter from "./dashboard.routes";
 import assistantRouter from "./conversations.routes";
+import debtPlannerRouter from "./debtPlanner.routes";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
 const router = Router();
@@ -22,5 +23,6 @@ router.use("/cards", authMiddleware, cardsRouter);
 router.use("/card-transactions", authMiddleware, cardTransactionsRouter);
 router.use("/dashboard", authMiddleware, dashboardRouter);
 router.use("/assistant", authMiddleware, assistantRouter);
+router.use("/debt-plan", authMiddleware, debtPlannerRouter);
 
 export default router;
