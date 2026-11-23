@@ -10,6 +10,7 @@ import cardTransactionsRouter from "./cardTransactions.routes";
 import dashboardRouter from "./dashboard.routes";
 import assistantRouter from "./conversations.routes";
 import debtPlannerRouter from "./debtPlanner.routes";
+import recurringPaymentRouter from "./recurringPayment.routes";
 import { authMiddleware } from "../../middleware/authMiddleware";
 
 const router = Router();
@@ -24,5 +25,6 @@ router.use("/card-transactions", authMiddleware, cardTransactionsRouter);
 router.use("/dashboard", authMiddleware, dashboardRouter);
 router.use("/assistant", authMiddleware, assistantRouter);
 router.use("/debt-plan", authMiddleware, debtPlannerRouter);
+router.use("/recurring-payments", authMiddleware, recurringPaymentRouter);
 
 export default router;

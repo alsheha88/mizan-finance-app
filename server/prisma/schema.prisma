@@ -13,30 +13,31 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(uuid()) @db.Uuid
-  fullName         String
-  email            String             @unique
-  passwordHash     String
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  isVerified       Boolean            @default(false)
-  avatar           String?
-  dateFormat       DateFormat         @default(dd_MM_yyyy)
-  currency         String             @default("KWD")
-  phoneNumber      String?
-  debtPlannerExtra Decimal?           @db.Decimal(12, 3)
-  weekStart        WeekStart          @default(sun)
-  language         LanguagePreference @default(en)
-  accounts         Account[]
-  transactions     Transaction[]
-  categories       Category[]
-  refreshTokens    RefreshToken[]
-  loans            Loan[]
-  creditCards      CreditCard[]
-  investments      Investment[]
-  cardTransactions CardTransaction[]
-  merchantMemories MerchantMemory[]
-  conversations    Conversation[]
+  id                String             @id @default(uuid()) @db.Uuid
+  fullName          String
+  email             String             @unique
+  passwordHash      String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  isVerified        Boolean            @default(false)
+  avatar            String?
+  dateFormat        DateFormat         @default(dd_MM_yyyy)
+  currency          String             @default("KWD")
+  phoneNumber       String?
+  debtPlannerExtra  Decimal?           @db.Decimal(12, 3)
+  weekStart         WeekStart          @default(sun)
+  language          LanguagePreference @default(en)
+  accounts          Account[]
+  transactions      Transaction[]
+  categories        Category[]
+  refreshTokens     RefreshToken[]
+  loans             Loan[]
+  creditCards       CreditCard[]
+  investments       Investment[]
+  cardTransactions  CardTransaction[]
+  merchantMemories  MerchantMemory[]
+  conversations     Conversation[]
+  recurringPayments RecurringPayment[]
 }
 
 enum LanguagePreference {
@@ -91,35 +92,38 @@ enum AccountType {
 }
 
 model Transaction {
-  id              String          @id @default(uuid()) @db.Uuid
-  merchant        String
-  description     String
-  isEdited        Boolean         @default(false)
-  balanceAfter    Decimal         @db.Decimal(12, 3)
-  type            TransactionType
-  amount          Decimal         @db.Decimal(12, 3)
-  statementRow    Int
-  rowType         RowType         @default(unknown)
-  transactionDate DateTime        @db.Date
-  updatedAt       DateTime        @updatedAt
-  merchantKey     String?
-  notes           String?
-  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  account         Account         @relation(fields: [accountId], references: [id], onDelete: Restrict)
-  category        Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  userId          String          @db.Uuid
-  accountId       String          @db.Uuid
-  categoryId      String?         @db.Uuid
-  transferGroupId String?         @db.Uuid
-  loan            Loan?           @relation(fields: [loanId], references: [id], onDelete: SetNull)
-  loanId          String?         @db.Uuid
-  creditCard      CreditCard?     @relation(fields: [creditCardId], references: [id], onDelete: SetNull)
-  creditCardId    String?         @db.Uuid
+  id                 String            @id @default(uuid()) @db.Uuid
+  merchant           String
+  description        String
+  isEdited           Boolean           @default(false)
+  balanceAfter       Decimal           @db.Decimal(12, 3)
+  type               TransactionType
+  amount             Decimal           @db.Decimal(12, 3)
+  statementRow       Int
+  rowType            RowType           @default(unknown)
+  transactionDate    DateTime          @db.Date
+  updatedAt          DateTime          @updatedAt
+  merchantKey        String?
+  notes              String?
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account            Account           @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category           Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  userId             String            @db.Uuid
+  accountId          String            @db.Uuid
+  categoryId         String?           @db.Uuid
+  transferGroupId    String?           @db.Uuid
+  loan               Loan?             @relation(fields: [loanId], references: [id], onDelete: SetNull)
+  loanId             String?           @db.Uuid
+  creditCard         CreditCard?       @relation(fields: [creditCardId], references: [id], onDelete: SetNull)
+  creditCardId       String?           @db.Uuid
+  recurringPayment   RecurringPayment? @relation(fields: [recurringPaymentId], references: [id], onDelete: SetNull)
+  recurringPaymentId String?           @db.Uuid
 
   @@unique([accountId, transactionDate, amount, balanceAfter])
   @@index([userId, transferGroupId])
   @@index([userId, merchantKey])
   @@index([accountId, transactionDate, statementRow])
+  @@index([recurringPaymentId])
 }
 
 enum TransactionType {
@@ -147,15 +151,16 @@ enum RowType {
 }
 
 model Category {
-  id               String            @id @default(uuid()) @db.Uuid
-  name             String
-  color            PaletteColor
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  appliesTo        TransactionType
-  transactions     Transaction[]
-  userId           String            @db.Uuid
-  cardTransactions CardTransaction[]
-  merchantMemories MerchantMemory[]
+  id                String             @id @default(uuid()) @db.Uuid
+  name              String
+  color             PaletteColor
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  appliesTo         TransactionType
+  transactions      Transaction[]
+  userId            String             @db.Uuid
+  cardTransactions  CardTransaction[]
+  merchantMemories  MerchantMemory[]
+  recurringPayments RecurringPayment[]
 
   @@unique([userId, appliesTo, name])
 }
@@ -236,9 +241,12 @@ model CardTransaction {
   categoryId          String?             @db.Uuid
   user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId              String              @db.Uuid
+  recurringPayment    RecurringPayment?   @relation(fields: [recurringPaymentId], references: [id], onDelete: SetNull)
+  recurringPaymentId  String?             @db.Uuid
 
   @@unique([creditCardId, transactionDate, amount, description, statementRow])
   @@index([userId, merchantKey])
+  @@index([recurringPaymentId])
 }
 
 enum CardTransactionType {
@@ -315,4 +323,24 @@ model Message {
 enum MessageRole {
   user
   assistant
+}
+
+model RecurringPayment {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  expectedAmount   Decimal           @db.Decimal(12, 3)
+  matchKey        String
+  expectedDay      Int
+  isActive         Boolean           @default(true)
+  amountVaries     Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String            @db.Uuid
+  category         Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId       String?           @db.Uuid
+  cardTransactions CardTransaction[]
+  transactions     Transaction[]
+
+  @@unique([userId, name])
 }

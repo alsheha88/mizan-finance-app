@@ -173,3 +173,10 @@ export const stripUndefined = <T extends object>(obj: T): StripUndefined<T> =>
 	Object.fromEntries(
 		Object.entries(obj).filter(([, value]) => value !== undefined),
 	) as StripUndefined<T>;
+
+export const toMatchKey = (merchant: string): string => {
+	const normalisedMerchant = normaliseMerchant(merchant);
+	if (!normalisedMerchant) return merchant.trim().toLowerCase();
+
+	return normalisedMerchant;
+};
