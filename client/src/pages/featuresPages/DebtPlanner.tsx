@@ -1,15 +1,15 @@
 import DebtPlannerTable from "@/components/features/debtPlanner/DebtPlannerTable";
+import PlanControls from "@/components/features/debtPlanner/PlanControls";
 import StatCard from "@/components/features/shared/StatCard";
 import { Card } from "@/components/primitives/Card";
-import { Input } from "@/components/primitives/Input";
 import LineChart from "@/components/primitives/LineChart";
-import NoticeCard from "@/components/primitives/NoticeCard";
 import PageHeader from "@/components/primitives/PageHeader";
 import EmptyState from "@/components/state/EmptyState";
 import ErrorState from "@/components/state/ErrorState";
 import LoadingState from "@/components/state/LoadingState";
 import { useDebouncedValue } from "@/hooks/custom/debouncedValue";
 import { useGetDebtPlan } from "@/hooks/debtPlanner";
+import { useGetUser } from "@/hooks/user";
 import {
 	formatKWD,
 	getDuration,
@@ -21,7 +21,24 @@ import { CalendarCheck2Icon } from "lucide-react";
 import { useState } from "react";
 
 function DebtPlanner() {
-	const [extraText, setExtraText] = useState("150");
+	const { data: user, isPending, isError, refetch } = useGetUser();
+
+	if (isPending) return <LoadingState />;
+	if (isError)
+		return (
+			<ErrorState
+				title={"Something went wrong!"}
+				message={"We couldn't load your profile, please try again"}
+				onAction={refetch}
+			/>
+		);
+
+	const savedExtra = Number(user.debtPlannerExtra ?? 0);
+	return <DebtPlannerContent savedExtra={savedExtra} />;
+}
+
+function DebtPlannerContent({ savedExtra }: { savedExtra: number }) {
+	const [extraText, setExtraText] = useState(String(savedExtra));
 	const extra = useDebouncedValue(toSafeExtra(extraText));
 	const { data, isPending, isError, refetch } = useGetDebtPlan(extra);
 
@@ -78,35 +95,15 @@ function DebtPlanner() {
 				<StatCard title={"Monthly toward debt"}>
 					{formatKWD(data.withPlan.monthlyBudget)}
 					<small className="text-text-tertiary text-caption-sm">
-						{`${formatKWD(minimums)} installments + ${formatKWD(extra)} extra`}
+						{`${formatKWD(minimums)} installments + ${formatKWD(savedExtra)} extra`}
 					</small>
 				</StatCard>
 			</div>
-			<Card className="grid gap-6">
-				<div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-8">
-					<Input
-						type={"text"}
-						inputMode="decimal"
-						label="Extra payment per month"
-            startIcon={<span className="text-body-sm">KWD</span>}
-            className="ps-14"
-						value={extraText}
-						onChange={(e) => setExtraText(e.target.value)}
-					/>
-					<div className="flex flex-col gap-1.5">
-						<p className="text-text-primary text-label-lg">How it works</p>
-						<p className="text-text-secondary text-body-sm">
-							Pay the minimum on every debt and put the extra on the smallest
-							balance. When it's paid off, its payment rolls into the next one.
-							The plan assumes no new spending on these cards.
-						</p>
-					</div>
-				</div>
-				<NoticeCard
-					message="For Islamic financing, paying early only lowers the total if KFH gives an early-settlement discount. Check with the bank before you pay extra on a financing contract."
-					noticeType="info"
-				/>
-			</Card>
+			<PlanControls
+				extraText={extraText}
+				setExtraText={setExtraText}
+				savedExtra={savedExtra}
+			/>
 			<Card>
 				<div className="flex flex-col gap-1">
 					<h4 className="text-h4 text-text-primary">Remaining debt</h4>

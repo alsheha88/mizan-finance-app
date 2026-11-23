@@ -1,6 +1,7 @@
 import type { Prisma } from "../../../generated/prisma/client";
 import { hashPassword } from "../../lib/authHelpers";
 import { defaultCategories } from "../../lib/defaultCategories";
+import { stripUndefined } from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
 import type { CreateUser, UpdateUser } from "../../schema/userSchema";
 
@@ -26,9 +27,7 @@ export const dbCreateUser = async (user: CreateUser) => {
 };
 
 export const dbEditUser = async (user: UpdateUser, id: string) => {
-	const data = Object.fromEntries(
-		Object.entries(user).filter(([, v]) => v !== undefined),
-	);
+	const data = stripUndefined(user);
 	return await prisma.user.update({
 		where: { id },
 		data,

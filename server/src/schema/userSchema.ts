@@ -31,6 +31,7 @@ export const editUserSchema = z
 		language: z.enum(LanguagePreference),
 		dateFormat: z.enum(DateFormat),
 		currency: z.string(),
+		debtPlannerExtra: z.number().multipleOf(0.001).min(0).max(1_000_000),
 	})
 	.partial();
 
