@@ -2,7 +2,7 @@ import Badge from "@/components/primitives/Badge";
 import { Card } from "@/components/primitives/Card";
 import { Table, TCell, TH, THead, TRow } from "@/components/primitives/Table";
 import { useMediaQuery } from "@/hooks/custom/mediaQuery";
-import {  formatKWD, monthsFromNow } from "@/lib/helpers";
+import { formatKWD, monthsFromNow } from "@/lib/helpers";
 import type { DebtPlanResponse } from "@/schema/debtPlannerSchema";
 
 type DebtPlannerTableProps = {
@@ -22,7 +22,7 @@ function DebtPlannerTable({ order }: DebtPlannerTableProps) {
 							<TRow>
 								<TH>Debt</TH>
 								<TH>Balance</TH>
-								{/* <TH>Monthly payment</TH> */}
+								<TH>Monthly payment</TH>
 								<TH>Paid off</TH>
 								<TH className="text-end">Status</TH>
 							</TRow>
@@ -37,6 +37,7 @@ function DebtPlannerTable({ order }: DebtPlannerTableProps) {
 										</p>
 									</TCell>
 									<TCell>{formatKWD(o.balance)}</TCell>
+									<TCell>{formatKWD(o.thisMonth)}</TCell>
 									<TCell>
 										{o.payoffMonth === null
 											? "Not within 50 years"

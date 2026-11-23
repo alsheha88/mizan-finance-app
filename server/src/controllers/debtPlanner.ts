@@ -19,14 +19,17 @@ export const getDebtPlan: RequestHandler = async (req, res) => {
 		return {
 			...i,
 			balance: i.balance / 1000,
+			thisMonth: i.thisMonth / 1000,
 		};
 	});
 
+	const { firstMonthPayments, ...withPlanRest } = plan.withPlan;
+
 	const planInKWD = {
 		withPlan: {
-			...plan.withPlan,
+			...withPlanRest,
 			totals: plan.withPlan.totals.map((i) => i / 1000),
-			monthlyBudget: plan.withPlan.monthlyBudget / 1000
+			monthlyBudget: plan.withPlan.monthlyBudget / 1000,
 		},
 		withoutPlan: {
 			...plan.withoutPlan,

@@ -56,6 +56,7 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 	let month = 0;
 	const totals: number[] = [];
 	const payoffMonths: Record<string, number> = {};
+	const firstMonthPayments: Record<string, number> = {};
 	const tracked = debts
 		.map((i) => {
 			return {
@@ -73,6 +74,9 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 		for (const item of tracked) {
 			if (item.balance === 0) continue;
 			const payment = monthlyPayment(item.debt, item.balance);
+			if (month === 1) {
+				firstMonthPayments[item.debt.id] = payment;
+			}
 			item.balance -= payment;
 			spent += payment;
 		}
@@ -81,6 +85,10 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 		for (const item of tracked) {
 			if (item.balance === 0) continue;
 			const give = Math.min(leftOver, item.balance);
+			if (month === 1) {
+				firstMonthPayments[item.debt.id] =
+					(firstMonthPayments[item.debt.id] ?? 0) + give;
+			}
 			item.balance -= give;
 			leftOver -= give;
 
@@ -95,7 +103,13 @@ export function simulateSnowball(debts: Debt[], extra: number) {
 		totals.push(sum);
 	}
 
-	return { month, payoffMonths, totals, monthlyBudget: fixedBudget };
+	return {
+		month,
+		payoffMonths,
+		totals,
+		monthlyBudget: fixedBudget,
+		firstMonthPayments,
+	};
 }
 
 export function planDebts(debts: Debt[], extra: number) {
@@ -111,6 +125,7 @@ export function planDebts(debts: Debt[], extra: number) {
 				balance: i.balance,
 				payoffMonth: withPlan.payoffMonths[i.id] ?? null,
 				kind: i.rule.type === "percent" ? "card" : "loan",
+				thisMonth: withPlan.firstMonthPayments[i.id] ?? 0,
 			};
 		})
 		.sort((a, b) => {
@@ -120,5 +135,10 @@ export function planDebts(debts: Debt[], extra: number) {
 			return a.payoffMonth - b.payoffMonth;
 		});
 
-	return { withPlan, withoutPlan, monthsSaved, order };
+	return {
+		withPlan,
+		withoutPlan,
+		monthsSaved,
+		order,
+	};
 }
