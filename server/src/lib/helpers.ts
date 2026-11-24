@@ -180,3 +180,10 @@ export const toMatchKey = (merchant: string): string => {
 
 	return normalisedMerchant;
 };
+
+export const calendarMonthCycle = (today: Date): { start: Date; end: Date } => {
+	return {
+		start: new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)),
+		end: new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)),
+	};
+};

@@ -37,7 +37,7 @@ export const dueDateInCycle = (expectedDay: number, cycleStart: Date) => {
 	return new Date(Date.UTC(year, month, day));
 };
 
-type PaymentSettings = {
+export type PaymentSettings = {
 	expectedAmount: number;
 	amountVaries: boolean;
 	isActive: boolean;
