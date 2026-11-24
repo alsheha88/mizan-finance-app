@@ -41,6 +41,7 @@ export const dbCreateRecurringPayment = async (
 				categoryId: data.categoryId ?? null,
 				matchKey,
 				amountVaries: data.amountVaries ?? false,
+				source: data.source,
 				userId,
 			},
 		});
@@ -74,14 +75,12 @@ export const dbGetRecurringPayments = async (userId: string, today: Date) => {
 		}),
 	]);
 
-	const dates = [
-		bankMax._max.transactionDate,
-		cardMax._max.transactionDate,
-	].filter((d): d is Date => d !== null);
-	const dataUntil =
-		dates.length > 0
-			? new Date(Math.max(...dates.map((d) => d.getTime())))
-			: null;
+	// Bank and card statements are uploaded separately and can reach different
+	// dates, so each payment is judged only by its own source's data.
+	const dataUntil = {
+		bank: bankMax._max.transactionDate,
+		card: cardMax._max.transactionDate,
+	};
 
 	const latestSalary = salaryRows[0];
 	const cycle = latestSalary

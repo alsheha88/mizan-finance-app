@@ -61,7 +61,7 @@ export const getRecurringPayments: RequestHandler = async (req, res) => {
 			paymentSettings,
 			dueDate,
 			linked,
-			dataUntil,
+			dataUntil[payment.source],
 			today,
 		);
 
