@@ -42,4 +42,7 @@ export const queryKeys = {
 		all: ["debtPlan"],
 		byExtra: (extra: number) => ["debtPlan", extra],
 	},
+	recurringPayments: {
+		all: ["recurringPayments"],
+	},
 } as const;

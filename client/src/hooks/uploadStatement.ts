@@ -16,6 +16,9 @@ export const useUploadAccountStatement = () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.loans.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.recurringPayments.all,
+			});
 			
 		},
 	});
@@ -31,6 +34,9 @@ export const useUploadCardStatement = () => {
 			queryClient.invalidateQueries({ queryKey: queryKeys.cardTransactions.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.cards.all });
 			queryClient.invalidateQueries({ queryKey: queryKeys.debtPlan.all });
+			queryClient.invalidateQueries({
+				queryKey: queryKeys.recurringPayments.all,
+			});
 
 		},
 		
