@@ -1,11 +1,13 @@
+import type { PaymentSource } from "../../../generated/prisma/enums";
 import {
 	calendarMonthCycle,
 	stripUndefined,
 	toMatchKey,
 } from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
-import { getCycle } from "../../lib/recurringPayments";
+import { getCycle, matchRecurringPayments } from "../../lib/recurringPayments";
 import type { CreateRecurringPaymentData } from "../../schema/recurringPayment";
+import type { MatchCandidate, MatchPayment } from "../../types/types";
 import { dbGetSalaryRows } from "./transactions";
 
 export const dbCreateRecurringPayment = async (
@@ -104,4 +106,111 @@ export const dbGetRecurringPayments = async (userId: string, today: Date) => {
 	});
 
 	return { cycle, dataUntil, recurringPayments };
+};
+
+export type UploadMatch = {
+	kind: "upload";
+	source: PaymentSource;
+	transactionIds: string[];
+};
+
+export type BackfillMatch = {
+	kind: "backfill";
+	recurringPaymentId: string;
+};
+
+export type MatchScope = UploadMatch | BackfillMatch;
+
+export const dbMatchRecurringPayments = async (
+	userId: string,
+	scope: MatchScope,
+) => {
+	const candidateSelect = {
+		id: true,
+		merchant: true,
+		transactionDate: true,
+		amount: true,
+	} as const;
+
+	const [payments, bankRows, cardRows] = await Promise.all([
+		prisma.recurringPayment.findMany({
+			where: {
+				userId,
+				isActive: true,
+				...(scope.kind === "backfill" && { id: scope.recurringPaymentId }),
+			},
+			include: {
+				transactions: { select: { transactionDate: true } },
+				cardTransactions: { select: { transactionDate: true } },
+			},
+		}),
+		prisma.transaction.findMany({
+			where: {
+				userId,
+				type: "expense",
+				recurringPaymentId: null,
+				...(scope.kind === "upload" && {
+					id: { in: scope.source === "bank" ? scope.transactionIds : [] },
+				}),
+			},
+			select: candidateSelect,
+		}),
+		prisma.cardTransaction.findMany({
+			where: {
+				userId,
+				cardTransactionType: "purchase",
+				recurringPaymentId: null,
+				...(scope.kind === "upload" && {
+					id: { in: scope.source === "card" ? scope.transactionIds : [] },
+				}),
+			},
+			select: candidateSelect,
+		}),
+	]);
+
+	const matchPayments: MatchPayment[] = payments.map((payment) => ({
+		id: payment.id,
+		source: payment.source,
+		matchKey: payment.matchKey,
+		expectedAmount: payment.expectedAmount.times(1000).toNumber(),
+		expectedDay: payment.expectedDay,
+		linkedDates: [...payment.transactions, ...payment.cardTransactions].map(
+			(t) => t.transactionDate,
+		),
+	}));
+
+	const toCandidate = (
+		row: (typeof bankRows)[number],
+		source: MatchCandidate["source"],
+	): MatchCandidate => ({
+		id: row.id,
+		source,
+		matchKey: toMatchKey(row.merchant),
+		amount: row.amount.times(1000).toNumber(),
+		date: row.transactionDate,
+	});
+
+	const candidates = [
+		...bankRows.map((row) => toCandidate(row, "bank")),
+		...cardRows.map((row) => toCandidate(row, "card")),
+	];
+
+	const decisions = matchRecurringPayments(matchPayments, candidates);
+	if (decisions.length === 0) return 0;
+
+	const updates = decisions.map((decision) =>
+		decision.source === "bank"
+			? prisma.transaction.updateMany({
+					where: { id: decision.transactionId, userId },
+					data: { recurringPaymentId: decision.recurringPaymentId },
+				})
+			: prisma.cardTransaction.updateMany({
+					where: { id: decision.transactionId, userId },
+					data: { recurringPaymentId: decision.recurringPaymentId },
+				}),
+	);
+
+	await prisma.$transaction(updates);
+
+	return decisions.length;
 };

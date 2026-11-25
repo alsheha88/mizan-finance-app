@@ -4,12 +4,10 @@ import { NotFoundError, ValidationError } from "../../errors/errors";
 import {
 	dbCreateRecurringPayment,
 	dbGetRecurringPayments,
+	dbMatchRecurringPayments,
 } from "../db/functions/recurringPayment";
-import {
-	dueDateInCycle,
-	paymentStatus,
-	type PaymentSettings,
-} from "../lib/recurringPayments";
+import { dueDateInCycle, paymentStatus } from "../lib/recurringPayments";
+import type { PaymentSettings } from "../types/types";
 
 export const createRecurringPayment: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
@@ -28,7 +26,12 @@ export const createRecurringPayment: RequestHandler = async (req, res) => {
 			"Transaction not found or already linked to a recurring payment",
 		);
 
-	res.status(201).json({ data: { recurringPayment } });
+	const linkedCount =await dbMatchRecurringPayments(userId, {
+		kind: "backfill",
+		recurringPaymentId: recurringPayment.id,
+	});
+
+	res.status(201).json({ data: { recurringPayment, linkedCount } },);
 };
 
 export const getRecurringPayments: RequestHandler = async (req, res) => {

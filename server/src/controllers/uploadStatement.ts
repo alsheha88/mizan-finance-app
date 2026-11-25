@@ -24,6 +24,7 @@ import {
 	dbCreateCardTransaction,
 	dbGetCreditCard,
 } from "../db/functions/creditCards";
+import { dbMatchRecurringPayments } from "../db/functions/recurringPayment";
 
 export const uploadAccountStatement: RequestHandler = async (req, res) => {
 	const file = req.file;
@@ -78,6 +79,11 @@ export const uploadAccountStatement: RequestHandler = async (req, res) => {
 	if (created.length > 0) {
 		await dbMatchTransactionToLoan(userId);
 		await dbAccountToAccountTransfers(userId);
+		await dbMatchRecurringPayments(userId, {
+			kind: "upload",
+			source: "bank",
+			transactionIds: created.map((t) => t.id),
+		});
 		await dbMatchCardPayments(userId);
 		await dbUpdateAccountStatementImportDate(account.id, userId);
 	}
@@ -125,6 +131,11 @@ export const uploadCardStatement: RequestHandler = async (req, res) => {
 		allTransactions,
 		validateRequest.data.creditCardId,
 	);
+	await dbMatchRecurringPayments(userId, {
+		kind: "upload",
+		source: "card",
+		transactionIds: created.map((t) => t.id),
+	});
 
 	res.status(201).json({
 		data: {
