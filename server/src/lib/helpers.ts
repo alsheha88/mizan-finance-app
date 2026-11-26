@@ -173,17 +173,3 @@ export const stripUndefined = <T extends object>(obj: T): StripUndefined<T> =>
 	Object.fromEntries(
 		Object.entries(obj).filter(([, value]) => value !== undefined),
 	) as StripUndefined<T>;
-
-export const toMatchKey = (merchant: string): string => {
-	const normalisedMerchant = normaliseMerchant(merchant);
-	if (!normalisedMerchant) return merchant.trim().toLowerCase();
-
-	return normalisedMerchant;
-};
-
-export const calendarMonthCycle = (today: Date): { start: Date; end: Date } => {
-	return {
-		start: new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)),
-		end: new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() + 1, 0)),
-	};
-};

@@ -10,9 +10,13 @@ import {
 import type Anthropic from "@anthropic-ai/sdk";
 import { runAgent } from "../assistant/agent";
 import { idParamsSchema } from "../schema/userSchema";
-import type { MessageToSave } from "../types/types";
 
-
+type MessageToSave = {
+	role: "user" | "assistant";
+	content: Anthropic.MessageParam["content"];
+	inputTokens?: number;
+	outputTokens?: number;
+};
 export const chat: RequestHandler = async (req, res) => {
 	const userId = req.user.id;
 
