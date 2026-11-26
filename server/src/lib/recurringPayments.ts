@@ -36,6 +36,24 @@ export const getCycle = (latestSalaryDate: Date) => {
 
 	return { start, end };
 };
+
+export const currentCycle = (latestSalaryDate: Date, today: Date) => {
+	let cycle = getCycle(latestSalaryDate);
+
+	while (today.getTime() > cycle.end.getTime()) {
+		const afterEnd = new Date(
+			Date.UTC(
+				cycle.end.getUTCFullYear(),
+				cycle.end.getUTCMonth(),
+				cycle.end.getUTCDate() + 1,
+			),
+		);
+
+		cycle = getCycle(afterEnd);
+	}
+
+	return cycle;
+};
 export const dueDateInCycle = (expectedDay: number, cycleStart: Date) => {
 	const year = cycleStart.getUTCFullYear();
 	const startMonth = cycleStart.getUTCMonth();

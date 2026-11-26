@@ -5,7 +5,7 @@ import {
 	toMatchKey,
 } from "../../lib/helpers";
 import { prisma } from "../../lib/prisma";
-import { getCycle, matchRecurringPayments } from "../../lib/recurringPayments";
+import { currentCycle, getCycle, matchRecurringPayments } from "../../lib/recurringPayments";
 import type {
 	CreateRecurringPaymentData,
 	TransactionLinkData,
@@ -90,7 +90,7 @@ export const dbGetRecurringPayments = async (userId: string, today: Date) => {
 
 	const latestSalary = salaryRows[0];
 	const cycle = latestSalary
-		? getCycle(latestSalary.transactionDate)
+		? currentCycle(latestSalary.transactionDate, today)
 		: calendarMonthCycle(today);
 
 	const inCycle = { transactionDate: { gte: cycle.start, lte: cycle.end } };
