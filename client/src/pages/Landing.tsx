@@ -5,14 +5,18 @@ import {
 	CreditCard,
 	FileUp,
 	LayoutDashboard,
+	Moon,
 	ShieldCheck,
 	Sparkles,
+	Sun,
 	Tags,
 	Target,
 } from "lucide-react";
 import { Logo } from "@/components/primitives/Logo";
 import { buttonClasses } from "@/components/primitives/Button";
 import { HeroPreview } from "@/components/features/landing/HeroPreview";
+import { IconButton } from "@/components/primitives/IconButton";
+import { useTheme } from "@/context/ThemeContext";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -82,6 +86,8 @@ const steps = [
 ];
 
 function Landing() {
+	const { theme, toggleTheme } = useTheme();
+
 	return (
 		<MotionConfig reducedMotion="user">
 			<div className="relative min-h-dvh overflow-x-clip bg-bg-primary text-text-primary">
@@ -103,7 +109,13 @@ function Landing() {
 							</a>
 						</nav>
 						<div className="flex items-center gap-2">
-							<Link to="/login" className={buttonClasses("ghost", "md")}>
+							<IconButton
+								label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+								icon={theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+								onClick={toggleTheme}
+								className="border-transparent"
+							/>
+							<Link to="/login" className={buttonClasses("ghost", "md", "hidden sm:inline-flex")}>
 								Sign in
 							</Link>
 							<Link to="/signup" className={buttonClasses("primary", "md")}>
