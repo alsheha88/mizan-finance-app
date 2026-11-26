@@ -1,7 +1,7 @@
 import { Button } from "@/components/primitives/Button";
 import { Input } from "@/components/primitives/Input";
 import { useSignup } from "@/hooks/user";
-import { Scale } from "lucide-react";
+import { Logo } from "@/components/primitives/Logo";
 import { Link } from "react-router-dom";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,12 +28,9 @@ function Signup() {
 				noValidate
 				onSubmit={handleSubmit(onSubmit)}
 				className="grid gap-6 sm:p-8 p-4 bg-card-default border border-border-subtle rounded-xl w-full max-w-md">
-				<div className="flex items-center gap-3">
-					<div className="p-2 flex items-center justify-center rounded-xs bg-interactive-primary">
-						<Scale className="stroke-interactive-primary-foreground" />
-					</div>
-					<span className="text-h3 text-text-primary">Mizan</span>
-				</div>
+				<Link to="/" aria-label="Mizan home" className="w-fit">
+					<Logo textClassName="text-h3" />
+				</Link>
 				<div className="flex flex-col gap-2">
 					<h1 className="text-h2 text-text-primary">Create your account</h1>
 					<p className="text-body-sm text-text-secondary">

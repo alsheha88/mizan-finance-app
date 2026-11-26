@@ -18,9 +18,28 @@ const sizeClasses = {
 	lg: "px-5 py-3 text-button-lg",
 } as const;
 
+export type ButtonVariant = keyof typeof variantClasses;
+export type ButtonSize = keyof typeof sizeClasses;
+
+// Shared by <Button> and by links that should look like buttons
+// (a <button> inside an <a> is invalid HTML).
+export const buttonClasses = (
+	variant: ButtonVariant = "primary",
+	size: ButtonSize = "md",
+	className?: string,
+) =>
+	cn(
+		"inline-flex items-center justify-center gap-2 rounded-sm transition-colors",
+		"focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring-default",
+		"disabled:pointer-events-none disabled:opacity-50 cursor-pointer active:scale-[0.98]",
+		variantClasses[variant],
+		sizeClasses[size],
+		className,
+	);
+
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-	variant?: keyof typeof variantClasses;
-	size?: keyof typeof sizeClasses;
+	variant?: ButtonVariant;
+	size?: ButtonSize;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -32,14 +51,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 			<button
 				type={type}
 				ref={ref}
-				className={cn(
-					"inline-flex items-center justify-center gap-2 rounded-sm transition-colors",
-					"focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring-default",
-					"disabled:pointer-events-none disabled:opacity-50 cursor-pointer active:scale-[0.98]",
-					variantClasses[variant],
-					sizeClasses[size],
-					className,
-				)}
+				className={buttonClasses(variant, size, className)}
 				{...props}
 			/>
 		);

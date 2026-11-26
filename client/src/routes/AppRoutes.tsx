@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import App from "@/App";
 import { PublicRoute } from "@/routes/PublicRoutes";
 import Login from "@/pages/authPages/Login";
@@ -11,12 +11,21 @@ import Cards from "@/pages/featuresPages/CreditCards";
 import Loans from "@/pages/featuresPages/Loans";
 import Profile from "@/pages/featuresPages/Profile";
 import NotFound from "@/pages/NotFound";
+import Landing from "@/pages/Landing";
 import Assistant from "@/pages/featuresPages/Assistant";
 import DebtPlanner from "@/pages/featuresPages/DebtPlanner";
 
 export function AppRoutes() {
 	return (
 		<Routes>
+			<Route
+				path="/"
+				element={
+					<PublicRoute>
+						<Landing />
+					</PublicRoute>
+				}
+			/>
 			<Route
 				path="/login"
 				element={
@@ -35,7 +44,6 @@ export function AppRoutes() {
 			/>
 
 			<Route element={<App />}>
-				<Route path="/" element={<Navigate to="/dashboard" replace />} />
 				<Route path="/dashboard" element={<Dashboard />} />
 				<Route path="/accounts" element={<Accounts />} />
 				<Route path="/income" element={<Income />} />
